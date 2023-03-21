@@ -2,7 +2,7 @@
 ##############################################
 #          Factory Practice
 
-class Base:
+class OntologyDatabase:
     def __init__(self):
         print("building the class")
         pass
@@ -12,4 +12,3 @@ class Base:
         pass
 
 
-base = Base()
