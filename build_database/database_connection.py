@@ -24,6 +24,7 @@ class DatabaseConnection:
             self.metadata_obj = sqla.MetaData()
         else:
             self.metadata_obj = sqla.MetaData(schema=self.schema)
+        print("metadata has been set")
 
     def create_database(self):
         """
@@ -67,6 +68,13 @@ class DatabaseConnection:
         print('------------------------------')
         print('     connect and print')
         print(stmt)
+        i = 0
         with self.engine.connect() as conn:
-            for row in conn.execute(stmt):
+            result = conn.execute(stmt)
+            num_rows = result.rowcount
+            for row in result:
                 print(f"   row = {row}")
+                i = i + 1
+                if i>10:
+                    break
+        return num_rows
