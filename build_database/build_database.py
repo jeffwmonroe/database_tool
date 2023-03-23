@@ -32,6 +32,7 @@ def main():
         print('----------------------------')
         print('Main Called')
 
+# ToDo put in more precise commands: create, fill, etc
     if args.command == 'run':
         database = NewDatabaseSchema()
         database.create_database()
@@ -41,7 +42,7 @@ def main():
 
         ontology = OntologySchema()
         ontology.connect_engine()
-        ontology.build_tables()
+        ontology.connect_tables()
         ontology.loop_over()
     elif args.command == 'drop':
         database = NewDatabaseSchema()

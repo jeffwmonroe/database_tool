@@ -65,7 +65,7 @@ class NewDatabaseSchema(DatabaseConnection):
         self.artist_table = None
         self.name_map_table = None
 
-    def build_tables(self):
+    def connect_tables(self, commit=False):
 
         self.type_table = sqla.Table(
             "type",
@@ -93,7 +93,8 @@ class NewDatabaseSchema(DatabaseConnection):
                                                           ])
 
         # ToDo have the create_all be optional
-        self.metadata_obj.create_all(self.engine)
+        if commit:
+            self.metadata_obj.create_all(self.engine)
 
     def insert_types(self):
         # ToDo complete this list. Probably move it into data or at least as a global
@@ -115,12 +116,4 @@ class NewDatabaseSchema(DatabaseConnection):
                     print(f'type already exists')
 
     # ToDo move this to base class
-    def drop_database(self):
-        """
-        This will drop the test database
-        This method really belongs in the base class. I am putting it here
-        so that I don't accidentally delete the ontology database.
-        """
-        url = self.url
-        print('Dropping the database')
-        sqlf.drop_database(url)
+

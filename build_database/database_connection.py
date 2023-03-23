@@ -37,4 +37,36 @@ class DatabaseConnection:
             print('database already exists')
 
     def build_tables(self):
+        """
+        This is behaving like an abstract method. Python does not have abstract
+        methods; however, this is a reminder that this method needs to be implemented
+        in child classes.
+        :return:
+        """
+        self.connect_tables(commit=True)
+
+    def connect_tables(self, commit=False):
         pass
+
+    def drop_database(self):
+        """
+        This will drop the test database
+        This method really belongs in the base class. I am putting it here
+        so that I don't accidentally delete the ontology database.
+        """
+        url = self.url
+        print('Dropping the database')
+        sqlf.drop_database(url)
+
+    def connect_and_print(self, stmt):
+        """
+        This is a useful test function. It prints the SQL query and then executes it.
+        :param stmt:
+        :return: n/a
+        """
+        print('------------------------------')
+        print('     connect and print')
+        print(stmt)
+        with self.engine.connect() as conn:
+            for row in conn.execute(stmt):
+                print(f"   row = {row}")

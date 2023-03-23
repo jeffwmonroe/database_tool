@@ -61,9 +61,19 @@ class OntologySchema(DatabaseConnection):
         self.artist_table = None
         self.map_table = None
 
-    def build_tables(self):
+    def connect_tables(self, commit=False):
         self.artist_table = type_table_no_data(self.metadata_obj, "artist")
         self.map_table = map_table(self.metadata_obj, "artist", "cheetah")
+
+    def drop_database(self):
+        """
+        This will NOT drop the Ontology database
+        This is overriding the base case to protect myself from mistakes
+        """
+        print('-------------------------------')
+        print('NOT Dropping the database')
+        print(f'database = {self.url}')
+
 
     def loop_over(self):
 

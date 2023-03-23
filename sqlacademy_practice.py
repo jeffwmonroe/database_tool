@@ -181,3 +181,91 @@ stmt = (
     )
 )
 connect_and_print(stmt)
+
+print("--------------")
+print("sub query")
+subq = (
+    select(func.count(address_table.c.id).label("count"), address_table.c.user_id)
+    .group_by(address_table.c.user_id)
+    .subquery()
+)
+stmt=(select(subq.c.user_id, subq.c.count))
+connect_and_print(stmt)
+
+stmt = select(user_table.c.name, user_table.c.fullname, subq.c.count).join_from(
+    user_table, subq
+)
+
+connect_and_print(stmt)
+
+print('-------------------')
+print('     CTE')
+subq = (
+    select(func.count(address_table.c.id).label("count"), address_table.c.user_id)
+    .group_by(address_table.c.user_id)
+    .cte()
+)
+
+stmt = select(user_table.c.name, user_table.c.fullname, subq.c.count).join_from(
+    user_table, subq
+)
+
+connect_and_print(stmt)
+
+
+subq = (
+    select(func.count(address_table.c.id))
+    .where(user_table.c.id == address_table.c.user_id)
+    .scalar_subquery()
+    .correlate(user_table)
+)
+print(subq)
+print(subq == 5)
+
+stmt = (select(user_table.c.name,
+               address_table.c.email_address,
+               subq.label("address_count"))
+        .join_from(user_table,
+                   address_table)
+        .order_by("address_count"))
+
+connect_and_print(stmt)
+
+
+print('-----------------------')
+print('   lateral correlation')
+subq = (
+    select(
+        func.count(address_table.c.id).label("address_count"),
+        address_table.c.email_address,
+        address_table.c.user_id,
+    )
+    .where(user_table.c.id == address_table.c.user_id)
+    .lateral()
+)
+stmt = (
+    select(user_table.c.name, subq.c.address_count, subq.c.email_address)
+    .join_from(user_table, subq)
+    .order_by(user_table.c.id, subq.c.email_address)
+)
+print(stmt)
+
+
+print('---------------------------------------------------')
+print('               sub queries')
+print('---------------------------------------------------')
+
+subq = (
+    select(func.count(address_table.c.id).label("count"), address_table.c.user_id)
+    .group_by(address_table.c.user_id)
+    .subquery()
+)
+
+print(subq)
+print(select(subq.c.user_id, subq.c.count))
+
+stmt = select(user_table.c.name, user_table.c.fullname, subq.c.count).join(
+    user_table, subq
+)
+
+connect_and_print(stmt)
