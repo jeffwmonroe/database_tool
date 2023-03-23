@@ -13,11 +13,7 @@ def parse_arguments():
     parser.add_argument("-v", "--verbose",
                         help="increase output verbosity",
                         action="store_true")
-    # parser.add_argument("-j", "--jeff",
-    #                     help="jeffness turned on",
-    #                     type=str,
-    #                     default="Jeff"
-    #                     )
+
     args = parser.parse_args()
 
 

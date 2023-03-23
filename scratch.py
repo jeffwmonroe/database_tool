@@ -50,12 +50,30 @@ class Scratch(DatabaseConnection):
             )
             conn.commit()
 
-    def run(self):
+    def show_all(self):
+        stmt = select(self.practice_table)
+        self.connect_and_print(stmt)
+
+    def is_one_to_one(self):
+        stmt = select(
+            self.practice_table.c.identifier,
+            func.count(self.practice_table.c.identifier),
+        ).group_by(
+            self.practice_table.c.identifier,
+        ).order_by(
+            asc(self.practice_table.c.identifier),
+            # desc(self.practice_table.c.identifier),
+        )
+
+        self.connect_and_print(stmt)
+
+    def max_value_query(self):
         print('--------------------------------------------------')
         print('--------------------------------------------------')
 
         subq = select(self.practice_table.c.identifier,
                       func.max(self.practice_table.c.date).label("maxdate"),
+                      func.max(self.practice_table.c.value).label("maxvalue"),
                       ).group_by(self.practice_table.c.identifier).subquery()
 
         query = (select(self.practice_table.c.id,
@@ -65,7 +83,9 @@ class Scratch(DatabaseConnection):
                  .join_from(self.practice_table,
                             subq,
                             and_(self.practice_table.c.identifier == subq.c.identifier,
-                                 subq.c.maxdate == self.practice_table.c.date)))
+                                 subq.c.maxdate == self.practice_table.c.date,
+                                 # subq.c.maxvalue == self.practice_table.c.value,
+                                 )))
 
         self.connect_and_print(query)
 
@@ -99,11 +119,14 @@ def parse_arguments():
     execute = parser.add_argument_group("Execution")
     execute.add_argument("-r", "--run",
                          help='execute scratch code',
-                         action="store_true",
+                         action="store",
+                         type=str,
+                         nargs=1  #"+" on or more
                          )
     parser.add_argument("-v", "--verbose",
                         help="increase output verbosity",
-                        action="store_true")
+                        action="store_true",
+                        )
     args = parser.parse_args()
     # print(f'parser = {args.execute}')
 
@@ -121,20 +144,25 @@ def main():
 
     if args.create:
         scratch.create_database()
-
     scratch.connect_engine()
-
     if args.table:
         scratch.build_tables()
     else:
         scratch.connect_tables()
-
     if args.fill:
         scratch.insert_rows()
-
-    if args.run:
-        scratch.run()
-
+    if args.run is not None:
+        print(f'run = {args.run}')
+        command = args.run[0]
+        match command:
+            case "max":
+                scratch.max_value_query()
+            case "all":
+                scratch.show_all()
+            case "one":
+                scratch.is_one_to_one()
+            case _:
+                print(f'command not found: {command}')
     if args.drop:
         scratch.drop_database()
 
