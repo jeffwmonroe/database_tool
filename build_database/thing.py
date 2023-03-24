@@ -11,34 +11,26 @@ class Thing:
     def __init__(self, thing, table):
         self.thing = thing
         self.table = table
-        self.actions = {}
-        self.vendor_actions = {}
 
         self.num_rows = 0
         self.num_cols = 0
-        self.good_id = False
-        self.good_log = False
+
         self.good_name = False
+        self.good_log = False
+
+        self.good_id = False
+        self.actions = {}
+        self.vendor_actions = {}
 
     def add_action(self, action, table):
-        self.actions[action] = Action(action, table)
+        self.actions[action] = Action(self.thing, action, table)
         # print(f'   action added: {self.thing} - {action}')
 
     def add_vendor_action(self, vendor, action, table):
         key = ActionKey(vendor, action)
-        self.vendor_actions[key] = VendorAction(action, vendor, table)
+        self.vendor_actions[key] = VendorAction(self.thing, action, vendor, table)
+
         # print(f'    vendor action added: {self.thing} - {key}')
-
-    # ToDo list all validations
-    #     number of rows
-    #     number of columns: this is for data / no data
-    #     4 log columns: name and type
-
-    # ToDo MAP Validations
-    #     One to one / one to many   -   only for maps
-    #     id name (id)
-    #     thing_id name
-    #     ext_id existence and type
 
     def validate(self, engine, metadata):
         # print(validate: {self.thing}')
