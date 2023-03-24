@@ -165,6 +165,10 @@ class OntologySchema(DatabaseConnection):
         )
         self.connect_and_print(stmt)
 
+    def check_tables(self):
+        for key in self.thing_dict:
+            self.thing_dict[key].validate(self.engine, self.metadata_obj )
+
     def enumerate_tables(self):
         thing_list = ['actor', 'app', 'artist', 'brand', 'category',
                       'cluster', 'division', 'eduction_level', 'entity_type', 'ethnicity', 'failtest',

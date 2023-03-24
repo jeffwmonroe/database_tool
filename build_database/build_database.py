@@ -32,7 +32,11 @@ def parse_arguments():
                        action="store_true",
                        )
     table.add_argument("-e", "--enumerate",
-                       help='reflect the tables from the ontology database',
+                       help='go over the tables and build structure',
+                       action="store_true",
+                       )
+    table.add_argument("--check",
+                       help='perform checks on all of the reflected and enumerated tables',
                        action="store_true",
                        )
     table.add_argument("-f", "--fill",
@@ -92,7 +96,8 @@ def main():
         ontology.connect_tables()
     if args.enumerate:
         ontology.enumerate_tables()
-
+    if args.check:
+        ontology.check_tables()
     if args.fill:
         # database.insert_types()
         # scratch.insert_rows()
