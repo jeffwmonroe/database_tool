@@ -188,11 +188,11 @@ class OntologySchema(DatabaseConnection):
             if key in self.metadata_obj.tables.keys():
                 thing_obj = Thing(thing, self.metadata_obj.tables[key])
                 self.thing_dict[thing] = thing_obj
-                print(f'Thing added: {thing}')
+                # print(f'Thing added: {thing}')
                 for action in action_list:
                     a_key = schema + action + "_" + thing
                     if a_key in self.metadata_obj.tables.keys():
-                        print(f"   thing action added: {action}")
+                        # print(f"   thing action added: {action}")
                         thing_obj.add_action(action, self.metadata_obj.tables[a_key])
 
         for thing in self.thing_dict.keys():

@@ -1,7 +1,7 @@
 from collections import namedtuple
 from action import Action, VendorAction
-import sqlalchemy as sqla
-from sqlalchemy import select, func
+from sqlalchemy import select
+from utilities import good_column, good_log_cols
 
 ActionKey = namedtuple("ThingAction", "vendor action")
 
@@ -22,12 +22,12 @@ class Thing:
 
     def add_action(self, action, table):
         self.actions[action] = Action(action, table)
-        print(f'   action added: {self.thing} - {action}')
+        # print(f'   action added: {self.thing} - {action}')
 
     def add_vendor_action(self, vendor, action, table):
         key = ActionKey(vendor, action)
         self.vendor_actions[key] = VendorAction(action, vendor, table)
-        print(f'    vendor action added: {self.thing} - {key}')
+        # print(f'    vendor action added: {self.thing} - {key}')
 
     # ToDo list all validations
     #     number of rows
@@ -40,38 +40,18 @@ class Thing:
     #     thing_id name
     #     ext_id existence and type
 
-    def good_column(self, labels, types):
-        # I realize that this is horrifying ...
-        for label in labels:
-            if label in self.table.c.keys():
-                col = self.table.c[label]
-                # print(f'    column: {label}, {col.type}')
-                if str(col.type) in types:
-                    return True
-                # else:
-                #     print(f'    not found!! {col.type} in {types}')
-                #     print(str(col.type))
-
-        return False
-
-    def good_log_cols(self):
-        return (self.good_column(['created_ts'], ["TIMESTAMP"]) and
-                self.good_column(['updated_ts'], ["TIMESTAMP"]) and
-                self.good_column(['created_by'], ["TEXT", "VARCHAR(200)"]) and
-                self.good_column(['updated_by'], ["TEXT", "VARCHAR(200)"]))
-
     def validate(self, engine, metadata):
-        # print(f'validate: {self.thing}')
+        # print(validate: {self.thing}')
         stmt = select(self.table)
         with engine.connect() as conn:
             result = conn.execute(stmt)
             self.num_rows = result.rowcount
             # print(f'    rows = {self.num_rows}')
 
-        self.good_id = self.good_column([self.thing + '_id'], ["INTEGER"])
-        self.good_name = self.good_column([self.thing + '_name', self.thing], ["TEXT", "VARCHAR(200)"])
+        self.good_id = good_column(self.table.c, [self.thing + '_id'], ["INTEGER"])
+        self.good_name = good_column(self.table.c, [self.thing + '_name', self.thing], ["TEXT", "VARCHAR(200)"])
 
-        self.good_log = self.good_log_cols()
+        self.good_log = good_log_cols(self.table.c)
 
         self.num_cols = len(self.table.c.keys())
         # if 'created_ts' in self.table.c.keys
@@ -79,14 +59,13 @@ class Thing:
         # print(f'    good id = {self.good_id}')
         # print(f'    good log = {self.good_log}')
         # print(f'    good id name = {self.good_id_name}')
-        for col in self.table.c.keys():
-            # print(f'    col = {col} - {self.table.c[col]}')
-            # print(type(col))
-            pass
         # self.print_validation()
+        for action in self.actions:
+            self.actions[action].validate(engine, metadata)
+        for vendor_action in self.vendor_actions:
+            self.vendor_actions[vendor_action].validate(engine, metadata)
 
     def print_validation(self):
         print(f'Table: {self.thing}', end=' ')
         print(f'<id={self.good_id}, name={self.good_name}, log={self.good_log}>', end=" ")
         print(f'columns = {self.num_cols}, rows = {self.num_rows}')
-

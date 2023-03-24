@@ -58,14 +58,14 @@ def parse_arguments():
 
     return args
 
-import re
+# ToDo This method is deprecated
 def parse_tables(table_list):
     table = table_list[4]
-    print(f'The first table is: {table}')
+    # print(f'The first table is: {table}')
 #     Prune out the ontology schema
 
     new_list = [table[9:] for table in table_list]
-    print(new_list)
+    # print(new_list)
 
 def main():
     args = parse_arguments()
