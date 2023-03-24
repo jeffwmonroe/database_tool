@@ -1,6 +1,7 @@
 from sqlalchemy import select, func
 from database_connection import DatabaseConnection
 from otable import MapTable, ThingTable
+from thing import Thing
 
 
 def ontology_url():
@@ -16,16 +17,21 @@ def ontology_url():
     return url
 
 
+# ActionTable = namedtuple("ActionTable", "thing vendor action")
+
+
 class OntologySchema(DatabaseConnection):
     def __init__(self, *args, **kwargs):
         kwargs['schema'] = 'ontology'
         super().__init__(ontology_url(), *args, **kwargs)
         self.artist_table = None
-        self.map_table = None
+        self.map_list = None
+        self.thing_dict = dict()
 
     def connect_tables(self, commit=False):
         self.artist_table = ThingTable(self.metadata_obj, "artist")
-        self.map_table = MapTable(self.metadata_obj, "artist", "cheetah")
+        vendor_list = ['cheetah', 'mockingbird', 'monkey', 'porcupine', 'tapir']
+        self.map_list = [MapTable(self.metadata_obj, "artist", vendor) for vendor in vendor_list]
 
     def drop_database(self):
         """
@@ -36,30 +42,51 @@ class OntologySchema(DatabaseConnection):
         print('NOT Dropping the database')
         print(f'database = {self.url}')
 
-    def is_one_to_one(self):
-        subquery = select(
-            self.map_table.table.c.ext_id,
-            func.count(self.map_table.table.c.ext_id).label("count")
-        ).group_by(self.map_table.table.c.ext_id).subquery()
+    def is_one_to_one(self, show_many_to_one=False):
+        return_list = []
+        print("is_one_to_one")
+        for map_table in self.map_list:
+            print(f'Checking map table: {map_table.thing}, {map_table.vendor}')
+            stmt = select(
+                map_table.table.c.artist_id
+            )
+            total_rows = self.connect_and_print(stmt)
+            subquery = select(
+                map_table.table.c.ext_id,
+                func.count(map_table.table.c.ext_id).label("count")
+            ).group_by(map_table.table.c.ext_id).subquery()
 
-        stmt = select(subquery).filter(subquery.c.count > 1)
-        ext_row = self.connect_and_print(stmt)
+            stmt = select(subquery).filter(subquery.c.count > 1)
+            ext_row = self.connect_and_print(stmt)
 
-        subquery = select(
-            self.map_table.table.c.artist_id,
-            func.count(self.map_table.table.c.artist_id).label("count")
-        ).group_by(self.map_table.table.c.artist_id).subquery()
+            subquery = select(
+                map_table.table.c.artist_id,
+                func.count(map_table.table.c.artist_id).label("count")
+            ).group_by(map_table.table.c.artist_id).subquery()
 
-        stmt = select(subquery).filter(subquery.c.count > 1)
-        type_row = self.connect_and_print(stmt)
+            stmt = select(subquery).filter(subquery.c.count > 1).order_by(subquery.c.count, subquery.c.artist_id)
+            type_row = self.connect_and_print(stmt, print_row=show_many_to_one)
 
-        print(f"rows = {ext_row}, {type_row}")
-        if ext_row + type_row == 0:
-            print("One to One relationship!!")
-            return True
-        else:
-            print("Many to One relationship!!")
-            return False
+            print(f"    rows = ext: {ext_row}, ont: {type_row} total: {total_rows}")
+            if ext_row + type_row == 0:
+                print("    One to One relationship!!")
+                return_list.append(True)
+            else:
+                print("    Many to One relationship!!")
+                return_list.append(True)
+        return return_list
+
+    def simple_loop(self, t_obj):
+        print(type(t_obj.table))
+        stmt = select(t_obj.table.c.ext_id, t_obj.table.c.artist_id)
+        with self.engine.connect() as conn:
+            result = conn.execute(stmt)
+            i = 0
+            for row in result:
+                t_obj.print_row(row)
+                i = i + 1
+                if i > 10:
+                    break
 
     def loop_over(self):
         """
@@ -137,3 +164,37 @@ class OntologySchema(DatabaseConnection):
             # self.artist_table.table.c[t_list[1]],
         )
         self.connect_and_print(stmt)
+
+    def enumerate_tables(self):
+        thing_list = ['actor', 'app', 'artist', 'brand', 'category',
+                      'cluster', 'division', 'eduction_level', 'entity_type', 'ethnicity', 'failtest',
+                      'franchise', 'gender', 'generation', 'genre', 'geo_crosswalk',
+                      'venue'
+                      ]
+        vendor_list = ['cheetah', 'mockingbird', 'monkey', 'porcupine', 'tapir', 'failvendor']
+        action_list = ['map', 'fuzzymatch', 'import', 'export', 'failaction']
+
+        # reflected_dict = self.metadata_obj.tables
+        # print(type(table_dict))
+        schema = 'ontology.'
+        # ------------------------------------
+        #    build the thing level dictionary
+        for thing in thing_list:
+            key = schema + thing
+            if key in self.metadata_obj.tables.keys():
+                thing_obj = Thing(thing, self.metadata_obj.tables[key])
+                self.thing_dict[thing] = thing_obj
+                print(f'Thing added: {thing}')
+                for action in action_list:
+                    a_key = schema + action + "_" + thing
+                    if a_key in self.metadata_obj.tables.keys():
+                        print(f"   thing action added: {action}")
+                        thing_obj.add_action(action, self.metadata_obj.tables[a_key])
+
+        for thing in self.thing_dict.keys():
+            if thing in self.thing_dict.keys():
+                for vendor in vendor_list:
+                    for action in action_list:
+                        o_key = schema + action + "_" + thing + "_" + vendor
+                        if o_key in self.metadata_obj.tables.keys():
+                            self.thing_dict[thing].add_vendor_action(vendor, action, self.metadata_obj.tables[o_key])

@@ -24,7 +24,15 @@ def parse_arguments():
                           )
     table = parser.add_argument_group("table tools")
     table.add_argument("-t", "--table",
-                       help='build the tables in a fresh database',
+                       help='build the new schema tables in a fresh database',
+                       action="store_true",
+                       )
+    table.add_argument("-r", "--reflect",
+                       help='reflect the tables from the ontology database',
+                       action="store_true",
+                       )
+    table.add_argument("-e", "--enumerate",
+                       help='reflect the tables from the ontology database',
                        action="store_true",
                        )
     table.add_argument("-f", "--fill",
@@ -32,7 +40,7 @@ def parse_arguments():
                        action="store_true",
                        )
     execute = parser.add_argument_group("Execution")
-    execute.add_argument("-r", "--run",
+    execute.add_argument("--run",
                          help='execute scratch code',
                          action="store",
                          type=str,
@@ -46,6 +54,14 @@ def parse_arguments():
 
     return args
 
+import re
+def parse_tables(table_list):
+    table = table_list[4]
+    print(f'The first table is: {table}')
+#     Prune out the ontology schema
+
+    new_list = [table[9:] for table in table_list]
+    print(new_list)
 
 def main():
     args = parse_arguments()
@@ -66,10 +82,17 @@ def main():
         return
     if args.table:
         database.build_tables()
-        ontology.connect_tables()
+    else:
+        database.connect_tables()
+    if args.reflect:
+        # ToDo move this to a good place
+        table_list = ontology.reflect_tables()
+        parse_tables(table_list)
     else:
         ontology.connect_tables()
-        database.connect_tables()
+    if args.enumerate:
+        ontology.enumerate_tables()
+
     if args.fill:
         # database.insert_types()
         # scratch.insert_rows()
@@ -79,11 +102,13 @@ def main():
         command = args.run[0]
         match command:
             case "loop":
-                ontology.loop_over()
+                ontology.simple_loop(ontology.map_list[-1])
             case "column":
                 ontology.column_test()
             case "one":
                 ontology.is_one_to_one()
+            case "reflect":
+                pass
             case _:
                 print(f'command not found: {command}')
     if args.drop:

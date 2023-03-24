@@ -1,10 +1,5 @@
 import sqlalchemy as sqla
-# from sqlalchemy import MetaData
-# from sqlalchemy import text
 import sqlalchemy_utils.functions as sqlf
-from sqlalchemy import insert, select
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy import text
 
 
 class DatabaseConnection:
@@ -25,6 +20,25 @@ class DatabaseConnection:
         else:
             self.metadata_obj = sqla.MetaData(schema=self.schema)
         print("metadata has been set")
+
+    def reflect_tables(self):
+        self.metadata_obj.reflect(bind=self.engine)
+        # print(self.metadata_obj.tables)
+        # print(len(self.metadata_obj.tables.keys()))
+        # print(self.metadata_obj.tables['ontology.artist'])
+
+        # Loop over tables
+        # for key in self.metadata_obj.tables.keys():
+        #     print(f'   key = {key}')
+        table_list = list(self.metadata_obj.tables.keys())
+        # print("number of tables = " + str(len(table_list)))
+        # vtable = self.metadata_obj.tables['ontology.venue']
+        # print(f'vtable = {vtable}')
+        # print(type(vtable))
+        # Loop over columns
+        # for col in vtable.c:
+        #     print(f'   col = {col.name}, {col.type}')
+        return table_list
 
     def create_database(self):
         """
@@ -59,22 +73,23 @@ class DatabaseConnection:
         print('Dropping the database')
         sqlf.drop_database(url)
 
-    def connect_and_print(self, stmt):
+    def connect_and_print(self, stmt, print_row=False):
         """
         This is a useful test function. It prints the SQL query and then executes it.
         :param stmt:
         :return: n/a
         """
-        print('------------------------------')
-        print('     connect and print')
-        print(stmt)
+        # print('------------------------------')
+        # print('     connect and print')
+        # print(stmt)
         i = 0
         with self.engine.connect() as conn:
             result = conn.execute(stmt)
             num_rows = result.rowcount
-            for row in result:
-                print(f"   row = {row}")
-                i = i + 1
-                if i>10:
-                    break
+            if print_row:
+                for row in result:
+                    print(f"   row = {row}")
+                    # i = i + 1
+                    # if i > 10:
+                    #     break
         return num_rows

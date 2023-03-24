@@ -24,7 +24,13 @@ def type_table_no_data(metadata_obj, name):
 
 
 def map_table(metadata_obj, name, vendor):
-    keys = [sqla.Column("id", sqla.Integer, primary_key=True), sqla.Column("ext_id", sqla.BIGINT)]
+    # ToDo fix the robo hack
+    if name == 'artist' and vendor == 'tapir':
+        ext_col = sqla.Column("ext_id", sqla.TEXT)
+    else:
+        ext_col = sqla.Column("ext_id", sqla.BIGINT)
+
+    keys = [sqla.Column("id", sqla.Integer, primary_key=True), ext_col]
     log = log_info()
     data = [sqla.Column(name + "_id", sqla.ForeignKey(name + "." + name + "_id"), nullable=False),
             ]
@@ -41,6 +47,8 @@ class OTable:
         self.thing = thing
         self.table = None
 
+    def print_row(self, row):
+        print(f'row')
 
 class MapTable(OTable):
     def __init__(self, metadata, thing, vendor, **kwargs):
@@ -48,6 +56,9 @@ class MapTable(OTable):
         super().__init__(thing)
         self.vendor = vendor
         self.table = map_table(metadata, thing, vendor)
+
+    def print_row(self, row):
+        print(f'map row = <{row.ext_id}>, {row.artist_id}')
 
 
 class ThingTable(OTable):
