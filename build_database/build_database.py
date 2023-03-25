@@ -80,9 +80,13 @@ def main():
         database.create_database()
     try:
         database.connect_engine()
+    except sqlalchemy.exc.OperationalError:
+        print("Error: Could not connect. New database not found")
+        return
+    try:
         ontology.connect_engine()
     except sqlalchemy.exc.OperationalError:
-        print("Error: Could not connect. Database not found")
+        print("Error: Could not connect. Ontology database not found")
         return
     if args.table:
         database.build_tables()
