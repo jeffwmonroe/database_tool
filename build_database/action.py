@@ -1,21 +1,16 @@
-from sqlalchemy import select, func
-from utilities import good_log_cols, good_column
+from utilities import good_column
+from table_base import TableBase
 
 
-class Action:
+class Action(TableBase):
     def __init__(self, thing, action, table):
-        self.thing = thing
+        super().__init__(thing, table)
         self.action = action
-        self.table = table
 
-        self.num_rows = 0
-        self.num_cols = 0
-
-        self.good_name = False
-
-        self.good_log = False
-        
         self.good_ext = False
+
+    def has_name(self):
+        return True
 
     # ToDo list all validations
     #     number of rows
@@ -28,16 +23,15 @@ class Action:
     #     thing_id name
     #     ext_id existence and type
     def validate(self, engine, metadata):
-        stmt = select(self.table)
-        with engine.connect() as conn:
-            result = conn.execute(stmt)
-            self.num_rows = result.rowcount
-        self.good_name = good_column(self.table.c, [self.thing + '_name', self.thing], ["TEXT", "VARCHAR(200)"])
-        self.num_cols = len(self.table.c.keys())
-        if self.action == 'map' or self.action == 'fuzzymatch':
-            self.good_log = good_log_cols(self.table.c)
+        super().validate(engine, metadata)
 
-        self.good_ext = good_column(self.table.c, ['ext'], ["TEXT", "VARCHAR(200)"])
+        if self.action == 'map' or self.action == 'fuzzymatch':
+            self.good_ext = good_column(self.table.c, ['ext'], ["TEXT", "VARCHAR(200)"])
+        else:
+            self.good_ext = None
+
+    def table_name(self):
+        return self.action + "_" + self.thing
 
 
 class VendorAction(Action):
@@ -45,6 +39,14 @@ class VendorAction(Action):
         super().__init__(thing, action, table)
         self.vendor = vendor
 
-    def validate(self, engine, metadata):
-        super().validate(engine, metadata)
-        pass
+    def has_log(self):
+        return self.action == 'map' or self.action == 'fuzzymatch'
+
+    def has_id(self):
+        return self.action == 'map' or self.action == 'fuzzymatch'
+
+    def has_name(self):
+        return self.action == 'map' or self.action == 'fuzzymatch'
+
+    def table_name(self):
+        return self.action + "_" + self.thing + "_" + self.vendor
