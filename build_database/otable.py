@@ -43,16 +43,15 @@ def map_table(metadata_obj, name, vendor):
 
 class OTable:
     def __init__(self, thing):
-
         self.thing = thing
         self.table = None
 
     def print_row(self, row):
         print(f'row')
 
+
 class MapTable(OTable):
     def __init__(self, metadata, thing, vendor, **kwargs):
-
         super().__init__(thing)
         self.vendor = vendor
         self.table = map_table(metadata, thing, vendor)
@@ -63,6 +62,5 @@ class MapTable(OTable):
 
 class ThingTable(OTable):
     def __init__(self, metadata, thing):
-
         super().__init__(thing)
         self.table = type_table_no_data(metadata, thing)

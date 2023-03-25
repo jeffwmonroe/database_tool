@@ -36,7 +36,7 @@ class TableBase:
             self.good_name = None
 
         if self.has_id():
-            self.good_id = good_column(self.table.c, [self.thing + '_id'], ["INTEGER"])
+            self.good_id = good_column(self.table.c, [self.thing + '_id'], ["INTEGER", "BIGINT"])
         else:
             self.good_id = None
 

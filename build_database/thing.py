@@ -30,8 +30,6 @@ class Thing(TableBase):
         key = ActionKey(vendor, action)
         self.vendor_actions[key] = VendorAction(self.thing, action, vendor, table)
 
-        # print(f'    vendor action added: {self.thing} - {key}')
-
     def validate(self, engine, metadata):
         super().validate(engine, metadata)
         self.print_validation()

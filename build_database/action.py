@@ -43,7 +43,7 @@ class VendorAction(Action):
         return self.action == 'map' or self.action == 'fuzzymatch'
 
     def has_id(self):
-        return self.action == 'map' or self.action == 'fuzzymatch'
+        return self.action == 'map' or self.action == 'fuzzymatch' or self.action == 'import'
 
     def has_name(self):
         return self.action == 'map' or self.action == 'fuzzymatch'
