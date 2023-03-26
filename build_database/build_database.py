@@ -1,3 +1,4 @@
+import pandas as pd
 import psycopg2
 import sqlalchemy
 from new_schema import NewDatabaseSchema
@@ -101,7 +102,10 @@ def main():
     if args.enumerate:
         ontology.enumerate_tables()
     if args.check:
-        ontology.check_tables()
+        result = ontology.check_tables()
+        df = pd.DataFrame(result,
+                          columns=result[0].keys())
+        df.to_csv('table validation.csv')
     if args.fill:
         # database.insert_types()
         # scratch.insert_rows()

@@ -26,7 +26,7 @@ class OntologySchema(DatabaseConnection):
         super().__init__(ontology_url(), *args, **kwargs)
         self.artist_table = None
         self.map_list = None
-        self.thing_dict = dict()
+        self.things = dict()
 
     def connect_tables(self, commit=False):
         self.artist_table = ThingTable(self.metadata_obj, "artist")
@@ -166,17 +166,30 @@ class OntologySchema(DatabaseConnection):
         self.connect_and_print(stmt)
 
     def check_tables(self):
-        for key in self.thing_dict:
-            self.thing_dict[key].validate(self.engine, self.metadata_obj )
+        result = []
+        for key in self.things:
+            self.things[key].validate(self.engine, self.metadata_obj)
+            result = result + self.things[key].validation_data()
+        return result
 
     def enumerate_tables(self):
-        thing_list = ['actor', 'app', 'artist', 'brand', 'category',
-                      'cluster', 'division', 'eduction_level', 'entity_type', 'ethnicity', 'failtest',
-                      'franchise', 'gender', 'generation', 'genre', 'geo_crosswalk',
-                      'venue'
+        thing_list = ['actor', 'app', 'artist', 'brand', 'category', 'category_hierarchy',
+                      'company', 'division', 'eduction_level', 'entity_type', 'ethnicity',
+                      'franchise', 'gender', 'generation', 'genre', 'has_children', 'household_size',
+                      'marital_status', 'political_affiliation', 'product', 'property_value',
+                      'region', 'residence', 'space', 'sport', 'sport_league', 'sport_team', 'sport_team_league',
+                      'state', 'theatre_tite', 'ticker', 'time', 'time_table', 'time_type', 'title',
+                      'venue', 'yearly_income',
                       ]
-        vendor_list = ['cheetah', 'mockingbird', 'monkey', 'porcupine', 'tapir', 'failvendor']
-        action_list = ['map', 'fuzzymatch', 'import', 'export', 'failaction']
+        vendor_list = ['alligator', 'android', 'brand', 'ios',  'cheetah', 'ferret', 'ferret_retailer',
+                       'genre', 'koala',
+                       'mockingbird', 'monkey', 'moose', 'natterjack', 'panther', 'peacock',
+                       'platypus', 'porcupine',
+                       'stork', 'stork_ios_android', 'swan',
+                       'tapir',
+                       'value_koala', 'concert_venue',
+                       ]
+        action_list = ['map', 'fuzzymatch', 'import', 'exp', 'history']
 
         # reflected_dict = self.metadata_obj.tables
         # print(type(table_dict))
@@ -187,7 +200,7 @@ class OntologySchema(DatabaseConnection):
             key = schema + thing
             if key in self.metadata_obj.tables.keys():
                 thing_obj = Thing(thing, self.metadata_obj.tables[key])
-                self.thing_dict[thing] = thing_obj
+                self.things[thing] = thing_obj
                 # print(f'Thing added: {thing}')
                 for action in action_list:
                     a_key = schema + action + "_" + thing
@@ -195,10 +208,10 @@ class OntologySchema(DatabaseConnection):
                         # print(f"   thing action added: {action}")
                         thing_obj.add_action(action, self.metadata_obj.tables[a_key])
 
-        for thing in self.thing_dict.keys():
-            if thing in self.thing_dict.keys():
+        for thing in self.things.keys():
+            if thing in self.things.keys():
                 for vendor in vendor_list:
                     for action in action_list:
                         o_key = schema + action + "_" + thing + "_" + vendor
                         if o_key in self.metadata_obj.tables.keys():
-                            self.thing_dict[thing].add_vendor_action(vendor, action, self.metadata_obj.tables[o_key])
+                            self.things[thing].add_vendor_action(vendor, action, self.metadata_obj.tables[o_key])

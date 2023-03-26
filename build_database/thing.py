@@ -32,14 +32,20 @@ class Thing(TableBase):
 
     def validate(self, engine, metadata):
         super().validate(engine, metadata)
-        self.print_validation()
-
         for action in self.actions:
             self.actions[action].validate(engine, metadata)
-            self.actions[action].print_validation()
         for vendor_action in self.vendor_actions:
             self.vendor_actions[vendor_action].validate(engine, metadata)
-            self.vendor_actions[vendor_action].print_validation()
+
+    def validation_data(self):
+        result = super().validation_data()
+
+        for action in self.actions:
+            result = result + self.actions[action].validation_data()
+        for vendor_action in self.vendor_actions:
+            result = result + self.vendor_actions[vendor_action].validation_data()
+
+        return result
 
     def table_name(self):
         return self.thing

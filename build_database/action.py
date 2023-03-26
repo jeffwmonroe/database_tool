@@ -1,4 +1,4 @@
-from utilities import good_column
+from utilities import good_column, one_to_one_data
 from table_base import TableBase
 
 
@@ -13,15 +13,8 @@ class Action(TableBase):
         return True
 
     # ToDo list all validations
-    #     number of rows
-    #     number of columns: this is for data / no data
-    #     4 log columns: name and type
+    #     1/2 log columns: name and type
 
-    # ToDo MAP Validations
-    #     One to one / one to many   -   only for maps
-    #     id name (id)
-    #     thing_id name
-    #     ext_id existence and type
     def validate(self, engine, metadata):
         super().validate(engine, metadata)
 
@@ -33,20 +26,42 @@ class Action(TableBase):
     def table_name(self):
         return self.action + "_" + self.thing
 
+    def get_action(self):
+        return self.action
+
 
 class VendorAction(Action):
     def __init__(self, thing, action, vendor, table):
         super().__init__(thing, action, table)
         self.vendor = vendor
+        self.duplicate_ids = 0
+        self.duplicate_ext_ids = 0
 
     def has_log(self):
         return self.action == 'map' or self.action == 'fuzzymatch'
 
     def has_id(self):
-        return self.action == 'map' or self.action == 'fuzzymatch' or self.action == 'import'
+        return self.action == 'map' or self.action == 'fuzzymatch'
 
     def has_name(self):
-        return self.action == 'map' or self.action == 'fuzzymatch'
+        return self.action == 'import'
 
     def table_name(self):
         return self.action + "_" + self.thing + "_" + self.vendor
+
+    def get_vendor(self):
+        return self.vendor
+
+    def get_duplicate_ids(self):
+        return self.duplicate_ids
+
+    def get_duplicate_ext_ids(self):
+        return self.duplicate_ext_ids
+
+    def validate(self, engine, metadata):
+        super().validate(engine, metadata)
+        if self.action == 'map' or self.action == 'fuzzymatch':
+            self.duplicate_ids, self.duplicate_ext_ids = one_to_one_data(engine,
+                                                                         self.table,
+                                                                         self.thing + '_id',
+                                                                         'ext_id')
