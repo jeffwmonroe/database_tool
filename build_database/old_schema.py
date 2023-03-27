@@ -2,6 +2,7 @@ from sqlalchemy import select, func
 from database_connection import DatabaseConnection
 from otable import MapTable, ThingTable
 from thing import Thing
+from utilities import test_fill
 
 
 def ontology_url():
@@ -27,6 +28,15 @@ class OntologySchema(DatabaseConnection):
         self.artist_table = None
         self.map_list = None
         self.things = dict()
+
+    def test_fill(self):
+        print('test fill:')
+        ethnicity = self.things["ethnicity"]
+        print('table found')
+        print(ethnicity.vendor_actions.keys())
+        map = ethnicity.vendor_actions[('koala', 'map')]
+        print('map found')
+        test_fill(self.engine, ethnicity, map)
 
     def connect_tables(self, commit=False):
         self.artist_table = ThingTable(self.metadata_obj, "artist")
@@ -181,7 +191,7 @@ class OntologySchema(DatabaseConnection):
                       'state', 'theatre_tite', 'ticker', 'time', 'time_table', 'time_type', 'title',
                       'venue', 'yearly_income',
                       ]
-        vendor_list = ['alligator', 'android', 'brand', 'ios',  'cheetah', 'ferret', 'ferret_retailer',
+        vendor_list = ['alligator', 'android', 'brand', 'ios', 'cheetah', 'ferret', 'ferret_retailer',
                        'genre', 'koala',
                        'mockingbird', 'monkey', 'moose', 'natterjack', 'panther', 'peacock',
                        'platypus', 'porcupine',

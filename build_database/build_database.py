@@ -6,6 +6,8 @@ from old_schema import OntologySchema
 import argparse
 
 
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser(prog="scratch",
                                      description="Database practice tool",
@@ -107,6 +109,7 @@ def main():
                           columns=result[0].keys())
         df.to_csv('table validation.csv')
     if args.fill:
+        ontology.test_fill()
         # database.insert_types()
         # scratch.insert_rows()
         pass

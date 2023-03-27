@@ -1,116 +1,116 @@
-Num,table_name,thing,action,vendor,good_id,good_name,good_log,columns,rows,dup id,dup ext_id,Notes
-0,actor,actor,,,TRUE,TRUE,TRUE,6,10000,0,0,
-1,map_actor_platypus,actor,map,platypus,TRUE,,TRUE,7,10000,0,0,
-2,app,app,,,TRUE,TRUE,TRUE,6,45894,0,0,
-3,map_app_android,app,map,android,TRUE,,TRUE,7,35576,1284,0,
-4,map_app_brand,app,map,brand,TRUE,,FALSE,7,1799,,,not external
-5,map_app_ios,app,map,ios,TRUE,,TRUE,7,27582,1166,0,
-6,map_app_stork,app,map,stork,TRUE,,TRUE,7,47476,1027,0,
-7,map_app_stork_ios_android,app,map,stork_ios_android,FALSE,,FALSE,2,63246,,,I have no idea what this is
-8,artist,artist,,,TRUE,TRUE,TRUE,6,24714,0,0,
-9,import_artist,artist,import,,,TRUE,,3,0,0,0,
-10,map_artist_cheetah,artist,map,cheetah,TRUE,,TRUE,7,24710,0,0,
-11,fuzzymatch_artist_cheetah,artist,fuzzymatch,cheetah,TRUE,,TRUE,7,0,0,0,
-12,import_artist_cheetah,artist,import,cheetah,,TRUE,,4,0,0,0,
-13,map_artist_genre,artist,map,genre,TRUE,,FALSE,4,26432,,,"not external, no PK, not normalized"
-14,map_artist_mockingbird,artist,map,mockingbird,TRUE,,TRUE,7,9654,1,0,
-15,fuzzymatch_artist_mockingbird,artist,fuzzymatch,mockingbird,TRUE,,TRUE,7,0,0,0,
-16,import_artist_mockingbird,artist,import,mockingbird,,TRUE,,4,0,0,0,
-17,map_artist_monkey,artist,map,monkey,TRUE,,TRUE,7,24339,6,0,
-18,fuzzymatch_artist_monkey,artist,fuzzymatch,monkey,TRUE,,TRUE,7,0,0,0,
-19,import_artist_monkey,artist,import,monkey,,TRUE,,4,0,0,0,
-20,map_artist_porcupine,artist,map,porcupine,TRUE,,TRUE,7,11968,67,0,
-21,fuzzymatch_artist_porcupine,artist,fuzzymatch,porcupine,TRUE,,TRUE,7,0,0,0,
-22,import_artist_porcupine,artist,import,porcupine,,TRUE,,4,0,0,0,
-23,map_artist_tapir,artist,map,tapir,TRUE,,FALSE,4,4608,0,0,half log
-24,map_artist_concert_venue,artist,map,concert_venue,TRUE,,FALSE,3,94636,,,not external
-25,brand,brand,,,TRUE,TRUE,TRUE,7,74095,0,0,
-26,import_brand,brand,import,,,TRUE,,4,0,0,0,
-27,category,category,,,TRUE,TRUE,TRUE,6,345,0,0,
-28,import_category,category,import,,,TRUE,,3,0,0,0,
-29,category_hierarchy,category_hierarchy,,,TRUE,FALSE,TRUE,11,313,0,0,non standard
-30,import_category_hierarchy,category_hierarchy,import,,,FALSE,,8,0,0,0,non standard
-31,company,company,,,TRUE,TRUE,TRUE,8,65508,0,0,
-32,import_company,company,import,,,TRUE,,4,0,0,0,
-33,division,division,,,TRUE,TRUE,FALSE,4,9,0,0,half log. Data is messed up
-34,entity_type,entity_type,,,TRUE,TRUE,TRUE,6,3,0,0,
-35,ethnicity,ethnicity,,,TRUE,TRUE,TRUE,6,7,0,0,
-36,map_ethnicity_koala,ethnicity,map,koala,TRUE,,TRUE,7,159,6,0,
-37,franchise,franchise,,,TRUE,TRUE,TRUE,6,825,0,0,
-38,gender,gender,,,TRUE,TRUE,TRUE,6,4,0,0,
-39,map_gender_koala,gender,map,koala,TRUE,,TRUE,7,6,2,0,
-40,generation,generation,,,TRUE,TRUE,TRUE,6,5,0,0,
-41,map_generation_koala,generation,map,koala,TRUE,,TRUE,7,85,5,0,
-42,genre,genre,,,TRUE,TRUE,TRUE,6,25,0,0,
-43,has_children,has_children,,,TRUE,FALSE,TRUE,6,2,0,0,"non standard, boolean instead of strings"
-44,map_has_children_koala,has_children,map,koala,TRUE,,TRUE,7,11,1,0,
-45,household_size,household_size,,,TRUE,TRUE,TRUE,6,4,0,0,
-46,map_household_size_koala,household_size,map,koala,TRUE,,TRUE,7,9,2,0,
-47,marital_status,marital_status,,,TRUE,TRUE,TRUE,6,3,0,0,
-48,map_marital_status_koala,marital_status,map,koala,TRUE,,TRUE,7,9,3,0,
-49,political_affiliation,political_affiliation,,,TRUE,TRUE,TRUE,6,6,0,0,
-50,map_political_affiliation_koala,political_affiliation,map,koala,TRUE,,TRUE,7,14,4,0,
-51,product,product,,,TRUE,TRUE,TRUE,8,74095,0,0,
-52,import_product,product,import,,,TRUE,,5,0,0,0,
-53,map_product_alligator,product,map,alligator,TRUE,,TRUE,7,4017,69,0,
-54,fuzzymatch_product_alligator,product,fuzzymatch,alligator,TRUE,,TRUE,7,0,0,0,
-55,import_product_alligator,product,import,alligator,,TRUE,,4,0,0,0,
-56,map_product_cheetah,product,map,cheetah,TRUE,,TRUE,7,1009,0,0,
-57,import_product_cheetah,product,import,cheetah,,TRUE,,4,0,0,0,
-58,map_product_ferret,product,map,ferret,TRUE,,TRUE,7,24031,2639,0,
-59,fuzzymatch_product_ferret,product,fuzzymatch,ferret,TRUE,,TRUE,7,0,0,0,
-60,import_product_ferret,product,import,ferret,,TRUE,,4,0,0,0,
-61,map_product_ferret_retailer,product,map,ferret_retailer,TRUE,,TRUE,7,1097,38,0,
-62,import_product_ferret_retailer,product,import,ferret_retailer,,TRUE,,4,0,0,0,
-63,map_product_koala,product,map,koala,TRUE,,TRUE,8,1578,306,0,
-64,fuzzymatch_product_koala,product,fuzzymatch,koala,TRUE,,TRUE,7,0,0,0,
-65,import_product_koala,product,import,koala,,TRUE,,5,0,0,0,
-66,map_product_moose,product,map,moose,TRUE,,TRUE,7,1402,148,0,
-67,fuzzymatch_product_moose,product,fuzzymatch,moose,TRUE,,TRUE,7,0,0,0,
-68,import_product_moose,product,import,moose,,TRUE,,4,0,0,0,
-69,map_product_panther,product,map,panther,TRUE,,TRUE,7,54301,305,0,
-70,fuzzymatch_product_panther,product,fuzzymatch,panther,TRUE,,TRUE,7,0,0,0,
-71,import_product_panther,product,import,panther,,TRUE,,4,0,0,0,
-72,map_product_peacock,product,map,peacock,TRUE,,TRUE,7,11785,1038,0,
-73,fuzzymatch_product_peacock,product,fuzzymatch,peacock,TRUE,,TRUE,7,0,0,0,
-74,import_product_peacock,product,import,peacock,,TRUE,,4,0,0,0,
-75,map_product_stork,product,map,stork,TRUE,,TRUE,7,615,8,0,
-76,fuzzymatch_product_stork,product,fuzzymatch,stork,TRUE,,TRUE,7,0,0,0,
-77,import_product_stork,product,import,stork,,TRUE,,4,0,0,0,
-78,map_product_swan,product,map,swan,TRUE,,TRUE,7,496,10,0,
-79,fuzzymatch_product_swan,product,fuzzymatch,swan,TRUE,,TRUE,7,0,0,0,
-80,import_product_swan,product,import,swan,,TRUE,,4,0,0,0,
-81,property_value,property_value,,,TRUE,TRUE,TRUE,6,5,0,0,
-82,map_property_value_koala,property_value,map,koala,TRUE,,TRUE,7,21,4,0,
-83,region,region,,,TRUE,TRUE,FALSE,4,4,0,0,half log
-84,residence,residence,,,TRUE,TRUE,TRUE,6,2,0,0,
-85,map_residence_koala,residence,map,koala,TRUE,,TRUE,7,3,1,0,
-86,space,space,,,FALSE,FALSE,TRUE,8,0,0,0,"ca_id instead of space_id, label instead of name"
-87,sport,sport,,,TRUE,TRUE,TRUE,6,6,0,0,
-88,sport_league,sport_league,,,FALSE,FALSE,TRUE,7,8,0,0,name and ID formatted non-standard
-89,sport_team,sport_team,,,FALSE,FALSE,TRUE,7,829,0,0,name and ID formatted non-standard
-90,map_sport_team_natterjack,sport_team,map,natterjack,FALSE,,TRUE,7,191,,,id non standard
-91,map_sport_team_tapir,sport_team,map,tapir,FALSE,,FALSE,4,1052,,,id non standard
-92,sport_team_league,sport_team_league,,,FALSE,FALSE,TRUE,7,829,0,0,Not external mapping
-93,state,state,,,TRUE,TRUE,TRUE,7,51,0,0,
-94,ticker,ticker,,,TRUE,TRUE,TRUE,6,753,0,0,
-95,time,time,,,FALSE,FALSE,TRUE,8,0,0,0,"Empty, ca_id, label instead of name"
-96,time_table,time_table,,,FALSE,TRUE,TRUE,6,0,0,0,id non standard
-97,time_type,time_type,,,FALSE,TRUE,TRUE,6,0,0,0,id non standard
-98,title,title,,,TRUE,TRUE,TRUE,6,44738,0,0,
-99,import_title,title,import,,,TRUE,,5,0,0,0,
-100,map_title_platypus,title,map,platypus,TRUE,,TRUE,6,26610,0,0,
-101,fuzzymatch_title_platypus,title,fuzzymatch,platypus,TRUE,,TRUE,7,0,0,0,
-102,import_title_platypus,title,import,platypus,,FALSE,,4,0,0,0,
-103,map_title_tapir,title,map,tapir,TRUE,,TRUE,6,18128,0,0,
-104,venue,venue,,,TRUE,TRUE,TRUE,14,10352,0,0,
-105,import_venue,venue,import,,,TRUE,,11,0,0,0,
-106,history_venue,venue,history,,,TRUE,,19,0,0,0,
-107,map_venue_koala,venue,map,koala,TRUE,,TRUE,7,10224,0,0,
-108,import_venue_koala,venue,import,koala,,FALSE,,4,0,0,0,
-109,map_venue_natterjack,venue,map,natterjack,TRUE,,FALSE,6,894,96,10,"created_ts is string, many to many mapping"
-110,import_venue_natterjack,venue,import,natterjack,,FALSE,,4,0,0,0,
-111,map_venue_porcupine,venue,map,porcupine,TRUE,,TRUE,6,991,4,0,
-112,import_venue_porcupine,venue,import,porcupine,,FALSE,,4,0,0,0,
-113,yearly_income,yearly_income,,,TRUE,TRUE,TRUE,6,5,0,0,
-114,map_yearly_income_koala,yearly_income,map,koala,TRUE,,TRUE,7,39,5,0,
+,table_name,thing,action,vendor,good_id,good_name,good_log,columns,rows,dup id,dup ext_id
+0,actor,actor,,,True,True,True,6,10000,0.0,0.0
+1,map_actor_platypus,actor,map,platypus,True,,True,7,10000,0.0,0.0
+2,app,app,,,True,True,True,6,45894,0.0,0.0
+3,map_app_android,app,map,android,True,,True,7,35576,1284.0,0.0
+4,map_app_brand,app,map,brand,True,,False,7,1799,,
+5,map_app_ios,app,map,ios,True,,True,7,27582,1166.0,0.0
+6,map_app_stork,app,map,stork,True,,True,7,47476,1027.0,0.0
+7,map_app_stork_ios_android,app,map,stork_ios_android,False,,False,2,63246,,
+8,artist,artist,,,True,True,True,6,24714,0.0,0.0
+9,import_artist,artist,import,,,True,,3,0,0.0,0.0
+10,map_artist_cheetah,artist,map,cheetah,True,,True,7,24710,0.0,0.0
+11,fuzzymatch_artist_cheetah,artist,fuzzymatch,cheetah,True,,True,7,0,0.0,0.0
+12,import_artist_cheetah,artist,import,cheetah,,True,,4,0,0.0,0.0
+13,map_artist_genre,artist,map,genre,True,,False,4,26432,,
+14,map_artist_mockingbird,artist,map,mockingbird,True,,True,7,9654,1.0,0.0
+15,fuzzymatch_artist_mockingbird,artist,fuzzymatch,mockingbird,True,,True,7,0,0.0,0.0
+16,import_artist_mockingbird,artist,import,mockingbird,,True,,4,0,0.0,0.0
+17,map_artist_monkey,artist,map,monkey,True,,True,7,24339,6.0,0.0
+18,fuzzymatch_artist_monkey,artist,fuzzymatch,monkey,True,,True,7,0,0.0,0.0
+19,import_artist_monkey,artist,import,monkey,,True,,4,0,0.0,0.0
+20,map_artist_porcupine,artist,map,porcupine,True,,True,7,11968,67.0,0.0
+21,fuzzymatch_artist_porcupine,artist,fuzzymatch,porcupine,True,,True,7,0,0.0,0.0
+22,import_artist_porcupine,artist,import,porcupine,,True,,4,0,0.0,0.0
+23,map_artist_tapir,artist,map,tapir,True,,False,4,4608,0.0,0.0
+24,map_artist_concert_venue,artist,map,concert_venue,True,,False,3,94636,,
+25,brand,brand,,,True,True,True,7,74095,0.0,0.0
+26,import_brand,brand,import,,,True,,4,0,0.0,0.0
+27,category,category,,,True,True,True,6,345,0.0,0.0
+28,import_category,category,import,,,True,,3,0,0.0,0.0
+29,category_hierarchy,category_hierarchy,,,True,False,True,11,313,0.0,0.0
+30,import_category_hierarchy,category_hierarchy,import,,,False,,8,0,0.0,0.0
+31,company,company,,,True,True,True,8,65508,0.0,0.0
+32,import_company,company,import,,,True,,4,0,0.0,0.0
+33,division,division,,,True,True,False,4,9,0.0,0.0
+34,entity_type,entity_type,,,True,True,True,6,3,0.0,0.0
+35,ethnicity,ethnicity,,,True,True,True,6,7,0.0,0.0
+36,map_ethnicity_koala,ethnicity,map,koala,True,,True,7,159,6.0,0.0
+37,franchise,franchise,,,True,True,True,6,825,0.0,0.0
+38,gender,gender,,,True,True,True,6,4,0.0,0.0
+39,map_gender_koala,gender,map,koala,True,,True,7,6,2.0,0.0
+40,generation,generation,,,True,True,True,6,5,0.0,0.0
+41,map_generation_koala,generation,map,koala,True,,True,7,85,5.0,0.0
+42,genre,genre,,,True,True,True,6,25,0.0,0.0
+43,has_children,has_children,,,True,False,True,6,2,0.0,0.0
+44,map_has_children_koala,has_children,map,koala,True,,True,7,11,1.0,0.0
+45,household_size,household_size,,,True,True,True,6,4,0.0,0.0
+46,map_household_size_koala,household_size,map,koala,True,,True,7,9,2.0,0.0
+47,marital_status,marital_status,,,True,True,True,6,3,0.0,0.0
+48,map_marital_status_koala,marital_status,map,koala,True,,True,7,9,3.0,0.0
+49,political_affiliation,political_affiliation,,,True,True,True,6,6,0.0,0.0
+50,map_political_affiliation_koala,political_affiliation,map,koala,True,,True,7,14,4.0,0.0
+51,product,product,,,True,True,True,8,74095,0.0,0.0
+52,import_product,product,import,,,True,,5,0,0.0,0.0
+53,map_product_alligator,product,map,alligator,True,,True,7,4017,69.0,0.0
+54,fuzzymatch_product_alligator,product,fuzzymatch,alligator,True,,True,7,0,0.0,0.0
+55,import_product_alligator,product,import,alligator,,True,,4,0,0.0,0.0
+56,map_product_cheetah,product,map,cheetah,True,,True,7,1009,0.0,0.0
+57,import_product_cheetah,product,import,cheetah,,True,,4,0,0.0,0.0
+58,map_product_ferret,product,map,ferret,True,,True,7,24031,2639.0,0.0
+59,fuzzymatch_product_ferret,product,fuzzymatch,ferret,True,,True,7,0,0.0,0.0
+60,import_product_ferret,product,import,ferret,,True,,4,0,0.0,0.0
+61,map_product_ferret_retailer,product,map,ferret_retailer,True,,True,7,1097,38.0,0.0
+62,import_product_ferret_retailer,product,import,ferret_retailer,,True,,4,0,0.0,0.0
+63,map_product_koala,product,map,koala,True,,True,8,1578,306.0,0.0
+64,fuzzymatch_product_koala,product,fuzzymatch,koala,True,,True,7,0,0.0,0.0
+65,import_product_koala,product,import,koala,,True,,5,0,0.0,0.0
+66,map_product_moose,product,map,moose,True,,True,7,1402,148.0,0.0
+67,fuzzymatch_product_moose,product,fuzzymatch,moose,True,,True,7,0,0.0,0.0
+68,import_product_moose,product,import,moose,,True,,4,0,0.0,0.0
+69,map_product_panther,product,map,panther,True,,True,7,54301,305.0,0.0
+70,fuzzymatch_product_panther,product,fuzzymatch,panther,True,,True,7,0,0.0,0.0
+71,import_product_panther,product,import,panther,,True,,4,0,0.0,0.0
+72,map_product_peacock,product,map,peacock,True,,True,7,11785,1038.0,0.0
+73,fuzzymatch_product_peacock,product,fuzzymatch,peacock,True,,True,7,0,0.0,0.0
+74,import_product_peacock,product,import,peacock,,True,,4,0,0.0,0.0
+75,map_product_stork,product,map,stork,True,,True,7,615,8.0,0.0
+76,fuzzymatch_product_stork,product,fuzzymatch,stork,True,,True,7,0,0.0,0.0
+77,import_product_stork,product,import,stork,,True,,4,0,0.0,0.0
+78,map_product_swan,product,map,swan,True,,True,7,496,10.0,0.0
+79,fuzzymatch_product_swan,product,fuzzymatch,swan,True,,True,7,0,0.0,0.0
+80,import_product_swan,product,import,swan,,True,,4,0,0.0,0.0
+81,property_value,property_value,,,True,True,True,6,5,0.0,0.0
+82,map_property_value_koala,property_value,map,koala,True,,True,7,21,4.0,0.0
+83,region,region,,,True,True,False,4,4,0.0,0.0
+84,residence,residence,,,True,True,True,6,2,0.0,0.0
+85,map_residence_koala,residence,map,koala,True,,True,7,3,1.0,0.0
+86,space,space,,,False,False,True,8,0,0.0,0.0
+87,sport,sport,,,True,True,True,6,6,0.0,0.0
+88,sport_league,sport_league,,,False,False,True,7,8,0.0,0.0
+89,sport_team,sport_team,,,False,False,True,7,829,0.0,0.0
+90,map_sport_team_natterjack,sport_team,map,natterjack,False,,True,7,191,,
+91,map_sport_team_tapir,sport_team,map,tapir,False,,False,4,1052,,
+92,sport_team_league,sport_team_league,,,False,False,True,7,829,0.0,0.0
+93,state,state,,,True,True,True,7,51,0.0,0.0
+94,ticker,ticker,,,True,True,True,6,753,0.0,0.0
+95,time,time,,,False,False,True,8,0,0.0,0.0
+96,time_table,time_table,,,False,True,True,6,0,0.0,0.0
+97,time_type,time_type,,,False,True,True,6,0,0.0,0.0
+98,title,title,,,True,True,True,6,44738,0.0,0.0
+99,import_title,title,import,,,True,,5,0,0.0,0.0
+100,map_title_platypus,title,map,platypus,True,,True,6,26610,0.0,0.0
+101,fuzzymatch_title_platypus,title,fuzzymatch,platypus,True,,True,7,0,0.0,0.0
+102,import_title_platypus,title,import,platypus,,False,,4,0,0.0,0.0
+103,map_title_tapir,title,map,tapir,True,,True,6,18128,0.0,0.0
+104,venue,venue,,,True,True,True,14,10352,0.0,0.0
+105,import_venue,venue,import,,,True,,11,0,0.0,0.0
+106,history_venue,venue,history,,,True,,19,0,0.0,0.0
+107,map_venue_koala,venue,map,koala,True,,True,7,10224,0.0,0.0
+108,import_venue_koala,venue,import,koala,,False,,4,0,0.0,0.0
+109,map_venue_natterjack,venue,map,natterjack,True,,False,6,894,96.0,10.0
+110,import_venue_natterjack,venue,import,natterjack,,False,,4,0,0.0,0.0
+111,map_venue_porcupine,venue,map,porcupine,True,,True,6,991,4.0,0.0
+112,import_venue_porcupine,venue,import,porcupine,,False,,4,0,0.0,0.0
+113,yearly_income,yearly_income,,,True,True,True,6,5,0.0,0.0
+114,map_yearly_income_koala,yearly_income,map,koala,True,,True,7,39,5.0,0.0
