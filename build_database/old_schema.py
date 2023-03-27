@@ -29,14 +29,14 @@ class OntologySchema(DatabaseConnection):
         self.map_list = None
         self.things = dict()
 
-    def test_fill(self):
+    def test_fill(self, database):
         print('test fill:')
-        ethnicity = self.things["ethnicity"]
+        thing_table = self.things["artist"]
         print('table found')
-        print(ethnicity.vendor_actions.keys())
-        map = ethnicity.vendor_actions[('koala', 'map')]
+        print(thing_table.vendor_actions.keys())
+        map_table = thing_table.vendor_actions[('cheetah', 'map')]
         print('map found')
-        test_fill(self.engine, ethnicity, map)
+        test_fill(database, self.engine, thing_table, map_table)
 
     def connect_tables(self, commit=False):
         self.artist_table = ThingTable(self.metadata_obj, "artist")

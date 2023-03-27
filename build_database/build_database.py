@@ -109,12 +109,13 @@ def main():
                           columns=result[0].keys())
         df.to_csv('table validation.csv')
     if args.fill:
-        ontology.test_fill()
+        ontology.test_fill(database)
         # database.insert_types()
         # scratch.insert_rows()
         pass
     if args.run is not None:
         print(f'run = {args.run}')
+
         command = args.run[0]
         match command:
             case "loop":
