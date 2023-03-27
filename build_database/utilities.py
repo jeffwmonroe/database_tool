@@ -1,9 +1,15 @@
 from sqlalchemy import select, func, insert
 from new_schema import Status, Action
+import time
 
-def test_fill(database, engine, thing, map):
-    # ToDo un-hardcode this
-    database.add_vendor("cheetah")
+print('loading utilities ...')
+
+
+def test_fill(database, engine, thing, map, vendor, pk_start):
+    log_pk_start = pk_start
+    thing_pk_start = pk_start
+    map_pk_start = pk_start
+    vendor_pk = database.add_vendor(vendor)
     print('-------------------------------------------------')
     print('              test_fill')
     subquery1 = select(
@@ -25,57 +31,60 @@ def test_fill(database, engine, thing, map):
         map.table.c.updated_by.label("m_updated_by"),
     ).join(map.table)
     stmt = subquery3
-    thing_add =[]
+    thing_add = []
+    map_add = []
 
-    log_start = 2000
-    pk_start = 3000
+    start_time = time.time()
+
     index = 0
     with engine.connect() as connection:
         result = connection.execute(stmt)
         row_num = result.rowcount
         for row in result:
-
             thing_add.append(
-                {'log_id': log_start + index,
-                 'n_id': pk_start + index,
+                {'log_id': log_pk_start + index,
+                 'n_id': thing_pk_start + index,
                  'name': row.artist_name,
                  'action': Action.create,
                  'created_ts': row.t_updated_ts,
                  'created_by': row.t_updated_by,
                  'status': Status.draft,
                  })
+            map_add.append(
+                {
+                    'log_id': map_pk_start + index,
+                    'n_id': thing_pk_start + index,
+                    'v_id': vendor_pk,
+                    'ext_id': row.ext_id,
+                    'map_type': 'person',
+                    'confidence': 1,
+                    'action': Action.create,
+                    'created_ts': row.m_updated_ts,
+                    'created_by': row.m_updated_by,
+                    'status': Status.draft,
+                }
+            )
             index += 1
 
-        # for row in result:
-            # print(f'row = {row}')
-            # print(f'pk = {row.artist_id}')
-            # thing_add.append({'type': 'artist'})
-            # database.add_thing_no_transaction(
-            #     new_connection,
-            # # database.add_thing(
-            #     'artist',
-            #     'cheetah',
-            #     row.artist_id,
-            #     row.artist_name,
-            #     row.t_updated_by,
-            #     row.t_updated_ts,
-            #     row.ext_id,
-            #     row.m_updated_by,
-            #     row.m_updated_ts,
-            # )
     values = [
-        {'n_id': pk_start+indx, 'type': 'artist'}
+        {'n_id': thing_pk_start + indx, 'type': 'artist'}
         for indx in range(row_num)]
     # print(values)
     # print(thing_add)
+    # print(map_add)
     stmt1 = insert(database.type_table).values(values)
     stmt2 = insert(database.artist_table).values(thing_add)
     with database.engine.connect() as new_connection:
-        result = new_connection.execute(stmt1)
-        result = new_connection.execute(stmt2)
+        insert_type = database.type_table.insert()
+        new_connection.execute(insert_type, values)
+        insert_thing = database.artist_table.insert()
+        new_connection.execute(insert_thing, thing_add)
+        insert_map = database.name_map_table.insert()
+        new_connection.execute(insert_map, map_add)
         new_connection.commit()
-    # print(thing_add)
-    # database.add_things(thing_add)
+    duration = time.time() - start_time
+    print(f'Duration: {duration}')
+    return row_num
 
 
 def test_fill_many(engine, thing, map):

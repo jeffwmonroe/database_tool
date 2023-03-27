@@ -31,12 +31,15 @@ class OntologySchema(DatabaseConnection):
 
     def test_fill(self, database):
         print('test fill:')
+        pk = 1000
         thing_table = self.things["artist"]
-        print('table found')
-        print(thing_table.vendor_actions.keys())
-        map_table = thing_table.vendor_actions[('cheetah', 'map')]
-        print('map found')
-        test_fill(database, self.engine, thing_table, map_table)
+        print('thing table found')
+        for vendor in ['cheetah']: #, 'tapir']:
+            # print(thing_table.vendor_actions.keys())
+            map_table = thing_table.vendor_actions[(vendor, 'map')]
+            print('map found')
+            rows = test_fill(database, self.engine, thing_table, map_table, vendor, pk)
+            pk += rows
 
     def connect_tables(self, commit=False):
         self.artist_table = ThingTable(self.metadata_obj, "artist")

@@ -68,22 +68,23 @@ class NewDatabaseSchema(DatabaseConnection):
         self.name_map_table = None
 
     def add_vendor(self, vendor):
-        # ToDo add code to detect if vendor already exists
         stmt = select(self.vendor_table).filter(self.vendor_table.c.vendor == vendor,
                                                 self.vendor_table.c.database == 'main')
         with self.engine.connect() as conn:
             result = conn.execute(stmt)
             rows_found = result.rowcount
+            pk_list = [row.v_id for row in result]
             conn.commit()
         if rows_found > 0:
-            return
+            print(f"PK found: {pk_list}")
+            return pk_list[0]
         stmt = insert(self.vendor_table).values(vendor=vendor, database="main")
         pk = None
         with self.engine.connect() as conn:
             result = conn.execute(stmt)
             pk = result.inserted_primary_key
             conn.commit()
-        return pk
+        return pk[0]
 
     def add_things(self,
                    things):
