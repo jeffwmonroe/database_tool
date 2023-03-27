@@ -1,17 +1,11 @@
-from sqlalchemy import select, func, insert
+from sqlalchemy import select, func
 from new_schema import Status, Action
 import time
 
 print('loading utilities ...')
 
 
-def test_fill(database, engine, thing, map, vendor, pk_start):
-    log_pk_start = pk_start
-    thing_pk_start = pk_start
-    map_pk_start = pk_start
-    vendor_pk = database.add_vendor(vendor)
-    print('-------------------------------------------------')
-    print('              test_fill')
+def join_thing_and_map(thing, map):
     subquery1 = select(
         thing.table.c.artist_id,
         thing.table.c.artist_name,
@@ -25,17 +19,26 @@ def test_fill(database, engine, thing, map, vendor, pk_start):
 
     subquery3 = select(
         subquery2,
-        map.table.c.id,
+        # map.table.c.id,
         map.table.c.ext_id,
         map.table.c.updated_ts.label("m_updated_ts"),
         map.table.c.updated_by.label("m_updated_by"),
-    ).join(map.table)
-    stmt = subquery3
+    ).join(map.table, map.table.c.artist_id == subquery2.c.artist_id)
+    return subquery3
+
+
+def test_fill(database, engine, thing, map, vendor, pk_start):
+    log_pk_start = pk_start
+    thing_pk_start = pk_start
+    map_pk_start = pk_start
+    vendor_pk = database.add_vendor(vendor)
+    print('-------------------------------------------------')
+    print('              test_fill')
+    stmt = join_thing_and_map(thing, map)
     thing_add = []
     map_add = []
 
     start_time = time.time()
-
     index = 0
     with engine.connect() as connection:
         result = connection.execute(stmt)
@@ -69,18 +72,17 @@ def test_fill(database, engine, thing, map, vendor, pk_start):
     values = [
         {'n_id': thing_pk_start + indx, 'type': 'artist'}
         for indx in range(row_num)]
-    # print(values)
-    # print(thing_add)
-    # print(map_add)
-    stmt1 = insert(database.type_table).values(values)
-    stmt2 = insert(database.artist_table).values(thing_add)
+
     with database.engine.connect() as new_connection:
         insert_type = database.type_table.insert()
         new_connection.execute(insert_type, values)
+
         insert_thing = database.artist_table.insert()
         new_connection.execute(insert_thing, thing_add)
+
         insert_map = database.name_map_table.insert()
         new_connection.execute(insert_map, map_add)
+
         new_connection.commit()
     duration = time.time() - start_time
     print(f'Duration: {duration}')

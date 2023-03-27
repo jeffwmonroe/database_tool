@@ -182,7 +182,7 @@ class NewDatabaseSchema(DatabaseConnection):
         self.name_map_table = build_data_table(self.metadata_obj,
                                                "name_map",
                                                use_vid=True,
-                                               data_cols=[sqla.Column("ext_id", sqla.String(30)),
+                                               data_cols=[sqla.Column("ext_id", sqla.String(200)),
                                                           sqla.Column("map_type", sqla.String(30)),
                                                           sqla.Column("confidence", sqla.REAL),
                                                           ])

@@ -38,6 +38,8 @@ class OntologySchema(DatabaseConnection):
             # print(thing_table.vendor_actions.keys())
             map_table = thing_table.vendor_actions[(vendor, 'map')]
             print('map found')
+            artist_col = map_table.table.c.artist_id
+            print(f'artist column = {artist_col}')
             rows = test_fill(database, self.engine, thing_table, map_table, vendor, pk)
             pk += rows
 
