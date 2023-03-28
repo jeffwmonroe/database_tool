@@ -27,15 +27,66 @@ def join_thing_and_map(thing, map):
     return subquery3
 
 
-def test_fill(database, engine, thing, map, vendor, pk_start):
-    log_pk_start = pk_start
-    thing_pk_start = pk_start
-    map_pk_start = pk_start
+def fill_thing_table(database, engine, thing, thing_pk_start):
+    subquery1 = select(
+        thing.table.c.artist_id,
+        thing.table.c.artist_name,
+        thing.table.c.updated_ts.label("t_updated_ts"),
+        thing.table.c.updated_by.label("t_updated_by"),
+        func.rank().over(order_by=thing.table.c.artist_id
+                         ).label('rank')
+    ).subquery()
+    subquery2 = select(subquery1)
+    # subquery2 = select(subquery1).filter(subquery1.c.rank < 11)
+    stmt = subquery2
+    thing_add = []
+    bridge_add = []
+    bridge = {}
+    index = 0
+    with engine.connect() as connection:
+        result = connection.execute(stmt)
+        row_num = result.rowcount
+        for row in result:
+            thing_add.append(
+                {
+                 'n_id': thing_pk_start + index,
+                 'name': row.artist_name,
+                 'action': Action.create,
+                 'created_ts': row.t_updated_ts,
+                 'created_by': row.t_updated_by,
+                 'status': Status.draft,
+                 })
+            bridge_add.append(
+                {'old_id': row.artist_id,
+                 'n_id': thing_pk_start + index,
+                 'type': 'artist',
+                 })
+            bridge[row.artist_id] = thing_pk_start + index
+            index += 1
+    values = [{'n_id': thing_pk_start + indx, 'type': 'artist'} for indx in range(row_num)]
+
+    with database.engine.connect() as new_connection:
+        insert_type = database.type_table.insert()
+        new_connection.execute(insert_type, values)
+
+        insert_thing = database.artist_table.insert()
+        new_connection.execute(insert_thing, thing_add)
+
+        bridge_ins = database.bridge_table.insert()
+        new_connection.execute(bridge_ins, bridge_add)
+
+        new_connection.commit()
+    return bridge, thing_pk_start + index
+
+
+def test_fill(database, engine, thing, map, vendor, bridge):
+
     vendor_pk = database.add_vendor(vendor)
+
     print('-------------------------------------------------')
     print('              test_fill')
+    # print(f'bridge = {bridge}')
     stmt = join_thing_and_map(thing, map)
-    thing_add = []
     map_add = []
 
     start_time = time.time()
@@ -44,19 +95,11 @@ def test_fill(database, engine, thing, map, vendor, pk_start):
         result = connection.execute(stmt)
         row_num = result.rowcount
         for row in result:
-            thing_add.append(
-                {'log_id': log_pk_start + index,
-                 'n_id': thing_pk_start + index,
-                 'name': row.artist_name,
-                 'action': Action.create,
-                 'created_ts': row.t_updated_ts,
-                 'created_by': row.t_updated_by,
-                 'status': Status.draft,
-                 })
+            old_pk = row.artist_id
+            new_pk = bridge[old_pk]
             map_add.append(
                 {
-                    'log_id': map_pk_start + index,
-                    'n_id': thing_pk_start + index,
+                    'n_id': new_pk,
                     'v_id': vendor_pk,
                     'ext_id': row.ext_id,
                     'map_type': 'person',
@@ -69,24 +112,13 @@ def test_fill(database, engine, thing, map, vendor, pk_start):
             )
             index += 1
 
-    values = [
-        {'n_id': thing_pk_start + indx, 'type': 'artist'}
-        for indx in range(row_num)]
-
     with database.engine.connect() as new_connection:
-        insert_type = database.type_table.insert()
-        new_connection.execute(insert_type, values)
-
-        insert_thing = database.artist_table.insert()
-        new_connection.execute(insert_thing, thing_add)
-
         insert_map = database.name_map_table.insert()
         new_connection.execute(insert_map, map_add)
 
         new_connection.commit()
     duration = time.time() - start_time
     print(f'Duration: {duration}')
-    return row_num
 
 
 def test_fill_many(engine, thing, map):

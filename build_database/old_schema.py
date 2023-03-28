@@ -2,8 +2,8 @@ from sqlalchemy import select, func
 from database_connection import DatabaseConnection
 from otable import MapTable, ThingTable
 from thing import Thing
-from utilities import test_fill
-
+from utilities import test_fill, fill_thing_table
+import time
 
 def ontology_url():
     # ToDo build these into environment variables or pass them as parameters
@@ -30,18 +30,21 @@ class OntologySchema(DatabaseConnection):
         self.things = dict()
 
     def test_fill(self, database):
+        start_time = time.time()
         print('test fill:')
         pk = 1000
         thing_table = self.things["artist"]
+        bridge, pk = fill_thing_table(database, self.engine, thing_table, pk)
         print('thing table found')
-        for vendor in ['cheetah']: #, 'tapir']:
+        for vendor in ['tapir', 'cheetah']: #, 'tapir']:
             # print(thing_table.vendor_actions.keys())
             map_table = thing_table.vendor_actions[(vendor, 'map')]
             print('map found')
             artist_col = map_table.table.c.artist_id
             print(f'artist column = {artist_col}')
-            rows = test_fill(database, self.engine, thing_table, map_table, vendor, pk)
-            pk += rows
+            test_fill(database, self.engine, thing_table, map_table, vendor, bridge)
+        duration = time.time() - start_time
+        print(f'Total duration: {duration}')
 
     def connect_tables(self, commit=False):
         self.artist_table = ThingTable(self.metadata_obj, "artist")

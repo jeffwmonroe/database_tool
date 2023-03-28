@@ -66,6 +66,7 @@ class NewDatabaseSchema(DatabaseConnection):
         self.vendor_table = None
         self.artist_table = None
         self.name_map_table = None
+        self.bridge_table = None
 
     def add_vendor(self, vendor):
         stmt = select(self.vendor_table).filter(self.vendor_table.c.vendor == vendor,
@@ -111,7 +112,7 @@ class NewDatabaseSchema(DatabaseConnection):
         pk = None
         result = connection.execute(stmt1)
         pk = result.inserted_primary_key[0]
-    # print(f'pk = {pk}')
+        # print(f'pk = {pk}')
 
         stmt2 = insert(self.artist_table).values(
             n_id=pk,
@@ -159,8 +160,15 @@ class NewDatabaseSchema(DatabaseConnection):
             thing_pk = result.inserted_primary_key
             conn.commit()
 
-    def connect_tables(self, commit=False):
+    def build_bridge_table(self):
+        return sqla.Table("old_new_bridge",
+                          self.metadata_obj,
+                          sqla.Column("old_id", sqla.Integer, primary_key=True),
+                          sqla.Column("n_id", sqla.ForeignKey("type.n_id"), nullable=False),
+                          sqla.Column("type", sqla.String(30), nullable=False))
 
+    def connect_tables(self, commit=False):
+        self.bridge_table = self.build_bridge_table()
         self.type_table = sqla.Table(
             "type",
             self.metadata_obj,
