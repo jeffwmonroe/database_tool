@@ -1,11 +1,8 @@
 import pandas as pd
-import psycopg2
 import sqlalchemy
 from new_schema import NewDatabaseSchema
 from old_schema import OntologySchema
 import argparse
-
-
 
 
 def parse_arguments():
@@ -51,7 +48,7 @@ def parse_arguments():
                          help='execute scratch code',
                          action="store",
                          type=str,
-                         nargs=1  #"+" on or more
+                         nargs=1  # "+" on or more
                          )
     parser.add_argument("-v", "--verbose",
                         help="increase output verbosity",
@@ -61,14 +58,6 @@ def parse_arguments():
 
     return args
 
-# ToDo This method is deprecated
-def parse_tables(table_list):
-    table = table_list[4]
-    # print(f'The first table is: {table}')
-#     Prune out the ontology schema
-
-    new_list = [table[9:] for table in table_list]
-    # print(new_list)
 
 def main():
     args = parse_arguments()
@@ -79,6 +68,8 @@ def main():
     database = NewDatabaseSchema()
     ontology = OntologySchema()
 
+    if args.drop:
+        database.drop_database()
     if args.create:
         database.create_database()
     try:
@@ -97,8 +88,7 @@ def main():
         database.connect_tables()
     if args.reflect:
         # ToDo move this to a good place
-        table_list = ontology.reflect_tables()
-        parse_tables(table_list)
+        ontology.reflect_tables()
     else:
         ontology.connect_tables()
     if args.enumerate:
@@ -128,14 +118,11 @@ def main():
                 pass
             case _:
                 print(f'command not found: {command}')
-    if args.drop:
-        database.drop_database()
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
-
 
 # def main():
 #     args = parse_arguments()
