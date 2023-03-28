@@ -1,5 +1,7 @@
 import sqlalchemy as sqla
+import sqlalchemy.exc
 import sqlalchemy_utils.functions as sqlf
+import psycopg2.errors as errors
 
 
 class DatabaseConnection:
@@ -57,7 +59,10 @@ class DatabaseConnection:
         """
         url = self.url
         print('Dropping the database')
-        sqlf.drop_database(url)
+        try:
+            sqlf.drop_database(url)
+        except sqlalchemy.exc.ProgrammingError:
+            pass
 
     def connect_and_print(self, stmt, print_row=False):
         """

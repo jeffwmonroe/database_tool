@@ -8,11 +8,11 @@ SHORT_LOAD = False
 
 def join_thing_and_map(thing, action):
     subquery1 = select(
-        thing.table.c.artist_id,
-        thing.table.c.artist_name,
+        thing.get_id_column().label('old_id'),
+        thing.get_name_column().label('name'),
         thing.table.c.updated_ts.label("t_updated_ts"),
         thing.table.c.updated_by.label("t_updated_by"),
-        func.rank().over(order_by=thing.table.c.artist_id
+        func.rank().over(order_by=thing.get_id_column()
                          ).label('rank')
     ).subquery()
     if SHORT_LOAD:
@@ -26,15 +26,15 @@ def join_thing_and_map(thing, action):
         action.table.c.ext_id,
         action.table.c.updated_ts.label("m_updated_ts"),
         action.table.c.updated_by.label("m_updated_by"),
-    ).join(action.table, action.table.c.artist_id == subquery2.c.artist_id)
+    ).join(action.table, action.get_id_column() == subquery2.c.old_id)
     # print(f'join_thing_and_map:  {subquery3}')
     return subquery3
 
 
-def fill_thing_table(database, engine, thing, thing_pk_start):
+def fill_thing_table(database, data_table, engine, thing, thing_pk_start):
     print('----------------------------------')
     print('          fill_thing_table')
-
+    print(f'   thing = {thing.thing}')
     subquery1 = select(
         thing.get_id_column().label('old_id'),
         thing.get_name_column().label('name'),
@@ -67,20 +67,23 @@ def fill_thing_table(database, engine, thing, thing_pk_start):
                 })
             bridge_add.append(
                 {'old_id': row.old_id,
+                 'thing': thing.thing,
                  'n_id': thing_pk_start + index,
-                 'type': 'artist',
                  })
             bridge[row.old_id] = thing_pk_start + index
             index += 1
-    values = [{'n_id': thing_pk_start + index, 'type': 'artist'} for index in range(row_num)]
+    # values is used for the type table
+    values = [{'n_id': thing_pk_start + index, 'thing': thing.thing} for index in range(row_num)]
 
     with database.engine.connect() as new_connection:
-        insert_type = database.type_table.insert()
+        # working
+        insert_type = database.thing_table.insert()
         new_connection.execute(insert_type, values)
 
-        insert_thing = database.artist_table.insert()
+        insert_thing = data_table.insert()
         new_connection.execute(insert_thing, thing_add)
 
+        # working
         bridge_ins = database.bridge_table.insert()
         new_connection.execute(bridge_ins, bridge_add)
 
@@ -102,7 +105,7 @@ def test_fill(database, engine, thing, action, vendor, bridge):
         result = connection.execute(stmt)
         # row_num = result.rowcount
         for row in result:
-            old_pk = row.artist_id
+            old_pk = row.old_id
             new_pk = bridge[old_pk]
             map_add.append(
                 {

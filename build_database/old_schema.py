@@ -38,8 +38,10 @@ class OntologySchema(DatabaseConnection):
         for key in self.things.keys():
             thing_table = self.things[key]
             if thing_table.is_proper_form():
-                print(f'thing = {key}')
-                bridge, pk = fill_thing_table(database, self.engine, thing_table, pk)
+                # print(f'   thing = {key}')
+                data_table = database.data_tables[key]
+                bridge, pk = fill_thing_table(database, data_table, self.engine, thing_table, pk)
+                print(f'   pk = {pk}')
                 for action in self.things[key]:
                     print(f'   action:    {action.action} / {action.vendor}')
                     test_fill(database, self.engine, thing_table, action, action.vendor, bridge)
