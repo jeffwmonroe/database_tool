@@ -6,7 +6,7 @@ print('loading utilities ...')
 SHORT_LOAD = False
 
 
-def join_thing_and_map(thing, map):
+def join_thing_and_map(thing, action):
     subquery1 = select(
         thing.table.c.artist_id,
         thing.table.c.artist_name,
@@ -23,22 +23,24 @@ def join_thing_and_map(thing, map):
     subquery3 = select(
         subquery2,
         # map.table.c.id,
-        map.table.c.ext_id,
-        map.table.c.updated_ts.label("m_updated_ts"),
-        map.table.c.updated_by.label("m_updated_by"),
-    ).join(map.table, map.table.c.artist_id == subquery2.c.artist_id)
+        action.table.c.ext_id,
+        action.table.c.updated_ts.label("m_updated_ts"),
+        action.table.c.updated_by.label("m_updated_by"),
+    ).join(action.table, action.table.c.artist_id == subquery2.c.artist_id)
+    # print(f'join_thing_and_map:  {subquery3}')
     return subquery3
 
 
 def fill_thing_table(database, engine, thing, thing_pk_start):
     print('----------------------------------')
     print('          fill_thing_table')
+
     subquery1 = select(
-        thing.table.c.artist_id,
-        thing.table.c.artist_name,
+        thing.get_id_column().label('old_id'),
+        thing.get_name_column().label('name'),
         thing.table.c.updated_ts.label("t_updated_ts"),
         thing.table.c.updated_by.label("t_updated_by"),
-        func.rank().over(order_by=thing.table.c.artist_id
+        func.rank().over(order_by=thing.get_id_column()
                          ).label('rank')
     ).subquery()
     if SHORT_LOAD:
@@ -57,20 +59,20 @@ def fill_thing_table(database, engine, thing, thing_pk_start):
             thing_add.append(
                 {
                     'n_id': thing_pk_start + index,
-                    'name': row.artist_name,
+                    'name': row.name,
                     'action': Action.create,
                     'created_ts': row.t_updated_ts,
                     'created_by': row.t_updated_by,
                     'status': Status.draft,
                 })
             bridge_add.append(
-                {'old_id': row.artist_id,
+                {'old_id': row.old_id,
                  'n_id': thing_pk_start + index,
                  'type': 'artist',
                  })
-            bridge[row.artist_id] = thing_pk_start + index
+            bridge[row.old_id] = thing_pk_start + index
             index += 1
-    values = [{'n_id': thing_pk_start + indx, 'type': 'artist'} for indx in range(row_num)]
+    values = [{'n_id': thing_pk_start + index, 'type': 'artist'} for index in range(row_num)]
 
     with database.engine.connect() as new_connection:
         insert_type = database.type_table.insert()
@@ -86,20 +88,19 @@ def fill_thing_table(database, engine, thing, thing_pk_start):
     return bridge, thing_pk_start + index
 
 
-def test_fill(database, engine, thing, map, vendor, bridge):
+def test_fill(database, engine, thing, action, vendor, bridge):
     vendor_pk = database.add_vendor(vendor)
 
     print('-------------------------------------------------')
     print('              test_fill')
-    # print(f'bridge = {bridge}')
-    stmt = join_thing_and_map(thing, map)
+    stmt = join_thing_and_map(thing, action)
     map_add = []
 
     start_time = time.time()
     index = 0
     with engine.connect() as connection:
         result = connection.execute(stmt)
-        row_num = result.rowcount
+        # row_num = result.rowcount
         for row in result:
             old_pk = row.artist_id
             new_pk = bridge[old_pk]
@@ -127,7 +128,7 @@ def test_fill(database, engine, thing, map, vendor, bridge):
     print(f'Duration: {duration}')
 
 
-def test_fill_many(engine, thing, map):
+def test_fill_many(engine, thing, action):
     stmt = select(thing.table.c.ethnicity_id,
                   thing.table.c.ethnicity,
                   )
@@ -142,14 +143,14 @@ def test_fill_many(engine, thing, map):
             print(f'row = {row}')
 
     subquery1 = select(
-        map.table.c.id,
-        map.table.c.ethnicity_id,
-        map.table.c.ext_id,
+        action.table.c.id,
+        action.table.c.ethnicity_id,
+        action.table.c.ext_id,
     ).subquery()
     subquery2 = select(
-        map.table.c.ethnicity_id,
+        action.table.c.ethnicity_id,
         func.count().label("count")
-    ).group_by(map.table.c.ethnicity_id).subquery()
+    ).group_by(action.table.c.ethnicity_id).subquery()
     subquery3 = select(subquery2).filter(subquery2.c.count < 10).subquery()
 
     print('----------------------------------------------------')

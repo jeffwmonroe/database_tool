@@ -1,10 +1,6 @@
 import sqlalchemy as sqla
-# from sqlalchemy import MetaData
-# from sqlalchemy import text
-import sqlalchemy_utils.functions as sqlf
 from sqlalchemy import insert, select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import text
 from database_connection import DatabaseConnection
 import enum
 from sqlalchemy import Enum
@@ -35,7 +31,9 @@ def db_url():
     return url
 
 
-def build_data_table(metadata_obj, name, use_vid=False, use_name=False, data_cols=[]):
+def build_data_table(metadata_obj, name, use_vid=False, use_name=False, data_cols=None):
+    if data_cols is None:
+        data_cols = []
     keys = [sqla.Column("log_id", sqla.Integer, primary_key=True),
             sqla.Column("n_id", sqla.ForeignKey("type.n_id"), nullable=False),
             ]
@@ -80,85 +78,19 @@ class NewDatabaseSchema(DatabaseConnection):
             print(f"PK found: {pk_list}")
             return pk_list[0]
         stmt = insert(self.vendor_table).values(vendor=vendor, database="main")
-        pk = None
         with self.engine.connect() as conn:
             result = conn.execute(stmt)
-            pk = result.inserted_primary_key
-            conn.commit()
-        return pk[0]
-
-    def add_things(self,
-                   things):
-        stmt = insert(self.type_table).values(things)
-        pk = None
-        with self.engine.connect() as conn:
-            result = conn.execute(stmt)
-            pk = result.inserted_primary_key
-            conn.commit()
-        print(f'pk = {pk}')
-
-    def add_thing_no_transaction(self,
-                                 connection,
-                                 thing,
-                                 vendor,
-                                 old_pk,
-                                 name,
-                                 thing_updated_by,
-                                 thing_updated_ts,
-                                 ext_id,
-                                 map_updated_by,
-                                 map_updated_ts):
-        stmt1 = insert(self.type_table).values(type=thing)
-        pk = None
-        result = connection.execute(stmt1)
-        pk = result.inserted_primary_key[0]
-        # print(f'pk = {pk}')
-
-        stmt2 = insert(self.artist_table).values(
-            n_id=pk,
-            name=name,
-            action=Action.create,
-            created_ts=thing_updated_ts,
-            created_by=thing_updated_by,
-            status=Status.draft
-        )
-        # print(f'   pk = {pk}')
-        thing_pk = None
-        result = connection.execute(stmt2)
-        thing_pk = result.inserted_primary_key
-
-    def add_thing(self,
-                  thing,
-                  vendor,
-                  old_pk,
-                  name,
-                  thing_updated_by,
-                  thing_updated_ts,
-                  ext_id,
-                  map_updated_by,
-                  map_updated_ts):
-        stmt1 = insert(self.type_table).values(type=thing)
-        pk = None
-        with self.engine.connect() as conn:
-            result = conn.execute(stmt1)
             pk = result.inserted_primary_key[0]
             conn.commit()
-        # print(f'pk = {pk}')
+        return pk
 
-        stmt = insert(self.artist_table).values(
-            n_id=pk,
-            name=name,
-            action=Action.create,
-            created_ts=thing_updated_ts,
-            created_by=thing_updated_by,
-            status=Status.draft
-        )
-        # print(f'   pk = {pk}')
-        thing_pk = None
+    def add_things(self, things):
+        stmt = insert(self.type_table).values(things)
         with self.engine.connect() as conn:
             result = conn.execute(stmt)
-            thing_pk = result.inserted_primary_key
+            pk = result.inserted_primary_key[0]
             conn.commit()
+        print(f'pk = {pk}')
 
     def build_bridge_table(self):
         return sqla.Table("old_new_bridge",
@@ -213,7 +145,7 @@ class NewDatabaseSchema(DatabaseConnection):
         for stmt in stmt_list:
             with self.engine.connect() as conn:
                 try:
-                    result = conn.execute(stmt)
+                    conn.execute(stmt)
                     conn.commit()
                 except IntegrityError:
                     print(f'type already exists')

@@ -5,6 +5,7 @@ from thing import Thing
 from utilities import test_fill, fill_thing_table
 import time
 
+
 def ontology_url():
     # ToDo build these into environment variables or pass them as parameters
     dialect = 'postgresql'
