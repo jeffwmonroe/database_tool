@@ -23,21 +23,7 @@ class DatabaseConnection:
 
     def reflect_tables(self):
         self.metadata_obj.reflect(bind=self.engine)
-        # print(self.metadata_obj.tables)
-        # print(len(self.metadata_obj.tables.keys()))
-        # print(self.metadata_obj.tables['ontology.artist'])
-
-        # Loop over tables
-        # for key in self.metadata_obj.tables.keys():
-        #     print(f'   key = {key}')
         table_list = list(self.metadata_obj.tables.keys())
-        # print("number of tables = " + str(len(table_list)))
-        # vtable = self.metadata_obj.tables['ontology.venue']
-        # print(f'vtable = {vtable}')
-        # print(type(vtable))
-        # Loop over columns
-        # for col in vtable.c:
-        #     print(f'   col = {col.name}, {col.type}')
         return table_list
 
     def create_database(self):
@@ -76,13 +62,10 @@ class DatabaseConnection:
     def connect_and_print(self, stmt, print_row=False):
         """
         This is a useful test function. It prints the SQL query and then executes it.
+        :param print_row: If true print all the rows during execute
         :param stmt:
         :return: n/a
         """
-        # print('------------------------------')
-        # print('     connect and print')
-        # print(stmt)
-        i = 0
         with self.engine.connect() as conn:
             result = conn.execute(stmt)
             num_rows = result.rowcount

@@ -5,6 +5,7 @@ from old_schema import OntologySchema
 import argparse
 import utilities
 
+
 def parse_arguments():
     parser = argparse.ArgumentParser(prog="scratch",
                                      description="Database practice tool",

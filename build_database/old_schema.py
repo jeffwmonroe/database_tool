@@ -106,68 +106,6 @@ class OntologySchema(DatabaseConnection):
                 if i > 10:
                     break
 
-    def loop_over(self):
-        """
-        This is bad code but it was my first loop over the artist_table so I am
-        keeping it around so that I can reuse code.
-        """
-        stmt = select(self.artist_table.table)
-        print(f'stmt = {stmt}')
-
-        print('artist table')
-        with self.engine.connect() as conn:
-            result = conn.execute(stmt)
-            conn.commit()
-
-            i = 0
-            for row in result:
-                created = row.created_ts
-                updated = row.updated_ts
-                delta = (updated - created).total_seconds()
-                if delta > 1:
-                    print(
-                        f"   id: {row.artist_id}  name: {row.artist_name} created_ts: {row.created_ts} delta: {delta}")
-                if i < 10:
-                    print(
-                        f"   id: {row.artist_id}  name: {row.artist_name} created_ts: {row.created_ts} delta: {delta}")
-
-                i += 1
-                # if i == 10:
-                #     break
-        stmt = select(self.map_table.table)
-        print(f'stmt = {stmt}')
-        print('map table')
-        with self.engine.connect() as conn:
-            result = conn.execute(stmt)
-            conn.commit()
-
-            i = 0
-            print(f"Results = {result.rowcount}")
-            for row in result:
-                created = row.created_ts
-                updated = row.updated_ts
-                delta = (updated - created).total_seconds()
-                if delta > 1:
-                    print(
-                        f"   Large Delta!!! id: {row.artist_id}  ext_id: {row.ext_id} created_ts: {row.created_ts} delta: {delta}")
-                if i < 10:
-                    print(
-                        f"   id: {row.artist_id}  ext_id: {row.ext_id} created_ts: {row.created_ts} delta: {delta}")
-
-                i += 1
-        count_fn = func.count(self.map_table.table.c.artist_id)
-        print(count_fn)
-        with self.engine.connect() as conn:
-            result = conn.execute(stmt)
-            conn.commit()
-            print(f"Results from count= {result.rowcount}")
-
-        stmt = select(self.map_table.table).order_by(self.map_table.table.c.artist_id)
-        print(f'stmt = {stmt}')
-        with self.engine.connect() as conn:
-            result = conn.execute(stmt)
-            conn.commit()
-
     def column_test(self):
         print('Column Test:')
         print(type(self.artist_table.table.c))

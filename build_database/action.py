@@ -12,9 +12,6 @@ class Action(TableBase):
     def has_name(self):
         return True
 
-    # ToDo list all validations
-    #     1/2 log columns: name and type
-
     def validate(self, engine, metadata):
         super().validate(engine, metadata)
 
@@ -36,7 +33,6 @@ class VendorAction(Action):
         self.vendor = vendor
         self.duplicate_ids = 0
         self.duplicate_ext_ids = 0
-
 
     def has_log(self):
         return self.action == 'map' or self.action == 'fuzzymatch'
