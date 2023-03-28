@@ -14,6 +14,8 @@ class TableBase:
         self.good_name = False
         self.good_log = False
 
+    def is_proper_form(self):
+        return self.thing == 'artist'
     def has_log(self):
         return False
 

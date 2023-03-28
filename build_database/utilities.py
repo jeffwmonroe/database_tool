@@ -3,6 +3,7 @@ from new_schema import Status, Action
 import time
 
 print('loading utilities ...')
+SHORT_LOAD = False
 
 
 def join_thing_and_map(thing, map):
@@ -14,8 +15,10 @@ def join_thing_and_map(thing, map):
         func.rank().over(order_by=thing.table.c.artist_id
                          ).label('rank')
     ).subquery()
-    subquery2 = select(subquery1).subquery()
-    # subquery2 = select(subquery1).filter(subquery1.c.rank < 11).subquery()
+    if SHORT_LOAD:
+        subquery2 = select(subquery1).filter(subquery1.c.rank < 11).subquery()
+    else:
+        subquery2 = select(subquery1).subquery()
 
     subquery3 = select(
         subquery2,
@@ -28,6 +31,8 @@ def join_thing_and_map(thing, map):
 
 
 def fill_thing_table(database, engine, thing, thing_pk_start):
+    print('----------------------------------')
+    print('          fill_thing_table')
     subquery1 = select(
         thing.table.c.artist_id,
         thing.table.c.artist_name,
@@ -36,8 +41,10 @@ def fill_thing_table(database, engine, thing, thing_pk_start):
         func.rank().over(order_by=thing.table.c.artist_id
                          ).label('rank')
     ).subquery()
-    subquery2 = select(subquery1)
-    # subquery2 = select(subquery1).filter(subquery1.c.rank < 11)
+    if SHORT_LOAD:
+        subquery2 = select(subquery1).filter(subquery1.c.rank < 11)
+    else:
+        subquery2 = select(subquery1)
     stmt = subquery2
     thing_add = []
     bridge_add = []
@@ -49,13 +56,13 @@ def fill_thing_table(database, engine, thing, thing_pk_start):
         for row in result:
             thing_add.append(
                 {
-                 'n_id': thing_pk_start + index,
-                 'name': row.artist_name,
-                 'action': Action.create,
-                 'created_ts': row.t_updated_ts,
-                 'created_by': row.t_updated_by,
-                 'status': Status.draft,
-                 })
+                    'n_id': thing_pk_start + index,
+                    'name': row.artist_name,
+                    'action': Action.create,
+                    'created_ts': row.t_updated_ts,
+                    'created_by': row.t_updated_by,
+                    'status': Status.draft,
+                })
             bridge_add.append(
                 {'old_id': row.artist_id,
                  'n_id': thing_pk_start + index,
@@ -80,7 +87,6 @@ def fill_thing_table(database, engine, thing, thing_pk_start):
 
 
 def test_fill(database, engine, thing, map, vendor, bridge):
-
     vendor_pk = database.add_vendor(vendor)
 
     print('-------------------------------------------------')

@@ -31,18 +31,17 @@ class OntologySchema(DatabaseConnection):
 
     def test_fill(self, database):
         start_time = time.time()
-        print('test fill:')
         pk = 1000
-        thing_table = self.things["artist"]
-        bridge, pk = fill_thing_table(database, self.engine, thing_table, pk)
-        print('thing table found')
-        for vendor in ['tapir', 'cheetah']: #, 'tapir']:
-            # print(thing_table.vendor_actions.keys())
-            map_table = thing_table.vendor_actions[(vendor, 'map')]
-            print('map found')
-            artist_col = map_table.table.c.artist_id
-            print(f'artist column = {artist_col}')
-            test_fill(database, self.engine, thing_table, map_table, vendor, bridge)
+        print(f'--------------------------------------')
+        print('    Iteration Test')
+        for key in self.things.keys():
+            thing_table = self.things[key]
+            if thing_table.is_proper_form():
+                print(f'thing = {key}')
+                bridge, pk = fill_thing_table(database, self.engine, thing_table, pk)
+                for action in self.things[key]:
+                    print(f'   action:    {action.action} / {action.vendor}')
+                    test_fill(database, self.engine, thing_table, action, action.vendor, bridge)
         duration = time.time() - start_time
         print(f'Total duration: {duration}')
 

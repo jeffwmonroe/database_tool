@@ -3,7 +3,7 @@ import sqlalchemy
 from new_schema import NewDatabaseSchema
 from old_schema import OntologySchema
 import argparse
-
+import utilities
 
 def parse_arguments():
     parser = argparse.ArgumentParser(prog="scratch",
@@ -37,6 +37,10 @@ def parse_arguments():
                        )
     table.add_argument("--check",
                        help='perform checks on all of the reflected and enumerated tables',
+                       action="store_true",
+                       )
+    table.add_argument("-s", "--short",
+                       help='only use the first 10 rows',
                        action="store_true",
                        )
     table.add_argument("-f", "--fill",
@@ -98,6 +102,8 @@ def main():
         df = pd.DataFrame(result,
                           columns=result[0].keys())
         df.to_csv('table validation.csv')
+    if args.short:
+        utilities.SHORT_LOAD = True
     if args.fill:
         ontology.test_fill(database)
         # database.insert_types()

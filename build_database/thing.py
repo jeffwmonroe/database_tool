@@ -2,7 +2,7 @@ from collections import namedtuple
 from action import Action, VendorAction
 from table_base import TableBase
 
-ActionKey = namedtuple("ThingAction", "vendor action")
+ActionKey = namedtuple("vendor", "vend action")
 
 
 class Thing(TableBase):
@@ -12,6 +12,8 @@ class Thing(TableBase):
 
         self.actions = {}
         self.vendor_actions = {}
+        self.position = 0  # position for iterator
+        self.iter_list = []
 
     def has_log(self):
         return True
@@ -49,3 +51,22 @@ class Thing(TableBase):
 
     def table_name(self):
         return self.thing
+
+    def __iter__(self):
+        if self.thing not in ["artist"]:
+            return self
+
+        self.position = 0
+        self.iter_list = []
+        for key in self.vendor_actions.keys():
+            if self.vendor_actions[key].action == "map":
+                if self.vendor_actions[key].vendor in ['cheetah', 'tapir']:
+                    self.iter_list.append(self.vendor_actions[key])
+
+        return self
+
+    def __next__(self):
+        # ToDo test for StopIteration
+        if len(self.iter_list) == 0:
+            raise StopIteration
+        return self.iter_list.pop()

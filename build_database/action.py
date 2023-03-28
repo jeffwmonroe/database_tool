@@ -37,6 +37,7 @@ class VendorAction(Action):
         self.duplicate_ids = 0
         self.duplicate_ext_ids = 0
 
+
     def has_log(self):
         return self.action == 'map' or self.action == 'fuzzymatch'
 
