@@ -61,7 +61,14 @@ class Thing(TableBase):
         for key in self.vendor_actions.keys():
             print(f'key: {key}')
             if self.vendor_actions[key].action == "map":
-                if self.vendor_actions[key].vendor in ['cheetah', 'tapir', 'platypus']:
+                if self.vendor_actions[key].vendor in ['cheetah',
+                                                       'tapir',
+                                                       'platypus',
+                                                       'android',
+                                                       'ios',
+                                                       'mockingbird',
+                                                       'monkey',
+                                                       'porcupine']:
                     self.iter_list.append(self.vendor_actions[key])
                 else:
                     print(f'   iterator rejected  {key}  ' + self.vendor_actions[key].vendor)

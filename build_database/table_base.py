@@ -15,7 +15,7 @@ class TableBase:
         self.good_log = False
 
     def is_proper_form(self):
-        return self.thing in ['artist', 'actor']
+        return self.thing in ['artist', 'actor', 'app']
 
     def has_log(self):
         return False

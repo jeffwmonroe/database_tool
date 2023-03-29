@@ -122,6 +122,7 @@ class NewDatabaseSchema(DatabaseConnection):
         self.data_tables = {
             'artist': build_data_table(self.metadata_obj, "artist", use_name=True),
             'actor': build_data_table(self.metadata_obj, "actor", use_name=True),
+            'app': build_data_table(self.metadata_obj, "app", use_name=True),
         }
 
         self.name_map_table = build_data_table(self.metadata_obj,
