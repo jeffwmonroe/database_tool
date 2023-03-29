@@ -1,6 +1,6 @@
 from sqlalchemy import select, func
 from database_connection import DatabaseConnection
-from otable import MapTable, ThingTable
+# from otable import MapTable, ThingTable
 from thing import Thing
 from utilities import test_fill, fill_thing_table
 import time
@@ -49,9 +49,7 @@ class OntologySchema(DatabaseConnection):
         print(f'Total duration: {duration}')
 
     def connect_tables(self, commit=False):
-        self.artist_table = ThingTable(self.metadata_obj, "artist")
-        vendor_list = ['cheetah', 'mockingbird', 'monkey', 'porcupine', 'tapir']
-        self.map_list = [MapTable(self.metadata_obj, "artist", vendor) for vendor in vendor_list]
+        pass
 
     def drop_database(self):
         """

@@ -1,5 +1,5 @@
 import pandas as pd
-import sqlalchemy
+import sqlalchemy as sqla
 from new_schema import NewDatabaseSchema
 from old_schema import OntologySchema
 import argparse
@@ -79,12 +79,12 @@ def main():
         database.create_database()
     try:
         database.connect_engine()
-    except sqlalchemy.exc.OperationalError:
+    except sqla.exc.OperationalError:
         print("Error: Could not connect. New database not found")
         return
     try:
         ontology.connect_engine()
-    except sqlalchemy.exc.OperationalError:
+    except sqla.exc.OperationalError:
         print("Error: Could not connect. Ontology database not found")
         return
     if args.table:
@@ -92,7 +92,6 @@ def main():
     else:
         database.connect_tables()
     if args.reflect:
-        # ToDo move this to a good place
         ontology.reflect_tables()
     else:
         ontology.connect_tables()
@@ -107,8 +106,6 @@ def main():
         utilities.SHORT_LOAD = True
     if args.fill:
         ontology.test_fill(database)
-        # database.insert_types()
-        # scratch.insert_rows()
         pass
     if args.run is not None:
         print(f'run = {args.run}')
@@ -130,35 +127,3 @@ def main():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
-
-# def main():
-#     args = parse_arguments()
-#     if args.verbose:
-#         print('----------------------------')
-#         print('Main Called')
-#
-# # ToDo put in more precise commands: create, fill, etc
-#     if args.command == 'run':
-#         database = NewDatabaseSchema()
-#         database.create_database()
-#         database.connect_engine()
-#         database.build_tables()
-#         database.insert_types()
-#
-#         ontology = OntologySchema()
-#         ontology.connect_engine()
-#         ontology.connect_tables()
-#         ontology.loop_over()
-#     elif args.command == 'drop':
-#         database = NewDatabaseSchema()
-#         database.drop_database()
-#     elif args.command == 'test':
-#         # Place holder for test command
-#         pass
-#     else:
-#         print(f'unrecognized command: {args.command}')
-#
-#
-# # Press the green button in the gutter to run the script.
-# if __name__ == '__main__':
-#     main()
