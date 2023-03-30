@@ -32,9 +32,7 @@ def join_thing_and_map(thing, action):
 
 
 def fill_thing_table(database, data_table, engine, thing, thing_pk_start):
-    print('----------------------------------')
-    print('          fill_thing_table')
-    print(f'   thing = {thing.thing}')
+    print(f'   fill_thing_table:  {thing.thing}')
     subquery1 = select(
         thing.get_id_column().label('old_id'),
         thing.get_name_column().label('name'),
@@ -94,8 +92,7 @@ def fill_thing_table(database, data_table, engine, thing, thing_pk_start):
 def test_fill(database, engine, thing, action, vendor, bridge):
     vendor_pk = database.add_vendor(vendor)
 
-    print('-------------------------------------------------')
-    print('              test_fill')
+    print(f'      test_fill ({action.action}, {thing.thing}, {vendor})')
     stmt = join_thing_and_map(thing, action)
     map_add = []
 
@@ -107,6 +104,7 @@ def test_fill(database, engine, thing, action, vendor, bridge):
         for row in result:
             old_pk = row.old_id
             new_pk = bridge[old_pk]
+            # print(f'old-new:  {old_pk} : {new_pk}')
             map_add.append(
                 {
                     'n_id': new_pk,
@@ -121,14 +119,16 @@ def test_fill(database, engine, thing, action, vendor, bridge):
                 }
             )
             index += 1
+    # print('map add len')
+    # print(len(map_add))
+    if len(map_add) > 0:
+        with database.engine.connect() as new_connection:
+            insert_map = database.name_map_table.insert()
+            new_connection.execute(insert_map, map_add)
 
-    with database.engine.connect() as new_connection:
-        insert_map = database.name_map_table.insert()
-        new_connection.execute(insert_map, map_add)
-
-        new_connection.commit()
+            new_connection.commit()
     duration = time.time() - start_time
-    print(f'Duration: {duration}')
+    print(f'         Duration: {duration}')
 
 
 def test_fill_many(engine, thing, action):

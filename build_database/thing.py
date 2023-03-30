@@ -53,26 +53,12 @@ class Thing(TableBase):
         return self.thing
 
     def __iter__(self):
-        # if self.thing not in ["artist"]:
-        #     return self
-
         self.position = 0
         self.iter_list = []
         for key in self.vendor_actions.keys():
-            print(f'key: {key}')
+            # ToDo remove this == 'map' check. This is pretty hacky
             if self.vendor_actions[key].action == "map":
-                if self.vendor_actions[key].vendor in ['cheetah',
-                                                       'tapir',
-                                                       'platypus',
-                                                       'android',
-                                                       'ios',
-                                                       'mockingbird',
-                                                       'monkey',
-                                                       'porcupine']:
-                    self.iter_list.append(self.vendor_actions[key])
-                else:
-                    print(f'   iterator rejected  {key}  ' + self.vendor_actions[key].vendor)
-
+                self.iter_list.append(self.vendor_actions[key])
         return self
 
     def __next__(self):

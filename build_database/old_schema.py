@@ -34,17 +34,15 @@ class OntologySchema(DatabaseConnection):
         start_time = time.time()
         pk = 1000
         print(f'--------------------------------------')
-        print('    Iteration Test')
+        print('Iteration Test')
         for key in self.things.keys():
             thing_table = self.things[key]
-            if thing_table.is_proper_form():
-                # print(f'   thing = {key}')
+            if thing_table.thing in database.vendors.keys():
                 data_table = database.data_tables[key]
                 bridge, pk = fill_thing_table(database, data_table, self.engine, thing_table, pk)
-                print(f'   pk = {pk}')
-                for action in self.things[key]:
-                    print(f'   action:    {action.action} / {action.vendor}')
-                    test_fill(database, self.engine, thing_table, action, action.vendor, bridge)
+                for action in thing_table:
+                    if action.vendor in database.vendors[thing_table.thing]:
+                        test_fill(database, self.engine, thing_table, action, action.vendor, bridge)
         duration = time.time() - start_time
         print(f'Total duration: {duration}')
 

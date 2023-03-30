@@ -14,9 +14,6 @@ class TableBase:
         self.good_name = False
         self.good_log = False
 
-    def is_proper_form(self):
-        return self.thing in ['artist', 'actor', 'app']
-
     def has_log(self):
         return False
 
@@ -97,6 +94,7 @@ class TableBase:
     def get_name_column(self):
         name = self.thing + "_name"
         if name in self.table.c.keys():
-            # print(f'found it: {name}')
             return self.table.c[name]
+        if self.thing in self.table.c.keys():
+            return self.table.c[self.thing]
         raise ValueError('No name found in get_name_column', name)

@@ -4,6 +4,8 @@ from sqlalchemy.exc import IntegrityError
 from database_connection import DatabaseConnection
 import enum
 from sqlalchemy import Enum
+import pandas as pd
+import math
 
 
 class Status(enum.Enum):
@@ -31,6 +33,21 @@ def db_url():
     return url
 
 
+def build_sql_column(col_name, col_type):
+    match col_type:
+        case 'string30':
+            return sqla.Column(col_name, sqla.String(30))
+        case 'string200':
+            return sqla.Column(col_name, sqla.String(200))
+        case 'varchar':
+            return sqla.Column(col_name, sqla.VARCHAR)
+        case 'int':
+            return sqla.Column(col_name, sqla.Integer)
+        case 'double':
+            return sqla.Column(col_name, sqla.DOUBLE_PRECISION)
+    raise ValueError('Column type not found in build_sql_column', col_type)
+
+
 def build_data_table(metadata_obj, name, use_vid=False, use_name=False, data_cols=None):
     if data_cols is None:
         data_cols = []
@@ -49,7 +66,7 @@ def build_data_table(metadata_obj, name, use_vid=False, use_name=False, data_col
             sqla.Column("created_by", sqla.String(30)),
             sqla.Column("status", Enum(Status)),
             ]
-    args = keys + data_cols + logs
+    args = keys + logs + data_cols
     table = sqla.Table(name,
                        metadata_obj,
                        *args
@@ -62,8 +79,8 @@ class NewDatabaseSchema(DatabaseConnection):
         super().__init__(db_url())
         self.thing_table = None
         self.vendor_table = None
-        # self.artist_table = None
         self.data_tables = {}
+        self.vendors = {}
         self.name_map_table = None
         self.bridge_table = None
 
@@ -76,7 +93,7 @@ class NewDatabaseSchema(DatabaseConnection):
             pk_list = [row.v_id for row in result]
             conn.commit()
         if rows_found > 0:
-            print(f"PK found: {pk_list}")
+            # print(f"PK found: {pk_list}")
             return pk_list[0]
         stmt = insert(self.vendor_table).values(vendor=vendor, database="main")
         with self.engine.connect() as conn:
@@ -101,6 +118,48 @@ class NewDatabaseSchema(DatabaseConnection):
                           sqla.Column("n_id", sqla.ForeignKey("thing.n_id"), nullable=False),
                           sqla.PrimaryKeyConstraint("old_id", "thing", name="primary_key"))
 
+    def read_table_info(self):
+        print('---------------------------------------')
+        print('new_schema: read_table_info')
+        df = pd.read_excel("../table_list.xlsx",
+                           sheet_name='tables',
+                           keep_default_na=False)
+        for row_index, row in df.iterrows():
+            row_list = list(row.values)
+            table_name = row_list[0]
+            row_list = row_list[1:]
+            print(f'   table name: {table_name}')
+            data_columns = []
+            while len(row_list) > 1:
+                col_name = row_list[0]
+                col_type = row_list[1]
+                row_list = row_list[2:]
+                if col_name == '' or col_type == '':
+                    break
+                data_columns.append(build_sql_column(col_name, col_type))
+            self.data_tables[table_name] = build_data_table(self.metadata_obj,
+                                                            table_name,
+                                                            use_name=True,
+                                                            data_cols=data_columns)
+            self.vendors[table_name] = []
+
+    def read_vendor_info(self):
+        print('---------------------------------------')
+        print('read_vendor_info') \
+            # ToDo fix the file name
+        df = pd.read_excel("../table_list.xlsx",
+                           sheet_name='vendors',
+                           keep_default_na=False)
+        for row_index, row in df.iterrows():
+            row_list = list(row.values)
+            table_name = row_list[0]
+            print(f'   table name: {table_name}')
+            vendors = []
+            for val in row_list[1:]:
+                if val != '':
+                    vendors.append(val)
+            self.vendors[table_name] = vendors
+
     def connect_tables(self, commit=False):
         self.bridge_table = self.build_bridge_table()
         self.thing_table = sqla.Table(
@@ -119,11 +178,8 @@ class NewDatabaseSchema(DatabaseConnection):
             sqla.Column("database", sqla.String(30)),
         )
 
-        self.data_tables = {
-            'artist': build_data_table(self.metadata_obj, "artist", use_name=True),
-            'actor': build_data_table(self.metadata_obj, "actor", use_name=True),
-            'app': build_data_table(self.metadata_obj, "app", use_name=True),
-        }
+        self.read_table_info()
+        self.read_vendor_info()
 
         self.name_map_table = build_data_table(self.metadata_obj,
                                                "name_map",
