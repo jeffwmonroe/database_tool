@@ -31,6 +31,7 @@ class OntologySchema(DatabaseConnection):
         self.things = dict()
 
     def test_fill(self, database):
+
         start_time = time.time()
         pk = 1000
         print(f'--------------------------------------')
