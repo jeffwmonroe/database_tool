@@ -4,3 +4,4 @@ sqlalchemy_utils
 pandas
 openpyxl
 jupyter
+pydantic

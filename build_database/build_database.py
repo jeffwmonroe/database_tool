@@ -80,7 +80,7 @@ def main():
     try:
         database.connect_engine()
     except sqla.exc.OperationalError:
-        print("Error: Could not connect. New database not found")
+        print("Error: Could not connect to new database. New database not found")
         return
     try:
         ontology.connect_engine()
@@ -101,7 +101,7 @@ def main():
         result = ontology.check_tables()
         df = pd.DataFrame(result,
                           columns=result[0].keys())
-        df.to_csv('table validation.csv')
+        df.to_csv('..\data\table validation.csv')
     if args.short:
         utilities.SHORT_LOAD = True
     if args.fill:

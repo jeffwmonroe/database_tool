@@ -7,7 +7,8 @@ from sqlalchemy import Enum
 import pandas as pd
 import math
 
-
+# ToDo move this to a .env vile
+table_list = "../data/table_list.xlsx"
 class Status(enum.Enum):
     draft = 1
     stage = 2
@@ -121,7 +122,7 @@ class NewDatabaseSchema(DatabaseConnection):
     def read_table_info(self):
         print('---------------------------------------')
         print('new_schema: read_table_info')
-        df = pd.read_excel("../table_list.xlsx",
+        df = pd.read_excel(table_list,
                            sheet_name='tables',
                            keep_default_na=False)
         for row_index, row in df.iterrows():
@@ -147,7 +148,7 @@ class NewDatabaseSchema(DatabaseConnection):
         print('---------------------------------------')
         print('read_vendor_info') \
             # ToDo fix the file name
-        df = pd.read_excel("../table_list.xlsx",
+        df = pd.read_excel(table_list,
                            sheet_name='vendors',
                            keep_default_na=False)
         for row_index, row in df.iterrows():
