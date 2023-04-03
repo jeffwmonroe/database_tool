@@ -1,12 +1,12 @@
-from sqlalchemy import select, func
 from database_connection import DatabaseConnection
-# from otable import MapTable, ThingTable
+from table_base import TableBase
 from thing import Thing
 from utilities import test_fill, fill_thing_table
 import time
+from new_schema import NewDatabaseSchema
 
 
-def ontology_url():
+def ontology_url() -> str:
     # ToDo build these into environment variables or pass them as parameters
     dialect = 'postgresql'
     driver = 'psycopg2'
@@ -20,14 +20,15 @@ def ontology_url():
 
 
 class OntologySchema(DatabaseConnection):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         kwargs['schema'] = 'ontology'
         super().__init__(ontology_url(), *args, **kwargs)
         self.artist_table = None
         self.map_list = None
-        self.things = dict()
+        self.things: dict[TableBase] = dict()
 
-    def test_fill(self, database):
+# ToDo refactor test_fill
+    def test_fill(self, database: NewDatabaseSchema):
 
         start_time = time.time()
         pk = 1000
@@ -44,10 +45,10 @@ class OntologySchema(DatabaseConnection):
         duration = time.time() - start_time
         print(f'Total duration: {duration}')
 
-    def connect_tables(self, commit=False):
+    def connect_tables(self, commit: bool = False) -> None:
         pass
 
-    def drop_database(self):
+    def drop_database(self) -> None:
         """
         This will NOT drop the Ontology database
         This is overriding the base case to protect myself from mistakes
@@ -56,75 +57,14 @@ class OntologySchema(DatabaseConnection):
         print('NOT Dropping the database')
         print(f'database = {self.url}')
 
-    def is_one_to_one(self, show_many_to_one=False):
-        return_list = []
-        print("is_one_to_one")
-        for map_table in self.map_list:
-            print(f'Checking map table: {map_table.thing}, {map_table.vendor}')
-            stmt = select(
-                map_table.table.c.artist_id
-            )
-            total_rows = self.connect_and_print(stmt)
-            subquery = select(
-                map_table.table.c.ext_id,
-                func.count(map_table.table.c.ext_id).label("count")
-            ).group_by(map_table.table.c.ext_id).subquery()
-
-            stmt = select(subquery).filter(subquery.c.count > 1)
-            ext_row = self.connect_and_print(stmt)
-
-            subquery = select(
-                map_table.table.c.artist_id,
-                func.count(map_table.table.c.artist_id).label("count")
-            ).group_by(map_table.table.c.artist_id).subquery()
-
-            stmt = select(subquery).filter(subquery.c.count > 1).order_by(subquery.c.count, subquery.c.artist_id)
-            type_row = self.connect_and_print(stmt, print_row=show_many_to_one)
-
-            print(f"    rows = ext: {ext_row}, ont: {type_row} total: {total_rows}")
-            if ext_row + type_row == 0:
-                print("    One to One relationship!!")
-                return_list.append(True)
-            else:
-                print("    Many to One relationship!!")
-                return_list.append(True)
-        return return_list
-
-    def simple_loop(self, t_obj):
-        print(type(t_obj.table))
-        stmt = select(t_obj.table.c.ext_id, t_obj.table.c.artist_id)
-        with self.engine.connect() as conn:
-            result = conn.execute(stmt)
-            i = 0
-            for row in result:
-                t_obj.print_row(row)
-                i = i + 1
-                if i > 10:
-                    break
-
-    def column_test(self):
-        print('Column Test:')
-        print(type(self.artist_table.table.c))
-        print(self.artist_table.table.c['artist_id'])
-
-        t_list = ['artist_id', 'artist_name']
-        c_list = [self.artist_table.table.c[x] for x in t_list]
-        print(c_list)
-        stmt = select(
-            *c_list,
-            # self.artist_table.table.c[t_list[0]],
-            # self.artist_table.table.c[t_list[1]],
-        )
-        self.connect_and_print(stmt)
-
-    def check_tables(self):
+    def check_tables(self) -> str:
         result = []
         for key in self.things:
             self.things[key].validate(self.engine, self.metadata_obj)
             result = result + self.things[key].validation_data()
         return result
 
-    def enumerate_tables(self):
+    def enumerate_tables(self) -> None:
         thing_list = ['actor', 'app', 'artist', 'brand', 'category', 'category_hierarchy',
                       'company', 'division', 'eduction_level', 'entity_type', 'ethnicity',
                       'franchise', 'gender', 'generation', 'genre', 'has_children', 'household_size',
@@ -160,10 +100,10 @@ class OntologySchema(DatabaseConnection):
                         # print(f"   thing action added: {action}")
                         thing_obj.add_action(action, self.metadata_obj.tables[a_key])
 
-        for thing in self.things.keys():
-            if thing in self.things.keys():
+        for thing_key in self.things.keys():
+            if thing_key in self.things.keys():
                 for vendor in vendor_list:
                     for action in action_list:
-                        o_key = schema + action + "_" + thing + "_" + vendor
+                        o_key = schema + action + "_" + thing_key + "_" + vendor
                         if o_key in self.metadata_obj.tables.keys():
-                            self.things[thing].add_vendor_action(vendor, action, self.metadata_obj.tables[o_key])
+                            self.things[thing_key].add_vendor_action(vendor, action, self.metadata_obj.tables[o_key])

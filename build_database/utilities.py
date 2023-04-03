@@ -1,12 +1,15 @@
+import sqlalchemy as sqla
 from sqlalchemy import select, func
 from new_schema import Status, Action
+from thing import Thing
 import time
+from new_schema import NewDatabaseSchema
 
 print('loading utilities ...')
 SHORT_LOAD = False
 
 
-def join_thing_and_map(thing, action):
+def join_thing_and_map(thing: Thing, action: Thing) -> sqla.Select:
     subquery1 = select(
         thing.get_id_column().label('old_id'),
         thing.get_name_column().label('name'),
@@ -27,11 +30,16 @@ def join_thing_and_map(thing, action):
         action.table.c.updated_ts.label("m_updated_ts"),
         action.table.c.updated_by.label("m_updated_by"),
     ).join(action.table, action.get_id_column() == subquery2.c.old_id)
-    # print(f'join_thing_and_map:  {subquery3}')
     return subquery3
 
 
-def fill_thing_table(database, data_table, engine, thing, thing_pk_start):
+def fill_thing_table(database: NewDatabaseSchema,
+                     data_table: sqla.Table,
+                     engine: sqla.Engine,
+                     thing: Thing,
+                     thing_pk_start: int,
+
+                     ) -> tuple[dict[int, int], int]:
     print(f'   fill_thing_table:  {thing.thing}')
     subquery1 = select(
         thing.get_id_column().label('old_id'),
@@ -48,7 +56,7 @@ def fill_thing_table(database, data_table, engine, thing, thing_pk_start):
     stmt = subquery2
     thing_add = []
     bridge_add = []
-    bridge = {}
+    bridge: dict[int, int] = {}
     index = 0
     with engine.connect() as connection:
         result = connection.execute(stmt)
@@ -89,7 +97,13 @@ def fill_thing_table(database, data_table, engine, thing, thing_pk_start):
     return bridge, thing_pk_start + index
 
 
-def test_fill(database, engine, thing, action, vendor, bridge):
+def test_fill(database: NewDatabaseSchema,
+              engine: sqla.Engine,
+              thing: Thing,
+              action: Thing,
+              vendor: str,
+              bridge: dict[int, int]
+              ) -> None:
     vendor_pk = database.add_vendor(vendor)
 
     print(f'      test_fill ({action.action}, {thing.thing}, {vendor})')
@@ -131,7 +145,7 @@ def test_fill(database, engine, thing, action, vendor, bridge):
     print(f'         Duration: {duration}')
 
 
-def test_fill_many(engine, thing, action):
+def test_fill_many(engine: sqla.Engine, thing: Thing, action: Thing) -> None:
     stmt = select(thing.table.c.ethnicity_id,
                   thing.table.c.ethnicity,
                   )
@@ -175,49 +189,3 @@ def test_fill_many(engine, thing, action):
         # result = result.rowcount
         for row in result:
             print(f'row = {row}')
-
-
-def good_column(table, labels, types):
-    # I realize that this is horrifying ...
-    for label in labels:
-        if label in table.keys():
-            col = table[label]
-            if str(col.type) in types:
-                return True
-
-    return False
-
-
-def good_log_cols(table):
-    return (good_column(table, ['created_ts'], ["TIMESTAMP"]) and
-            good_column(table, ['updated_ts'], ["TIMESTAMP"]) and
-            good_column(table, ['created_by'], ["TEXT", "VARCHAR(200)"]) and
-            good_column(table, ['updated_by'], ["TEXT", "VARCHAR(200)"]))
-
-
-def duplicate_row_query(engine, column):
-    subquery = select(column,
-                      func.count(column).label("count")
-                      ).group_by(column).subquery()
-    stmt = select(subquery).filter(subquery.c.count > 1)
-    with engine.connect() as connection:
-        result = connection.execute(stmt)
-        result = result.rowcount
-    return result
-
-
-def one_to_one_data(engine, map_table, id_label, ext_id_label):
-    if id_label in map_table.c.keys():
-        id_column = map_table.c[id_label]
-    else:
-        return [None, None]
-
-    if ext_id_label in map_table.c.keys():
-        ext_id_column = map_table.c[ext_id_label]
-    else:
-        return [None, None]
-
-    duplicate_ext_ids = duplicate_row_query(engine, ext_id_column)
-    duplicate_ids = duplicate_row_query(engine, id_column)
-
-    return [duplicate_ids, duplicate_ext_ids]

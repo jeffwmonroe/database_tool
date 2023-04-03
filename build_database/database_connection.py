@@ -1,22 +1,21 @@
 import sqlalchemy as sqla
 import sqlalchemy.exc
 import sqlalchemy_utils.functions as sqlf
-import psycopg2.errors as errors
 
 
 class DatabaseConnection:
     url: str
-    engine: sqla.engine.Engine
-    metadata_obj: sqla.MetaData
-    schema: str
+    engine: sqla.Engine | None
+    metadata_obj: sqla.MetaData | None
+    schema: str | None
 
-    def __init__(self, url, schema=None):
+    def __init__(self, url: str, schema: str | None = None) -> None:
         self.url = url
         self.engine = None
         self.metadata_obj = None
         self.schema = schema
 
-    def connect_engine(self):
+    def connect_engine(self) -> None:
         self.engine = sqla.create_engine(self.url)
         print(f'schema = {self.schema}')
         with self.engine.connect() as conn:
@@ -28,12 +27,12 @@ class DatabaseConnection:
             self.metadata_obj = sqla.MetaData(schema=self.schema)
         print("metadata has been set")
 
-    def reflect_tables(self):
+    def reflect_tables(self) -> list[str]:
         self.metadata_obj.reflect(bind=self.engine)
         table_list = list(self.metadata_obj.tables.keys())
         return table_list
 
-    def create_database(self):
+    def create_database(self) -> None:
         """
         This will create the new database if it does not exist
         """
@@ -44,7 +43,7 @@ class DatabaseConnection:
         else:
             print('database already exists')
 
-    def build_tables(self):
+    def build_tables(self) -> None:
         """
         This is behaving like an abstract method. Python does not have abstract
         methods; however, this is a reminder that this method needs to be implemented
@@ -53,10 +52,10 @@ class DatabaseConnection:
         """
         self.connect_tables(commit=True)
 
-    def connect_tables(self, commit=False):
+    def connect_tables(self, commit=False) -> None:
         pass
 
-    def drop_database(self):
+    def drop_database(self) -> None:
         """
         This will drop the test database
         This method really belongs in the base class. I am putting it here
@@ -68,21 +67,3 @@ class DatabaseConnection:
             sqlf.drop_database(url)
         except sqlalchemy.exc.ProgrammingError:
             pass
-
-    def connect_and_print(self, stmt, print_row=False):
-        """
-        This is a useful test function. It prints the SQL query and then executes it.
-        :param print_row: If true print all the rows during execute
-        :param stmt:
-        :return: n/a
-        """
-        with self.engine.connect() as conn:
-            result = conn.execute(stmt)
-            num_rows = result.rowcount
-            if print_row:
-                for row in result:
-                    print(f"   row = {row}")
-                    # i = i + 1
-                    # if i > 10:
-                    #     break
-        return num_rows
