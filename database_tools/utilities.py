@@ -71,7 +71,7 @@ def fill_thing_table(database: NewDatabaseSchema,
     # Bridge_add is a list of dicts old_id, thing, new_id. It is formed so that it can
     # be dumped to the bridge table in the new database. This is not strictly necessary but
     # is good for validation and debugging.
-    bridge_add: list[dict[int, str, int]] = []
+    bridge_add: list[dict[str, str | int | Any]] = []
     # bridge is a dictionary mapping old_pks to new_pks. It is used in memory for this execution
     bridge: dict[int, int] = {}
     index = 0
