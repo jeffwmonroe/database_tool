@@ -129,7 +129,7 @@ class TableBase:
             'dup ext_id': self.get_duplicate_ext_ids(),
         }]
 
-    def get_id_column(self) -> sqla.Table:
+    def get_id_column(self) -> sqla.Column:
         name = self.thing + "_id"
         if name in self.table.c.keys():
             # print(f'found it: {name}')

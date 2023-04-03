@@ -4,6 +4,7 @@ from new_schema import Status, Action
 from thing import Thing
 import time
 from new_schema import NewDatabaseSchema
+from typing import Any
 
 print('loading utilities ...')
 SHORT_LOAD = False
@@ -40,8 +41,19 @@ def fill_thing_table(database: NewDatabaseSchema,
                      thing_pk_start: int,
 
                      ) -> tuple[dict[int, int], int]:
+    """
+    This fills one single thing table in the new database with values from the old database.
+    All old values are maintained but put into the new format
+    :param database: NewDatabase schema for new style database
+    :param data_table: Reference to Table in new database
+    :param engine: Engine from old database.
+    :param thing: Thing object corresponding to the new table type
+    :param thing_pk_start: starting values for Primary Keys. This explicitly assigns PKs
+    :return:
+    """
     print(f'   fill_thing_table:  {thing.thing}')
     subquery1 = select(
+        # "*",
         thing.get_id_column().label('old_id'),
         thing.get_name_column().label('name'),
         thing.table.c.updated_ts.label("t_updated_ts"),
@@ -54,8 +66,13 @@ def fill_thing_table(database: NewDatabaseSchema,
     else:
         subquery2 = select(subquery1)
     stmt = subquery2
-    thing_add = []
-    bridge_add = []
+    # ToDo clean up the thing_add type definition
+    thing_add: list[dict[str, Any]] = []
+    # Bridge_add is a list of dicts old_id, thing, new_id. It is formed so that it can
+    # be dumped to the bridge table in the new database. This is not strictly necessary but
+    # is good for validation and debugging.
+    bridge_add: list[dict[int, str, int]] = []
+    # bridge is a dictionary mapping old_pks to new_pks. It is used in memory for this execution
     bridge: dict[int, int] = {}
     index = 0
     with engine.connect() as connection:

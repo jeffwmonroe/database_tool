@@ -4,6 +4,7 @@ from thing import Thing
 from utilities import test_fill, fill_thing_table
 import time
 from new_schema import NewDatabaseSchema
+import sqlalchemy as sqla
 
 
 def ontology_url() -> str:
@@ -28,16 +29,21 @@ class OntologySchema(DatabaseConnection):
         self.things: dict[TableBase] = dict()
 
 # ToDo refactor test_fill
-    def test_fill(self, database: NewDatabaseSchema):
-
+    def test_fill(self, database: NewDatabaseSchema) -> None:
+        """
+        Fills the new database tables with values from the old database.
+        All of the tables in the new database need to be created first.
+        :param database: reference to NewDatabaseSchema configured for the new style
+        :return: None
+        """
         start_time = time.time()
         pk = 1000
         print(f'--------------------------------------')
         print('Iteration Test')
         for key in self.things.keys():
-            thing_table = self.things[key]
+            thing_table: TableBase = self.things[key]
             if thing_table.thing in database.vendors.keys():
-                data_table = database.data_tables[key]
+                data_table: sqla.Table = database.data_tables[key]
                 bridge, pk = fill_thing_table(database, data_table, self.engine, thing_table, pk)
                 for action in thing_table:
                     if action.vendor in database.vendors[thing_table.thing]:

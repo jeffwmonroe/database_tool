@@ -142,7 +142,7 @@ class NewDatabaseSchema(DatabaseConnection):
             row_list = list(row.values)
             table_name = row_list[0]
             row_list = row_list[1:]
-            print(f'   table name: {table_name}')
+            # print(f'   table name: {table_name}')
             data_columns = []
             while len(row_list) > 1:
                 col_name = row_list[0]
@@ -167,7 +167,7 @@ class NewDatabaseSchema(DatabaseConnection):
         for row_index, row in df.iterrows():
             row_list = list(row.values)
             table_name = row_list[0]
-            print(f'   table name: {table_name}')
+            # print(f'   table name: {table_name}')
             vendors = []
             for val in row_list[1:]:
                 if val != '':
