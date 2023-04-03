@@ -1,0 +1,254 @@
+{
+    "tables": [
+        {
+            "name": "artist",
+            "columns": [
+                {
+                    "name": "hair_color",
+                    "data_type": "string30"
+                },
+                {
+                    "name": "albums",
+                    "data_type": "int"
+                }
+            ],
+            "vendors": [
+                "cheetah",
+                "tapir",
+                "mockingbird",
+                "monkey",
+                "porcupine"
+            ]
+        },
+        {
+            "name": "actor",
+            "columns": [],
+            "vendors": [
+                "platypus"
+            ]
+        },
+        {
+            "name": "app",
+            "columns": [],
+            "vendors": [
+                "android",
+                "ios"
+            ]
+        },
+        {
+            "name": "brand",
+            "columns": [
+                {
+                    "name": "company_id",
+                    "data_type": "int"
+                }
+            ],
+            "vendors": []
+        },
+        {
+            "name": "category",
+            "columns": [],
+            "vendors": []
+        },
+        {
+            "name": "company",
+            "columns": [],
+            "vendors": []
+        },
+        {
+            "name": "jeff",
+            "columns": [
+                {
+                    "name": "hair",
+                    "data_type": "string30"
+                },
+                {
+                    "name": "hands",
+                    "data_type": "int"
+                },
+                {
+                    "name": "feet",
+                    "data_type": "int"
+                }
+            ],
+            "vendors": []
+        },
+        {
+            "name": "entity_type",
+            "columns": [],
+            "vendors": []
+        },
+        {
+            "name": "ethnicity",
+            "columns": [],
+            "vendors": [
+                "koala"
+            ]
+        },
+        {
+            "name": "franchise",
+            "columns": [],
+            "vendors": []
+        },
+        {
+            "name": "gender",
+            "columns": [],
+            "vendors": [
+                "koala"
+            ]
+        },
+        {
+            "name": "generation",
+            "columns": [],
+            "vendors": [
+                "koala"
+            ]
+        },
+        {
+            "name": "genre",
+            "columns": [],
+            "vendors": []
+        },
+        {
+            "name": "household_size",
+            "columns": [],
+            "vendors": [
+                "koala"
+            ]
+        },
+        {
+            "name": "marital_status",
+            "columns": [],
+            "vendors": [
+                "koala"
+            ]
+        },
+        {
+            "name": "political_affiliation",
+            "columns": [],
+            "vendors": [
+                "koala"
+            ]
+        },
+        {
+            "name": "product",
+            "columns": [
+                {
+                    "name": "brand_id",
+                    "data_type": "int"
+                },
+                {
+                    "name": "category_id",
+                    "data_type": "int"
+                }
+            ],
+            "vendors": [
+                "alligator",
+                "cheetah",
+                "ferret",
+                "koala",
+                "moose",
+                "panther",
+                "peacock",
+                "stork",
+                "swan",
+                "ferret_retailer"
+            ]
+        },
+        {
+            "name": "property_value",
+            "columns": [],
+            "vendors": [
+                "koala"
+            ]
+        },
+        {
+            "name": "region",
+            "columns": [],
+            "vendors": []
+        },
+        {
+            "name": "residence",
+            "columns": [],
+            "vendors": [
+                "koala"
+            ]
+        },
+        {
+            "name": "sport",
+            "columns": [],
+            "vendors": []
+        },
+        {
+            "name": "state",
+            "columns": [
+                {
+                    "name": "state_abbreviation",
+                    "data_type": "string30"
+                }
+            ],
+            "vendors": []
+        },
+        {
+            "name": "ticker",
+            "columns": [],
+            "vendors": []
+        },
+        {
+            "name": "title",
+            "columns": [],
+            "vendors": [
+                "tapir",
+                "platypus"
+            ]
+        },
+        {
+            "name": "venue",
+            "columns": [
+                {
+                    "name": "latitude",
+                    "data_type": "double"
+                },
+                {
+                    "name": "longitude",
+                    "data_type": "double"
+                },
+                {
+                    "name": "street_address",
+                    "data_type": "string200"
+                },
+                {
+                    "name": "city",
+                    "data_type": "string200"
+                },
+                {
+                    "name": "region",
+                    "data_type": "string200"
+                },
+                {
+                    "name": "postal_code",
+                    "data_type": "string30"
+                },
+                {
+                    "name": "country_code",
+                    "data_type": "string30"
+                },
+                {
+                    "name": "polygon_wkt",
+                    "data_type": "varchar"
+                }
+            ],
+            "vendors": [
+                "koala",
+                "porcupine"
+            ]
+        },
+        {
+            "name": "yearly_income",
+            "columns": [],
+            "vendors": [
+                "koala"
+            ]
+        }
+    ]
+}

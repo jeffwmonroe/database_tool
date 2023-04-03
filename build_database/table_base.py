@@ -14,16 +14,16 @@ class TableBase:
         self.good_name = False
         self.good_log = False
 
-    def has_log(self):
+    def has_log(self) -> bool:
         return False
 
-    def has_id(self):
+    def has_id(self) -> bool:
         return False
 
-    def has_name(self):
+    def has_name(self) -> bool:
         return True
 
-    def validate(self, engine, metadata):
+    def validate(self, engine, metadata) -> None:
         # print(validate: {self.thing}')
         stmt = select(self.table)
         with engine.connect() as conn:
@@ -44,15 +44,8 @@ class TableBase:
             self.good_log = None
         self.num_cols = len(self.table.c.keys())
 
-    def table_name(self):
+    def table_name(self) -> str:
         return "none"
-
-    def print_validation(self):
-        name = self.table_name()
-        print(f'Table: {name}', end=' ')
-        print(f'<id={self.good_id}, name={self.good_name}, log={self.good_log}>', end=" ")
-        print(f'columns = {self.num_cols}, rows = {self.num_rows}')
-        return self.validation_data()
 
     def get_thing(self):
         return self.thing
@@ -63,10 +56,10 @@ class TableBase:
     def get_vendor(self):
         return None
 
-    def get_duplicate_ids(self):
+    def get_duplicate_ids(self) -> int:
         return 0
 
-    def get_duplicate_ext_ids(self):
+    def get_duplicate_ext_ids(self) -> int:
         return 0
 
     def validation_data(self):

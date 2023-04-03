@@ -5,6 +5,11 @@ import psycopg2.errors as errors
 
 
 class DatabaseConnection:
+    url: str
+    engine: sqla.engine.Engine
+    metadata_obj: sqla.MetaData
+    schema: str
+
     def __init__(self, url, schema=None):
         self.url = url
         self.engine = None

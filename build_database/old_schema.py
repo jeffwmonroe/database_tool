@@ -19,9 +19,6 @@ def ontology_url():
     return url
 
 
-# ActionTable = namedtuple("ActionTable", "thing vendor action")
-
-
 class OntologySchema(DatabaseConnection):
     def __init__(self, *args, **kwargs):
         kwargs['schema'] = 'ontology'
