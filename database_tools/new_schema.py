@@ -1,11 +1,11 @@
 import sqlalchemy as sqla
 from sqlalchemy import insert, select, Enum
-from database_connection import DatabaseConnection
 import enum
 import pandas as pd
+from database_tools.database_connection import DatabaseConnection
 
 # ToDo move this to a .env vile
-table_list = "../data/table_list.xlsx"
+table_list = "./data/table_list.xlsx"
 
 
 class Status(enum.Enum):

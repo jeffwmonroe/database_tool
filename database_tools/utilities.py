@@ -1,10 +1,10 @@
 import sqlalchemy as sqla
 from sqlalchemy import select, func
-from new_schema import Status, Action
-from thing import Thing
 import time
-from new_schema import NewDatabaseSchema
 from typing import Any
+from database_tools.new_schema import NewDatabaseSchema
+from database_tools.new_schema import Status, Action
+from database_tools.thing import Thing
 
 print('loading utilities ...')
 SHORT_LOAD = False

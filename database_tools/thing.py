@@ -1,7 +1,7 @@
-from table_base import TableBase
 from collections import namedtuple
-from action import Action, VendorAction
 import sqlalchemy as sqla
+from database_tools.action import Action, VendorAction
+from database_tools.table_base import TableBase
 
 ActionKey = namedtuple("vendor", "vend action")
 

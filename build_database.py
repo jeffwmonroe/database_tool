@@ -1,9 +1,7 @@
 import pandas as pd
 import sqlalchemy as sqla
-from new_schema import NewDatabaseSchema
-from old_schema import OntologySchema
+from database_tools import NewDatabaseSchema, OntologySchema, utilities
 import argparse
-import utilities
 
 
 def parse_arguments():
@@ -101,7 +99,7 @@ def main():
         result = ontology.check_tables()
         df = pd.DataFrame(result,
                           columns=result[0].keys())
-        df.to_csv("../data/table validation.csv")
+        df.to_csv("./data/table validation.csv")
     if args.short:
         utilities.SHORT_LOAD = True
     if args.fill:

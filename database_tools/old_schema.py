@@ -1,10 +1,10 @@
-from database_connection import DatabaseConnection
-from table_base import TableBase
-from thing import Thing
-from utilities import test_fill, fill_thing_table
-import time
-from new_schema import NewDatabaseSchema
 import sqlalchemy as sqla
+import time
+from database_tools.utilities import test_fill, fill_thing_table
+from database_tools.thing import Thing
+from database_tools.table_base import TableBase
+from database_tools.database_connection import DatabaseConnection
+from database_tools.new_schema import NewDatabaseSchema
 
 
 def ontology_url() -> str:

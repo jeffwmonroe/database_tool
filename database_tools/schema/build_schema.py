@@ -1,34 +1,11 @@
 import pandas as pd
-from pydantic import BaseModel
-from collections.abc import Sequence
 import json
+from schema import Schema, DataTable, Column
+import argparse
+
 # ToDo move this to a .env vile
 table_list = "../../data/table_list.xlsx"
 json_file = "../../data/tables.json"
-
-
-class Column(BaseModel):
-    """
-    Column is the class for a data column outside of the standard columns
-    """
-    name: str
-    data_type: str
-    # foreign_table: str
-    # foreign_column: str
-
-
-class DataTable(BaseModel):
-    """
-    DataTable base model definition
-    """
-    name: str
-    columns: list[Column]
-    vendors: list[str]
-
-
-class Schema(BaseModel):
-
-    tables: list[DataTable]
 
 
 def read_vendor_info() -> dict[str, list[str]]:
@@ -42,7 +19,6 @@ def read_vendor_info() -> dict[str, list[str]]:
     for row_index, row in df.iterrows():
         row_list = list(row.values)
         table_name = row_list[0]
-        print(f'   table name: {table_name}')
         vendors = []
         for val in row_list[1:]:
             if val != '':
@@ -62,7 +38,6 @@ def read_table_info(vendors: dict[str, list[str]]) -> list[DataTable]:
         row_list = list(row.values)
         table_name = row_list[0]
         row_list = row_list[1:]
-        print(f'   table name: {table_name}')
         columns = []
         while len(row_list) > 1:
             col_name = row_list[0]
@@ -81,32 +56,47 @@ def read_table_info(vendors: dict[str, list[str]]) -> list[DataTable]:
     return tables
 
 
+def parse_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(prog="Build Schema",
+                                     description="Schema Build Tool",
+                                     epilog="Thanks for practicing with %(prog)s! :-)",
+                                     allow_abbrev=False,
+                                     )
+    database = parser.add_argument_group("build schema")
+    database.add_argument("-v", "--verbose",
+                          help='verbose output',
+                          action="store_true",
+                          )
+    database.add_argument("-b", "--build",
+                          help='build schema JSON from excel file',
+                          action="store_true",
+                          )
+    database.add_argument("-r", "--read",
+                          help='read the JSON file',
+                          action="store_true",
+                          )
+    args = parser.parse_args()
+    return args
+
+
 def main():
-    print("schema")
-    vendors = read_vendor_info()
-    tables = read_table_info(vendors)
-    schema = Schema(tables=tables)
+    args = parse_arguments()
+    if args.verbose:
+        print('---------------------------------')
+        print('       Welcome to build_schema')
 
-    tables = {"tables": tables}
-    print(schema.dict())
-    json_object = json.dumps(schema.dict(), indent=4)
-    with open(json_file, "w") as outfile:
-        outfile.write(json_object)
+    if args.build:
+        vendors = read_vendor_info()
+        tables = read_table_info(vendors)
+        schema = Schema(tables=tables)
 
-    # Data to be written
-    dictionary = {
-        "name": "sathiyajith",
-        "rollno": 56,
-        "cgpa": 8.6,
-        "phonenumber": "9976770500"
-    }
-
-    # Serializing json
-    json_object = json.dumps(dictionary, indent=4)
-
-    # Writing to sample.json
-    with open("..\..\data\sample.json", "w") as outfile:
-        outfile.write(json_object)
+        json_object = json.dumps(schema.dict(), indent=4)
+        with open(json_file, "w") as outfile:
+            outfile.write(json_object)
+    if args.read:
+        with open(json_file, "r") as infile:
+            json_object = infile.read()
+            print(json_object)
 
 
 # Press the green button in the gutter to run the script.

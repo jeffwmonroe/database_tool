@@ -1,0 +1,2 @@
+from database_tools.new_schema import NewDatabaseSchema
+from database_tools.old_schema import OntologySchema
