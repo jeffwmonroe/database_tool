@@ -43,11 +43,9 @@ class NewDatabaseSchema(DatabaseConnection):
                                                 self.vendor_table.c.database == 'main')
         with self.engine.connect() as conn:
             result = conn.execute(stmt)
-            rows_found: int = result.rowcount
             pk_list = [row.v_id for row in result]
             conn.commit()
-        if rows_found > 0:
-            # print(f"PK found: {pk_list}")
+        if len(pk_list) > 0:
             return pk_list[0]
         stmt = insert(self.vendor_table).values(vendor=vendor, database="main")
         with self.engine.connect() as conn:

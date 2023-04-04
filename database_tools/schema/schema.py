@@ -1,6 +1,4 @@
 from pydantic import BaseModel
-import json
-
 
 
 class Column(BaseModel):
@@ -23,9 +21,4 @@ class DataTable(BaseModel):
 
 
 class Schema(BaseModel):
-
     tables: list[DataTable]
-
-
-
-
