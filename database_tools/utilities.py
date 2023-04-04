@@ -2,15 +2,16 @@ import sqlalchemy as sqla
 from sqlalchemy import select, func
 import time
 from typing import Any
-from database_tools.new_schema import NewDatabaseSchema
-from database_tools.new_schema import Status, Action
-from database_tools.thing import Thing
+from database_tools.database_connection.new_schema import NewDatabaseSchema
+import database_tools.database_connection.enums as db_enum
+from database_tools.thing import Thing, Action
+from database_tools.table_base import TableBase
 
 print('loading utilities ...')
 SHORT_LOAD = False
 
 
-def join_thing_and_map(thing: Thing, action: Thing) -> sqla.Select:
+def join_thing_and_map(thing: Thing, action: TableBase) -> sqla.Select:
     subquery1 = select(
         thing.get_id_column().label('old_id'),
         thing.get_name_column().label('name'),
@@ -39,7 +40,6 @@ def fill_thing_table(database: NewDatabaseSchema,
                      engine: sqla.Engine,
                      thing: Thing,
                      thing_pk_start: int,
-
                      ) -> tuple[dict[int, int], int]:
     """
     This fills one single thing table in the new database with values from the old database.
@@ -83,10 +83,10 @@ def fill_thing_table(database: NewDatabaseSchema,
                 {
                     'n_id': thing_pk_start + index,
                     'name': row.name,
-                    'action': Action.create,
+                    'action': db_enum.Action.create,
                     'created_ts': row.t_updated_ts,
                     'created_by': row.t_updated_by,
-                    'status': Status.draft,
+                    'status': db_enum.Status.draft,
                 })
             bridge_add.append(
                 {'old_id': row.old_id,
@@ -96,7 +96,7 @@ def fill_thing_table(database: NewDatabaseSchema,
             bridge[row.old_id] = thing_pk_start + index
             index += 1
     # values is used for the type table
-    values = [{'n_id': thing_pk_start + index, 'thing': thing.thing} for index in range(row_num)]
+    values: dict[str, int | str] = [{'n_id': thing_pk_start + index, 'thing': thing.thing} for index in range(row_num)]
 
     with database.engine.connect() as new_connection:
         # working
@@ -117,7 +117,7 @@ def fill_thing_table(database: NewDatabaseSchema,
 def test_fill(database: NewDatabaseSchema,
               engine: sqla.Engine,
               thing: Thing,
-              action: Thing,
+              action: Action,
               vendor: str,
               bridge: dict[int, int]
               ) -> None:
@@ -143,10 +143,10 @@ def test_fill(database: NewDatabaseSchema,
                     'ext_id': row.ext_id,
                     'map_type': 'person',
                     'confidence': 1,
-                    'action': Action.create,
+                    'action': db_enum.Action.create,
                     'created_ts': row.m_updated_ts,
                     'created_by': row.m_updated_by,
-                    'status': Status.draft,
+                    'status': db_enum.Status.draft,
                 }
             )
             index += 1
