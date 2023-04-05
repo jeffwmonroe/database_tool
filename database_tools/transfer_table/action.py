@@ -1,4 +1,4 @@
-from database_tools.table_base import TableBase, good_column, one_to_one_data
+from database_tools.transfer_table.table_base import TableBase, good_column, one_to_one_data
 import sqlalchemy as sqla
 
 

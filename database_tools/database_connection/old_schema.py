@@ -1,9 +1,5 @@
-import sqlalchemy as sqla
-import time
-from database_tools.utilities import test_fill, fill_thing_table
-from database_tools.thing import Thing
+from database_tools.transfer_table.thing import Thing
 from database_tools.database_connection.database_connection import DatabaseConnection
-from database_tools.database_connection.new_schema import NewDatabaseSchema
 
 
 def ontology_url() -> str:
@@ -27,28 +23,7 @@ class OntologySchema(DatabaseConnection):
         self.map_list = None
         self.things: dict[str, Thing] = dict()
 
-# ToDo refactor test_fill
-    def test_fill(self, database: NewDatabaseSchema) -> None:
-        """
-        Fills the new database tables with values from the old database.
-        All the tables in the new database need to be created first.
-        :param database: reference to NewDatabaseSchema configured for the new style
-        :return: None
-        """
-        start_time = time.time()
-        pk = 1000
-        print(f'--------------------------------------')
-        print('Iteration Test')
-        for key in self.things.keys():
-            thing_table = self.things[key]
-            if thing_table.thing in database.vendors.keys():
-                data_table: sqla.Table = database.data_tables[key]
-                bridge, pk = fill_thing_table(database, data_table, self.engine, thing_table, pk)
-                for action in thing_table:
-                    if action.vendor in database.vendors[thing_table.thing]:
-                        test_fill(database, self.engine, thing_table, action, action.vendor, bridge)
-        duration = time.time() - start_time
-        print(f'Total duration: {duration}')
+    # ToDo refactor test_fill
 
     def connect_tables(self, commit: bool = False) -> None:
         pass

@@ -1,6 +1,6 @@
 import pandas as pd
 import sqlalchemy as sqla
-from database_tools import NewDatabaseSchema, OntologySchema, utilities
+from database_tools import NewDatabaseSchema, OntologySchema
 import argparse
 
 
@@ -23,7 +23,7 @@ def parse_arguments():
                           )
     table = parser.add_argument_group("table tools")
     table.add_argument("-t", "--table",
-                       help='build the new schema tables in a fresh database',
+                       help='build the new jason_schema tables in a fresh database',
                        action="store_true",
                        )
     table.add_argument("-r", "--reflect",
@@ -101,9 +101,10 @@ def main():
                           columns=result[0].keys())
         df.to_csv("./data/table validation.csv")
     if args.short:
-        utilities.SHORT_LOAD = True
+        SHORT_LOAD = True
     if args.fill:
-        ontology.test_fill(database)
+        # ontology.test_fill(database) # old style
+        database.fill_tables(ontology)
         pass
     if args.run is not None:
         print(f'run = {args.run}')

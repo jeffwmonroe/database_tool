@@ -2,6 +2,7 @@ import sqlalchemy as sqla
 import pandas as pd
 from database_tools.database_connection.utilities import build_sql_column, build_data_table
 
+
 # ToDo move this to a .env vile
 table_list = "./data/table_list.xlsx"
 

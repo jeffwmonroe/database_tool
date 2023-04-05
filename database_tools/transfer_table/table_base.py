@@ -136,7 +136,7 @@ class TableBase:
             return self.table.c[name]
         raise ValueError('No name found in get_id_column', name)
 
-    def get_name_column(self) -> sqla.Table:
+    def get_name_column(self) -> sqla.Column:
         name = self.thing + "_name"
         if name in self.table.c.keys():
             return self.table.c[name]

@@ -1,11 +1,10 @@
 import pandas as pd
 import json
-from schema import Schema, DataTable, Column
+from json_schema import JsonSchema, JsonDataTable, JsonColumn, read_schema_json, json_file
 import argparse
 
 # ToDo move this to a .env vile
 table_list = "../../data/table_list.xlsx"
-json_file = "../../data/tables.json"
 
 
 def read_vendor_info() -> dict[str, list[str]]:
@@ -27,7 +26,7 @@ def read_vendor_info() -> dict[str, list[str]]:
     return table_vendors
 
 
-def read_table_info(vendors: dict[str, list[str]]) -> list[DataTable]:
+def read_table_info(vendors: dict[str, list[str]]) -> list[JsonDataTable]:
     print('---------------------------------------')
     print('new_schema: read_table_info')
     df = pd.read_excel(table_list,
@@ -46,12 +45,12 @@ def read_table_info(vendors: dict[str, list[str]]) -> list[DataTable]:
             if col_name == '' or col_type == '':
                 break
             # columns[col_name] = (col_name, col_type)
-            columns.append(Column(name=col_name,
-                                  data_type=col_type))
-        tables.append(DataTable(name=table_name,
-                                columns=columns,
-                                vendors=(vendors[table_name] if table_name in vendors.keys() else []),
-                                ))
+            columns.append(JsonColumn(name=col_name,
+                                      data_type=col_type))
+        tables.append(JsonDataTable(name=table_name,
+                                    columns=columns,
+                                    vendors=(vendors[table_name] if table_name in vendors.keys() else []),
+                                    ))
 
     return tables
 
@@ -62,13 +61,13 @@ def parse_arguments() -> argparse.Namespace:
                                      epilog="Thanks for practicing with %(prog)s! :-)",
                                      allow_abbrev=False,
                                      )
-    database = parser.add_argument_group("build schema")
+    database = parser.add_argument_group("build jason_schema")
     database.add_argument("-v", "--verbose",
                           help='verbose output',
                           action="store_true",
                           )
     database.add_argument("-b", "--build",
-                          help='build schema JSON from excel file',
+                          help='build jason_schema JSON from excel file',
                           action="store_true",
                           )
     database.add_argument("-r", "--read",
@@ -88,15 +87,16 @@ def main():
     if args.build:
         vendors = read_vendor_info()
         tables = read_table_info(vendors)
-        schema = Schema(tables=tables)
+        schema = JsonSchema(tables=tables)
 
         json_object = json.dumps(schema.dict(), indent=4)
         with open(json_file, "w") as outfile:
             outfile.write(json_object)
     if args.read:
-        with open(json_file, "r") as infile:
-            json_object = infile.read()
-            print(json_object)
+        # ToDo move this to a .env vile
+        json_file = "../../data/tables.json"
+        schema = read_schema_json(json_file)
+        schema.pprint()
 
 
 # Press the green button in the gutter to run the script.
