@@ -240,15 +240,22 @@ class NewDatabaseSchema(DatabaseConnection):
                 print('    found in data_tables')
                 new_thing_table = self.data_tables[key]
                 print(f'    vendors = {new_thing_table.vendors}')
-                print(f'    thing.thing = {thing_table.thing}')
-                if True:  # thing_table.thing in new_thing_table.vendors:
-                    print('found')
-                    data_table: sqla.Table = self.data_tables[key].sql_table
-                    bridge, pk = self.fill_thing_table(data_table, old_database.engine, thing_table, pk, short_load)
-                    for action in thing_table:
-                        print(f"    action.vendor = {action.get_vendor()}")
-                        if action.vendor in new_thing_table.vendors:
-                            self.test_fill(old_database.engine, thing_table, action, action.vendor, bridge, short_load)
+                # print(f'    thing.thing = {thing_table.thing}')
+                extra_columns_names, extra_columns = new_thing_table.extra_columns(thing_table.table)
+                # print(f'    extra columns = {extra_columns}')
+                data_table: sqla.Table = self.data_tables[key].sql_table
+                bridge, pk = self.fill_thing_table(data_table,
+                                                   old_database.engine,
+                                                   thing_table,
+                                                   pk,
+                                                   extra_columns,
+                                                   extra_columns_names,
+                                                   short_load,
+                                                   )
+                for action in thing_table:
+                    print(f"    action.vendor = {action.get_vendor()}")
+                    if action.vendor in new_thing_table.vendors:
+                        self.test_fill(old_database.engine, thing_table, action, action.vendor, bridge, short_load)
         duration = time.time() - start_time
         print(f'Total duration: {duration}')
 
@@ -271,6 +278,7 @@ class NewDatabaseSchema(DatabaseConnection):
                                                old_database.engine,
                                                old_thing,
                                                pk,
+                                               [],
                                                True)
 
             print(f'pk = {pk}')
@@ -291,19 +299,22 @@ class NewDatabaseSchema(DatabaseConnection):
                          engine: sqla.Engine,
                          old_thing: Thing,
                          thing_pk_start: int,
+                         extra_columns: list[sqla.Column],
+                         extra_column_names: list[str],
                          short_load: bool,
                          ) -> tuple[dict[int, int], int]:
 
-        print(f'   fill_thing_table:  {old_thing.thing}')
-        subquery1 = select(
-            # "*",
+        print(f'    fill_thing_table:  {old_thing.thing}')
+        standard_columns: list[sqla.Column] = [
             old_thing.get_id_column().label('old_id'),
             old_thing.get_name_column().label('name'),
             old_thing.table.c.updated_ts.label("t_updated_ts"),
             old_thing.table.c.updated_by.label("t_updated_by"),
             func.rank().over(order_by=old_thing.get_id_column()
                              ).label('rank')
-        ).subquery()
+        ]
+        columns = standard_columns + extra_columns
+        subquery1 = select(*columns).subquery()
         if short_load:
             subquery2 = select(subquery1).filter(subquery1.c.rank < 11)
         else:
@@ -322,15 +333,19 @@ class NewDatabaseSchema(DatabaseConnection):
             result = connection.execute(stmt)
             row_num: int | Callable[[], int] = result.rowcount
             for row in result:
-                thing_add.append(
-                    {
+                row_dict = {
                         'n_id': thing_pk_start + index,
                         'name': row.name,
                         'action': db_enum.Action.create,
                         'created_ts': row.t_updated_ts,
                         'created_by': row.t_updated_by,
                         'status': db_enum.Status.draft,
-                    })
+                    }
+                for column_name in extra_column_names:
+                    if column_name in row._fields:
+                        # print(f"        extra column found: {column_name}, {row._asdict()[column_name]}")
+                        row_dict[column_name] = row._asdict()[column_name]
+                thing_add.append(row_dict)
                 bridge_add.append(
                     {'old_id': row.old_id,
                      'thing': old_thing.thing,

@@ -42,3 +42,13 @@ class OntologyTable:
         print(f'build table: {self.name}')
         for column in self.columns:
             print(f'    column: ({column.name}, {column.data_type})')
+
+    def extra_columns(self, old_table: sqla.Table) -> tuple[list[str], list[sqla.Column]]:
+        column_names: list[str] = []
+        columns: list[sqla.Column] = []
+        for column in self.columns:
+            if column.name in old_table.c.keys():
+                # print(f'    extra: {column.name}')
+                column_names.append(column.name)
+                columns.append(old_table.c[column.name])
+        return column_names, columns

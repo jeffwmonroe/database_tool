@@ -53,6 +53,14 @@ class Thing(TableBase):
     def table_name(self) -> str:
         return self.thing
 
+    def vendor_action_list(self) -> list[Action]:
+        result = []
+        for key in self.vendor_actions.keys():
+            # ToDo remove this == 'map' check. This is pretty hacky
+            if self.vendor_actions[key].action == "map":
+                result.append(self.vendor_actions[key])
+        return result
+
     # ToDo Deprecate this code
     # OK, this code is a bit weird. The table, thing, action, vendorAction hierarchy was built
     # to store the table structure from the original database so that analysis could be performed
@@ -64,14 +72,6 @@ class Thing(TableBase):
     # The if action == "map" statement ensures that the iterater only returns tables in the
     # for of: map_thing_vendor. The other tables are ignore.
     # This is really hacky
-
-    def vendor_action_list(self) -> list[Action]:
-        result = []
-        for key in self.vendor_actions.keys():
-            # ToDo remove this == 'map' check. This is pretty hacky
-            if self.vendor_actions[key].action == "map":
-                result.append(self.vendor_actions[key])
-        return result
 
     def __iter__(self):
         self.position = 0
