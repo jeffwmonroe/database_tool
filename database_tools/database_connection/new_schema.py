@@ -255,42 +255,7 @@ class NewDatabaseSchema(DatabaseConnection):
                 for action in thing_table:
                     print(f"    action.vendor = {action.get_vendor()}")
                     if action.vendor in new_thing_table.vendors:
-                        self.test_fill(old_database.engine, thing_table, action, action.vendor, bridge, short_load)
-        duration = time.time() - start_time
-        print(f'Total duration: {duration}')
-
-    def xxfill_tables(self, old_database: OntologySchema) -> None:
-        start_time = time.time()
-        pk = 1000
-        print(f'--------------------------------------')
-        print(f'         Filling Tables')
-        for new_table_name in self.data_tables:
-            print(f'Loading {new_table_name}')
-            print(f'   table: {self.data_tables[new_table_name].sql_table}')
-            # print(f'   old names: {old_database.things.keys()}')
-            if new_table_name not in old_database.things.keys():
-                break
-            old_thing: Thing = old_database.things[new_table_name]
-            new_thing: OntologyTable = self.data_tables[new_table_name]
-            data_table: sqla.Table = self.data_tables[new_table_name].sql_table
-
-            bridge, pk = self.fill_thing_table(data_table,
-                                               old_database.engine,
-                                               old_thing,
-                                               pk,
-                                               [],
-                                               True)
-
-            print(f'pk = {pk}')
-            for old_vendor_action in old_thing.vendor_action_list():
-                print(f'      vendor = {old_vendor_action.get_vendor()}')
-                if old_vendor_action.get_vendor() in new_thing.vendors:
-                    self.test_fill(old_database.engine,
-                                   old_thing,
-                                   old_vendor_action,
-                                   old_vendor_action.get_vendor(),
-                                   bridge,
-                                   True)
+                        self.fill_name_map_table(old_database.engine, thing_table, action, action.vendor, bridge, short_load)
         duration = time.time() - start_time
         print(f'Total duration: {duration}')
 
@@ -372,7 +337,7 @@ class NewDatabaseSchema(DatabaseConnection):
             new_connection.commit()
         return bridge, thing_pk_start + index
 
-    def test_fill(self,
+    def fill_name_map_table(self,
                   engine: sqla.Engine,
                   old_thing: Thing,
                   old_action: Action,
@@ -382,7 +347,6 @@ class NewDatabaseSchema(DatabaseConnection):
                   ) -> None:
 
         vendor_pk = self.add_vendor(vendor)
-        # print(f'      test_fill ({old_action.action}, {old_thing.thing})')
         stmt = join_thing_and_map(old_thing, old_action, short_load)
         map_add = []
 
