@@ -102,9 +102,11 @@ def main():
         df.to_csv("./data/table validation.csv")
     if args.short:
         SHORT_LOAD = True
+    else:
+        SHORT_LOAD = False
     if args.fill:
         # ontology.test_fill(database) # old style
-        database.fill_tables(ontology)
+        database.fill_tables(ontology, SHORT_LOAD)
         pass
     if args.run is not None:
         print(f'run = {args.run}')

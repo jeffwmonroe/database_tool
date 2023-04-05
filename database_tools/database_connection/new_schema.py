@@ -16,9 +16,6 @@ import database_tools.database_connection.enums as db_enum
 # ToDo move this to a .env vile
 table_list = "./data/table_list.xlsx"
 
-print('loading utilities ...')
-SHORT_LOAD = True
-
 
 def db_url() -> str:
     # ToDo build these into environment variables or pass them as parameters
@@ -34,7 +31,8 @@ def db_url() -> str:
 
 
 def join_thing_and_map(old_thing: Thing,
-                       old_action: Action
+                       old_action: Action,
+                       short_load: bool,
                        ) -> sqla.Select:
     subquery1 = select(
         old_thing.get_id_column().label('old_id'),
@@ -44,12 +42,11 @@ def join_thing_and_map(old_thing: Thing,
         func.rank().over(order_by=old_thing.get_id_column()
                          ).label('rank')
     ).subquery()
-    if SHORT_LOAD:
+    if short_load:
         subquery2 = select(subquery1).filter(subquery1.c.rank < 11).subquery()
     else:
         subquery2 = select(subquery1).subquery()
 
-    print(f'old action = {old_action.table.c.keys()}')
     subquery3 = select(
         subquery2,
         # map.table.c.id,
@@ -231,7 +228,7 @@ class NewDatabaseSchema(DatabaseConnection):
         if commit:
             self.metadata_obj.create_all(self.engine)
 
-    def fill_tables(self, old_database: OntologySchema) -> None:
+    def fill_tables(self, old_database: OntologySchema, short_load: bool) -> None:
         start_time = time.time()
         pk = 1000
         print(f'--------------------------------------')
@@ -247,11 +244,11 @@ class NewDatabaseSchema(DatabaseConnection):
                 if True:  # thing_table.thing in new_thing_table.vendors:
                     print('found')
                     data_table: sqla.Table = self.data_tables[key].sql_table
-                    bridge, pk = self.fill_thing_table(data_table, old_database.engine, thing_table, pk)
+                    bridge, pk = self.fill_thing_table(data_table, old_database.engine, thing_table, pk, short_load)
                     for action in thing_table:
                         print(f"    action.vendor = {action.get_vendor()}")
                         if action.vendor in new_thing_table.vendors:
-                            self.test_fill(old_database.engine, thing_table, action, action.vendor, bridge)
+                            self.test_fill(old_database.engine, thing_table, action, action.vendor, bridge, short_load)
         duration = time.time() - start_time
         print(f'Total duration: {duration}')
 
@@ -273,7 +270,8 @@ class NewDatabaseSchema(DatabaseConnection):
             bridge, pk = self.fill_thing_table(data_table,
                                                old_database.engine,
                                                old_thing,
-                                               pk)
+                                               pk,
+                                               True)
 
             print(f'pk = {pk}')
             for old_vendor_action in old_thing.vendor_action_list():
@@ -283,7 +281,8 @@ class NewDatabaseSchema(DatabaseConnection):
                                    old_thing,
                                    old_vendor_action,
                                    old_vendor_action.get_vendor(),
-                                   bridge)
+                                   bridge,
+                                   True)
         duration = time.time() - start_time
         print(f'Total duration: {duration}')
 
@@ -292,16 +291,9 @@ class NewDatabaseSchema(DatabaseConnection):
                          engine: sqla.Engine,
                          old_thing: Thing,
                          thing_pk_start: int,
+                         short_load: bool,
                          ) -> tuple[dict[int, int], int]:
-        """
-        This fills one single thing table in the new database with values from the old database.
-        All old values are maintained but put into the new format
-        :param data_table: Reference to Table in new database
-        :param engine: Engine from old database.
-        :param thing: Thing object corresponding to the new table type
-        :param thing_pk_start: starting values for Primary Keys. This explicitly assigns PKs
-        :return:
-        """
+
         print(f'   fill_thing_table:  {old_thing.thing}')
         subquery1 = select(
             # "*",
@@ -312,7 +304,7 @@ class NewDatabaseSchema(DatabaseConnection):
             func.rank().over(order_by=old_thing.get_id_column()
                              ).label('rank')
         ).subquery()
-        if SHORT_LOAD:
+        if short_load:
             subquery2 = select(subquery1).filter(subquery1.c.rank < 11)
         else:
             subquery2 = select(subquery1)
@@ -370,12 +362,13 @@ class NewDatabaseSchema(DatabaseConnection):
                   old_thing: Thing,
                   old_action: Action,
                   vendor: str,
-                  bridge: dict[int, int]
+                  bridge: dict[int, int],
+                  short_load: bool,
                   ) -> None:
 
         vendor_pk = self.add_vendor(vendor)
         # print(f'      test_fill ({old_action.action}, {old_thing.thing})')
-        stmt = join_thing_and_map(old_thing, old_action)
+        stmt = join_thing_and_map(old_thing, old_action, short_load)
         map_add = []
 
         start_time = time.time()
