@@ -17,10 +17,10 @@ class DatabaseConnection:
 
     def connect_engine(self) -> None:
         self.engine = sqla.create_engine(self.url)
-        print(f'schema = {self.schema}')
+        print(f"schema = {self.schema}")
         with self.engine.connect() as conn:
             conn.execute(sqla.text("select 'hello world'"))
-            print('Successful login. Database exists. Connection good...')
+            print("Successful login. Database exists. Connection good...")
         if self.schema is None:
             self.metadata_obj = sqla.MetaData()
         else:
@@ -41,7 +41,7 @@ class DatabaseConnection:
             print("no database found ... building database ...")
             sqlf.create_database(self.url)
         else:
-            print('database already exists')
+            print("database already exists")
 
     def build_tables(self) -> None:
         """
@@ -62,7 +62,7 @@ class DatabaseConnection:
         so that I don't accidentally delete the ontology database.
         """
         url = self.url
-        print('Dropping the database')
+        print("Dropping the database")
         try:
             sqlf.drop_database(url)
         except sqlalchemy.exc.ProgrammingError:

@@ -1,5 +1,7 @@
 from collections import namedtuple
+
 import sqlalchemy as sqla
+
 from database_tools.transfer_table.action import Action, VendorAction
 from database_tools.transfer_table.table_base import TableBase
 
@@ -7,7 +9,6 @@ ActionKey = namedtuple("vendor", "vend action")
 
 
 class Thing(TableBase):
-
     def __init__(self, thing: str, table: sqla.Table):
         super().__init__(thing, table)
 

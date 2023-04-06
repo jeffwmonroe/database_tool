@@ -1,5 +1,10 @@
-from database_tools.transfer_table.table_base import TableBase, good_column, one_to_one_data
 import sqlalchemy as sqla
+
+from database_tools.transfer_table.table_base import (
+    TableBase,
+    good_column,
+    one_to_one_data,
+)
 
 
 class Action(TableBase):
@@ -15,8 +20,8 @@ class Action(TableBase):
     def validate(self, engine, metadata) -> None:
         super().validate(engine, metadata)
 
-        if self.action == 'map' or self.action == 'fuzzymatch':
-            self.good_ext = good_column(self.table.c, ['ext'], ["TEXT", "VARCHAR(200)"])
+        if self.action == "map" or self.action == "fuzzymatch":
+            self.good_ext = good_column(self.table.c, ["ext"], ["TEXT", "VARCHAR(200)"])
         else:
             self.good_ext = None
 
@@ -35,13 +40,13 @@ class VendorAction(Action):
         self.duplicate_ext_ids: int = 0
 
     def has_log(self) -> bool:
-        return self.action == 'map' or self.action == 'fuzzymatch'
+        return self.action == "map" or self.action == "fuzzymatch"
 
     def has_id(self) -> bool:
-        return self.action == 'map' or self.action == 'fuzzymatch'
+        return self.action == "map" or self.action == "fuzzymatch"
 
     def has_name(self) -> bool:
-        return self.action == 'import'
+        return self.action == "import"
 
     def table_name(self) -> str:
         return self.action + "_" + self.thing + "_" + self.vendor
@@ -57,8 +62,7 @@ class VendorAction(Action):
 
     def validate(self, engine, metadata) -> None:
         super().validate(engine, metadata)
-        if self.action == 'map' or self.action == 'fuzzymatch':
-            self.duplicate_ids, self.duplicate_ext_ids = one_to_one_data(engine,
-                                                                         self.table,
-                                                                         self.thing + '_id',
-                                                                         'ext_id')
+        if self.action == "map" or self.action == "fuzzymatch":
+            self.duplicate_ids, self.duplicate_ext_ids = one_to_one_data(
+                engine, self.table, self.thing + "_id", "ext_id"
+            )
