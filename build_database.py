@@ -1,6 +1,6 @@
 import pandas as pd
 import sqlalchemy as sqla
-from database_tools import NewDatabaseSchema, OntologySchema
+from database_tools import NewDatabaseSchema, OntologySchema, load_table_from_file
 import argparse
 
 
@@ -63,11 +63,11 @@ def parse_arguments():
     )
     execute = parser.add_argument_group("Execution")
     execute.add_argument(
-        "--run",
+        "--load",
         help="execute scratch code",
         action="store",
         type=str,
-        nargs=1,  # "+" on or more
+        nargs=2,  # "+" on or more
     )
     parser.add_argument(
         "-v",
@@ -125,15 +125,13 @@ def main():
         # ontology.test_fill(database) # old style
         database.fill_tables(ontology, SHORT_LOAD)
         pass
-    if args.run is not None:
-        print(f"run = {args.run}")
+    if args.load is not None:
+        print(f"load = {args.load}")
 
-        command = args.run[0]
-        match command:
-            case "reflect":
-                pass
-            case _:
-                print(f"command not found: {command}")
+        table_name = args.load[0]
+        file_name = args.load[1]
+        load_table_from_file(table_name, file_name, database)
+
 
 
 # Press the green button in the gutter to run the script.

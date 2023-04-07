@@ -1,4 +1,4 @@
 from database_tools.database_connection.new_schema import NewDatabaseSchema
 from database_tools.database_connection.old_schema import OntologySchema
-
+from database_tools.utilities import load_table_from_file
 # from database_tools.database_connection.json_reader import fill_tables
