@@ -2,16 +2,7 @@
     "tables": [
         {
             "name": "artist",
-            "columns": [
-                {
-                    "name": "hair_color",
-                    "data_type": "string30"
-                },
-                {
-                    "name": "albums",
-                    "data_type": "int"
-                }
-            ],
+            "columns": [],
             "vendors": [
                 "cheetah",
                 "tapir",

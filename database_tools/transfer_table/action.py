@@ -1,10 +1,7 @@
 import sqlalchemy as sqla
 
-from database_tools.transfer_table.table_base import (
-    TableBase,
-    good_column,
-    one_to_one_data,
-)
+from database_tools.transfer_table.table_base import (TableBase, good_column,
+                                                      one_to_one_data)
 
 
 class Action(TableBase):

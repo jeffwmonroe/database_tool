@@ -1,6 +1,7 @@
 import pandas as pd
 # import sqlalchemy as sqla
-from database_tools import NewDatabaseSchema, OntologySchema, load_thing_table_from_file
+from database_tools import NewDatabaseSchema, OntologySchema, load_thing_table_from_file, \
+    load_many_thing_tables_from_file, get_latest_thing, create_additional_things, create_additional_things2
 import argparse
 from sqlalchemy.exc import OperationalError
 
@@ -65,7 +66,28 @@ def parse_arguments():
     execute = parser.add_argument_group("Execution")
     execute.add_argument(
         "--load",
-        help="execute scratch code",
+        help="load in a single import file",
+        action="store",
+        type=str,
+        nargs=2,  # "+" on or more
+    )
+    execute.add_argument(
+        "--load_series",
+        help="Load a series of import files",
+        action="store",
+        type=str,
+        nargs=3,  # "+" on or more
+    )
+    table.add_argument(
+        "-q",
+        "--query",
+        help="query the thing table",
+        action="store_true",
+    )
+    table.add_argument(
+        "-a",
+        "--additional",
+        help="add additonal columns for stress testing",
         action="store",
         type=str,
         nargs=2,  # "+" on or more
@@ -120,6 +142,7 @@ def main():
         validation_results = ontology.check_tables()
         validation_column_names = [column_name for column_name in validation_results[0].keys()]
         df = pd.DataFrame(validation_results, columns=validation_column_names)
+        # ToDo move this to an environment
         df.to_csv("./data/table validation.csv")
     if args.short:
         short_load: bool = True
@@ -128,13 +151,33 @@ def main():
     if args.fill:
         # ontology.test_fill(database) # old style
         database.fill_tables(ontology, short_load)
-        pass
     if args.load is not None:
         print(f"load = {args.load}")
 
         table_name = args.load[0]
         file_name = args.load[1]
-        load_thing_table_from_file(table_name, file_name, database)
+        load_thing_table_from_file(table_name, file_name, database.engine, database.metadata_obj)
+    if args.load_series is not None:
+        print(f"load_series = {args.load_series}")
+
+        table_name = args.load_series[0]
+        file_name = args.load_series[1]
+        number_of_files = int(args.load_series[2])
+        load_many_thing_tables_from_file(table_name, file_name, number_of_files,
+                                         database.engine, database.metadata_obj)
+    print('before args.query')
+    if args.query:
+        # ontology.test_fill(database) # old style
+        get_latest_thing('artist', database.engine, database.metadata_obj)
+    print('before args.additional')
+    if args.additional is not None:
+        print('inside of args.additional')
+        table_name = args.additional[0]
+        print(f'table name = {table_name}')
+        additional = int(args.additional[1])
+        print(f'additional = {additional}')
+        # ontology.test_fill(database) # old style
+        create_additional_things(table_name, additional, database.engine, database.metadata_obj)
 
 
 # Press the green button in the gutter to run the script.

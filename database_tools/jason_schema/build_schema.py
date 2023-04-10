@@ -2,12 +2,7 @@ import argparse
 import json
 
 import pandas as pd
-from json_schema import (
-    JsonColumn,
-    JsonDataTable,
-    JsonSchema,
-    read_schema_json,
-)
+from json_schema import JsonColumn, JsonDataTable, JsonSchema, read_schema_json
 
 # ToDo move this to a .env vile
 table_list = "../../data/table_list.xlsx"

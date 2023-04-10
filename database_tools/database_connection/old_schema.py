@@ -1,4 +1,5 @@
-from database_tools.database_connection.database_connection import DatabaseConnection
+from database_tools.database_connection.database_connection import \
+    DatabaseConnection
 from database_tools.transfer_table.thing import Thing
 
 
