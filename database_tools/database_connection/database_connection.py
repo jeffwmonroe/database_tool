@@ -17,7 +17,6 @@ class DatabaseConnection:
 
     def connect_engine(self) -> None:
         self.engine = sqla.create_engine(self.url)
-        print(f"schema = {self.schema}")
         with self.engine.connect() as conn:
             conn.execute(sqla.text("select 'hello world'"))
             print("Successful login. Database exists. Connection good...")

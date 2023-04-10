@@ -121,6 +121,12 @@ class TableBase:
         return 0
 
     def validation_data(self) -> list[dict[str, str | bool | int | None]]:
+        """
+        This method returns a list of objects (dict) for the validation data.
+        This data will be written out to Excel for inspection of the data
+        within the database.
+        :return: list of one dict (table)
+        """
         return [
             {
                 "table_name": self.table_name(),

@@ -6,7 +6,6 @@ from json_schema import (
     JsonColumn,
     JsonDataTable,
     JsonSchema,
-    json_file,
     read_schema_json,
 )
 
@@ -95,6 +94,8 @@ def main():
         print("---------------------------------")
         print("       Welcome to build_schema")
 
+    # ToDo move this to a .env vile
+    json_file = "../../data/tables.json"
     if args.build:
         vendors = read_vendor_info()
         tables = read_table_info(vendors)
@@ -104,8 +105,6 @@ def main():
         with open(json_file, "w") as outfile:
             outfile.write(json_object)
     if args.read:
-        # ToDo move this to a .env vile
-        json_file = "../../data/tables.json"
         schema = read_schema_json(json_file)
         schema.pprint()
 

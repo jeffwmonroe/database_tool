@@ -29,7 +29,7 @@ def build_data_table(
     extra_data_columns: list[sqla.Column] | None = None,
 ) -> sqla.Table:
     """
-    This method builds an sql table for standard data.
+    This method builds a sql table for standard data.
     Standard data has contains the following columns:
         Keys:
             log_id (primary key)

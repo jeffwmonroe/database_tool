@@ -35,6 +35,13 @@ class Thing(TableBase):
         self.vendor_actions[key] = VendorAction(self.thing, action, vendor, table)
 
     def validate(self, engine: sqla.Engine, metadata: sqla.MetaData) -> None:
+        """
+        Thus method performs validation checks on the thing as well as the
+        sub tables in actions and vendor actions
+        :param engine: SqlAlchemy engine for the old ontology database
+        :param metadata: SqlAlchemy metadata object for the old ontology database
+        :return: None
+        """
         super().validate(engine, metadata)
         for action in self.actions:
             self.actions[action].validate(engine, metadata)

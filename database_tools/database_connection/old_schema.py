@@ -21,6 +21,7 @@ class OntologySchema(DatabaseConnection):
         super().__init__(ontology_url(), *args, **kwargs)
         self.artist_table = None
         self.map_list = None
+        # self.things is a dictionary of the thing tables
         self.things: dict[str, Thing] = dict()
 
     # ToDo refactor test_fill
@@ -37,7 +38,7 @@ class OntologySchema(DatabaseConnection):
         print("NOT Dropping the database")
         print(f"database = {self.url}")
 
-    def check_tables(self) -> str:
+    def check_tables(self) -> list[dict[str, str | bool | int | None]]:
         result = []
         for key in self.things:
             self.things[key].validate(self.engine, self.metadata_obj)

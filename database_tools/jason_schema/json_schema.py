@@ -1,6 +1,5 @@
 import json
 
-import sqlalchemy as sqla
 from pydantic import BaseModel
 
 

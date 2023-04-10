@@ -1,7 +1,8 @@
 import pandas as pd
-import sqlalchemy as sqla
-from database_tools import NewDatabaseSchema, OntologySchema, load_table_from_file
+# import sqlalchemy as sqla
+from database_tools import NewDatabaseSchema, OntologySchema, load_thing_table_from_file
 import argparse
+from sqlalchemy.exc import OperationalError
 
 
 def parse_arguments():
@@ -95,12 +96,14 @@ def main():
         database.create_database()
     try:
         database.connect_engine()
-    except sqla.exc.OperationalError:
+    except OperationalError:
+        if args.drop:
+            return
         print("Error: Could not connect to new database. New database not found")
         return
     try:
         ontology.connect_engine()
-    except sqla.exc.OperationalError:
+    except OperationalError:
         print("Error: Could not connect. Ontology database not found")
         return
     if args.table:
@@ -114,24 +117,24 @@ def main():
     if args.enumerate:
         ontology.enumerate_tables()
     if args.check:
-        result = ontology.check_tables()
-        df = pd.DataFrame(result, columns=result[0].keys())
+        validation_results = ontology.check_tables()
+        validation_column_names = [column_name for column_name in validation_results[0].keys()]
+        df = pd.DataFrame(validation_results, columns=validation_column_names)
         df.to_csv("./data/table validation.csv")
     if args.short:
-        SHORT_LOAD = True
+        short_load: bool = True
     else:
-        SHORT_LOAD = False
+        short_load: bool = False
     if args.fill:
         # ontology.test_fill(database) # old style
-        database.fill_tables(ontology, SHORT_LOAD)
+        database.fill_tables(ontology, short_load)
         pass
     if args.load is not None:
         print(f"load = {args.load}")
 
         table_name = args.load[0]
         file_name = args.load[1]
-        load_table_from_file(table_name, file_name, database)
-
+        load_thing_table_from_file(table_name, file_name, database)
 
 
 # Press the green button in the gutter to run the script.
