@@ -6,7 +6,7 @@ import sqlalchemy as sqla
 
 import database_tools.database_connection.enums as db_enum
 from datetime import timedelta
-
+import copy
 
 # ToDo move this to a different utility module
 def timer(function):
@@ -80,24 +80,28 @@ def load_many_thing_tables_from_file(
 
 
 @timer
-def get_latest_thing(table_name: str, engine: sqla.Engine, meta_data: sqla.MetaData) -> None:
+def get_latest_thing(table_name: str,
+                     engine: sqla.Engine,
+                     meta_data: sqla.MetaData) -> None:
     table = meta_data.tables[table_name]
     # stmt = sqla.select(table).where(table.c['status'] == db_enum.Status.draft)
-    sub_query1 = sqla.select(table)#.where(table.c['n_id'] == 56894).subquery()
-    sub_query2 = sqla.select(sqla.func.max(sub_query1.c['log_id']).label('max_log'),
-                             sqla.func.max(sub_query1.c['created_ts'])).group_by('n_id').subquery()
-    stmt = sqla.select(sub_query2,
-                       table.c['name'],
-                       table.c['n_id']).join(table, sub_query2.c['max_log'] == table.c['log_id'])
+    sub_query0 = sqla.select(table).where(table.c['status'] == db_enum.Status.production).subquery()
+    sub_query1 = sqla.select(sub_query0).where(sub_query0.c['n_id'] == 56894).subquery()
+    # sub_query2 = sqla.select(sqla.func.max(sub_query1.c['log_id']).label('max_log'),
+    #                          sqla.func.max(sub_query1.c['created_ts'])).group_by('n_id').subquery()
+    # stmt = sqla.select(sub_query1,
+    #                    table.c['name'],
+    #                    table.c['n_id']).join(table, sub_query2.c['max_log'] == table.c['log_id'])
 
+    stmt = sqla.select(sub_query1)
     index = 0
     with engine.connect() as connection:
         result = connection.execute(stmt)
         for row in result:
             print(f'row = {row}')
             index += 1
-            if index > 10:
-                break
+            # if index > 10:
+            #     break
 
 @timer
 def create_additional_things(table_name: str, additional: int, engine: sqla.Engine, meta_data: sqla.MetaData) -> None:
@@ -119,10 +123,16 @@ def create_additional_things(table_name: str, additional: int, engine: sqla.Engi
     rows_to_add = []
     for index in range(additional):
         print(f'   index = {index}')
-        for row in row_list:
-            row['created_ts'] = row['created_ts'] + timedelta(days=1)
+        row_list_copy = copy.deepcopy(row_list)
+        for row in row_list_copy:
+            row['created_ts'] = row['created_ts'] + timedelta(days=(1+index))
             row['name'] = names[row['n_id']] + f'-{index}'
-        rows_to_add = rows_to_add + row_list
+            if index % 5 == 0:
+                row['status'] = db_enum.Status.stage
+            if index % 13 == 0:
+                row['status'] = db_enum.Status.production
+
+        rows_to_add = rows_to_add + row_list_copy
     # print(rows_to_add)
     print(f'total rows to add = {len(rows_to_add)}')
     with engine.connect() as new_connection:
