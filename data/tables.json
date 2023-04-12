@@ -60,6 +60,10 @@
                 {
                     "name": "favorite_color",
                     "data_type": "string30"
+                },
+                {
+                    "name": "favorite_food",
+                    "data_type": "string30"
                 }
             ],
             "vendors": []

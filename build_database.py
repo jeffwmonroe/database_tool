@@ -2,12 +2,12 @@ import pandas as pd
 # import sqlalchemy as sqla
 from database_tools import (NewDatabaseSchema, OntologySchema, load_thing_table_from_file,
                             load_many_thing_tables_from_file, get_latest_thing,
-                            create_additional_things, create_additional_things2,
+                            create_additional_things,
                             str_to_action, str_to_status,
                             )
 import argparse
 from sqlalchemy.exc import OperationalError
-import database_tools.database_connection.enums as db_enum
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -85,7 +85,7 @@ def parse_arguments():
     execute.add_argument(
         "-a",
         "--additional",
-        help="add additonal rows for stress testing",
+        help="add additional rows for stress testing",
         action="store",
         type=str,
         metavar=('<table name>', '<number of duplicates>'),
@@ -95,6 +95,9 @@ def parse_arguments():
         "-q",
         "--query",
         help="query the thing table",
+        # nargs=1,
+        # type=str,
+        # metavar='<table name>',
         action="store_true",
     )
     parser.add_argument(
@@ -119,6 +122,7 @@ def parse_arguments():
         help="name id (n_id) for query",
         type=int,
         metavar='<primary key>',
+        default=None,
         action="store",
     )
     query.add_argument(
@@ -213,7 +217,7 @@ def main():
         load_many_thing_tables_from_file(table_name, file_name, number_of_files,
                                          database.engine, database.metadata_obj)
     if args.query:
-        nid = args.n_id #56894
+        nid = args.n_id  # 56894
         status = str_to_status(args.status)
         action = str_to_action(args.action)
         latest = args.latest
@@ -221,6 +225,7 @@ def main():
         print(f'   n_id  = {nid}')
         print(f'   action = {action}')
         # ontology.test_fill(database) # old style
+        # table_name = args.query[0],
         get_latest_thing('artist',
                          database.engine,
                          database.metadata_obj,

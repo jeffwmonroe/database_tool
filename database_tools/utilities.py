@@ -134,7 +134,7 @@ def get_latest_thing(table_name: str,
                      n_id: int | None = None,
                      latest: bool = False,
                      ) -> None:
-    table = meta_data.tables[table_name]
+    table: sqla.Table = meta_data.tables[table_name]
     # stmt = sqla.select(table).where(table.c['status'] == db_enum.Status.draft)
     if status is None:
         status_sub_query = sqla.select(table).subquery()
