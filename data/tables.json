@@ -50,16 +50,16 @@
             "name": "jeff",
             "columns": [
                 {
-                    "name": "hair",
+                    "name": "nick_name",
                     "data_type": "string30"
                 },
                 {
-                    "name": "hands",
+                    "name": "children",
                     "data_type": "int"
                 },
                 {
-                    "name": "feet",
-                    "data_type": "int"
+                    "name": "favorite_color",
+                    "data_type": "string30"
                 }
             ],
             "vendors": []

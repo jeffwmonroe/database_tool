@@ -3,10 +3,12 @@ import time
 
 import pandas as pd
 import sqlalchemy as sqla
+from sqlalchemy.exc import OperationalError
 
 import database_tools.database_connection.enums as db_enum
-from datetime import timedelta
+from datetime import timedelta, datetime
 import copy
+
 
 # ToDo move this to a different utility module
 def timer(function):
@@ -43,13 +45,38 @@ def generate_new_id_pks(
 def load_thing_table(
         table_name: str, df: pd.DataFrame, engine: sqla.Engine, meta_data: sqla.MetaData,
 ) -> None:
+    """
+    This function will load one table into the database from a pandas dataframe.
+    If the dataframe has an n_id column, the load will modify existing things.
+    If the dataframe does not have an n_id column the load will create new
+    things.
+    :param table_name: name of the table, in the database, for the load
+    :param df: pandas dataframe containing the data to load
+    :param engine: SqlAlchemy Engine that needs to be connected to the database
+    :param meta_data: SqlAlchemy MetaData that needs to be connected to the database.
+    :return: None
+    """
+    print('load_thing_table')
+    print(f'   table_name = {table_name}')
     load_table = meta_data.tables[table_name]
     nrows = len(df.index)
+    thing_table = meta_data.tables["thing"]
     if "n_id" in df.keys():
         df['action'] = ['modify'] * nrows
+        # ToDo need to check that the n_id pks are correct
+        n_ids = df['n_id'].to_list()
+        stmt = sqla.select(thing_table).where(thing_table.c['n_id'].in_(n_ids))
+        with engine.connect() as new_connection:
+            result = new_connection.execute(stmt)
+            for row in result:
+                if row.thing != table_name:
+                    print(f'error: n_id:{row.n_id} corresponds to {row.thing} not {table_name}')
+                    return
+        # stmt = sqla.select(load_table.c['n_id'],
+        #                    load_table.c['name'],
+        #                    ).join(thing_table)
     else:
         # ToDo refactor this
-        thing_table = meta_data.tables["thing"]
         df["n_id"] = generate_new_id_pks(
             len(df.index), table_name, thing_table, engine
         )
@@ -63,9 +90,16 @@ def load_thing_table(
 
 
 def load_thing_table_from_file(
-        table_name: str, file_name: str, engine: sqla.Engine, meta_data: sqla.MetaData,
+        table_name: str,
+        file_name: str,
+        engine: sqla.Engine,
+        meta_data: sqla.MetaData,
+        sheet_name=None,
 ) -> None:
-    df = pd.read_excel(file_name)
+    if sheet_name is None:
+        df = pd.read_excel(file_name)
+    else:
+        df = pd.read_excel(file_name, sheet_name=sheet_name)
     load_thing_table(table_name, df, engine, meta_data)
 
 
@@ -79,29 +113,63 @@ def load_many_thing_tables_from_file(
         load_thing_table(table_name, df, engine, meta_data)
 
 
+def print_row(row):
+    log_id = row[0]
+    n_id = row[1]
+    action = row[2]
+    the_time: datetime = row[3]
+    time_string = f'{the_time.year}-{the_time.month}-{the_time.day}'
+    user = row[4]
+    status = row[5]
+    name = row[6]
+    print(f'row = {log_id} {n_id} {action} {time_string} {user} {name} {status}')
+
+
 @timer
 def get_latest_thing(table_name: str,
                      engine: sqla.Engine,
-                     meta_data: sqla.MetaData) -> None:
+                     meta_data: sqla.MetaData,
+                     status: db_enum.Status | None = None,
+                     action: db_enum.Action | None = None,
+                     n_id: int | None = None,
+                     latest: bool = False,
+                     ) -> None:
     table = meta_data.tables[table_name]
     # stmt = sqla.select(table).where(table.c['status'] == db_enum.Status.draft)
-    sub_query0 = sqla.select(table).where(table.c['status'] == db_enum.Status.production).subquery()
-    sub_query1 = sqla.select(sub_query0).where(sub_query0.c['n_id'] == 56894).subquery()
-    # sub_query2 = sqla.select(sqla.func.max(sub_query1.c['log_id']).label('max_log'),
-    #                          sqla.func.max(sub_query1.c['created_ts'])).group_by('n_id').subquery()
-    # stmt = sqla.select(sub_query1,
-    #                    table.c['name'],
-    #                    table.c['n_id']).join(table, sub_query2.c['max_log'] == table.c['log_id'])
+    if status is None:
+        status_sub_query = sqla.select(table).subquery()
+    else:
+        status_sub_query = sqla.select(table).where(table.c['status'] == status).subquery()
+    if action is None:
+        action_sub_query = sqla.select(status_sub_query).subquery()
+    else:
+        action_sub_query = sqla.select(status_sub_query).where(status_sub_query.c['action'] == action).subquery()
+    if n_id is None:
+        nid_sub_query = sqla.select(action_sub_query).subquery()
+    else:
+        nid_sub_query = sqla.select(action_sub_query).where(action_sub_query.c['n_id'] == n_id).subquery()
+    if latest:
+        latest_sub_query = sqla.select(sqla.func.max(nid_sub_query.c['log_id']).label('max_log'),
+                                       sqla.func.max(nid_sub_query.c['created_ts'])).group_by('n_id').subquery()
+        latest_sub_query2 = sqla.select(table,
+                                        ).join(latest_sub_query,
+                                               latest_sub_query.c['max_log'] == table.c['log_id']).subquery()
+    else:
+        latest_sub_query2 = sqla.select(nid_sub_query).subquery()
 
-    stmt = sqla.select(sub_query1)
+    stmt = sqla.select(latest_sub_query2)
     index = 0
     with engine.connect() as connection:
         result = connection.execute(stmt)
+        number_of_rows = result.rowcount
         for row in result:
-            print(f'row = {row}')
+            print_row(row)
             index += 1
-            # if index > 10:
-            #     break
+            if index > 101:
+                break
+
+    print(f'Total rows found = {number_of_rows}')
+
 
 @timer
 def create_additional_things(table_name: str, additional: int, engine: sqla.Engine, meta_data: sqla.MetaData) -> None:
@@ -125,7 +193,7 @@ def create_additional_things(table_name: str, additional: int, engine: sqla.Engi
         print(f'   index = {index}')
         row_list_copy = copy.deepcopy(row_list)
         for row in row_list_copy:
-            row['created_ts'] = row['created_ts'] + timedelta(days=(1+index))
+            row['created_ts'] = row['created_ts'] + timedelta(days=(1 + index))
             row['name'] = names[row['n_id']] + f'-{index}'
             if index % 5 == 0:
                 row['status'] = db_enum.Status.stage

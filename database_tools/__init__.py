@@ -5,5 +5,8 @@ from database_tools.utilities import (create_additional_things,
                                       get_latest_thing,
                                       load_many_thing_tables_from_file,
                                       load_thing_table_from_file)
+from database_tools.database_connection.enums import (str_to_action,
+                                                      str_to_status,
+                                                      )
 
 # from database_tools.database_connection.json_reader import fill_tables

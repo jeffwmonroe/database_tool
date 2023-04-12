@@ -1,10 +1,13 @@
 import pandas as pd
 # import sqlalchemy as sqla
-from database_tools import NewDatabaseSchema, OntologySchema, load_thing_table_from_file, \
-    load_many_thing_tables_from_file, get_latest_thing, create_additional_things, create_additional_things2
+from database_tools import (NewDatabaseSchema, OntologySchema, load_thing_table_from_file,
+                            load_many_thing_tables_from_file, get_latest_thing,
+                            create_additional_things, create_additional_things2,
+                            str_to_action, str_to_status,
+                            )
 import argparse
 from sqlalchemy.exc import OperationalError
-
+import database_tools.database_connection.enums as db_enum
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -12,7 +15,6 @@ def parse_arguments():
         description="Database practice tool",
         epilog="Thanks for practicing with %(prog)s! :-)",
         allow_abbrev=False,
-        # argument_default=argparse.SUPPRESS,
     )
     # parser.add_argument("echo")
     database = parser.add_argument_group("database tools")
@@ -25,6 +27,12 @@ def parse_arguments():
     database.add_argument(
         "--drop",
         help="drop the database",
+        action="store_true",
+    )
+    database.add_argument(
+        "-f",
+        "--fill",
+        help="fill the tables with data",
         action="store_true",
     )
     table = parser.add_argument_group("table tools")
@@ -57,18 +65,13 @@ def parse_arguments():
         help="only use the first 10 rows",
         action="store_true",
     )
-    table.add_argument(
-        "-f",
-        "--fill",
-        help="fill the tables with data",
-        action="store_true",
-    )
     execute = parser.add_argument_group("Execution")
     execute.add_argument(
         "--load",
         help="load in a single import file",
         action="store",
         type=str,
+        metavar=('<table>', '<filename>'),
         nargs=2,  # "+" on or more
     )
     execute.add_argument(
@@ -76,26 +79,67 @@ def parse_arguments():
         help="Load a series of import files",
         action="store",
         type=str,
+        metavar=('<table name>', '<file name>', '<number of tabs>'),
         nargs=3,  # "+" on or more
     )
-    table.add_argument(
+    execute.add_argument(
+        "-a",
+        "--additional",
+        help="add additonal rows for stress testing",
+        action="store",
+        type=str,
+        metavar=('<table name>', '<number of duplicates>'),
+        nargs=2,  # "+" on or more
+    )
+    execute.add_argument(
         "-q",
         "--query",
         help="query the thing table",
         action="store_true",
     )
-    table.add_argument(
-        "-a",
-        "--additional",
-        help="add additonal columns for stress testing",
-        action="store",
-        type=str,
-        nargs=2,  # "+" on or more
-    )
     parser.add_argument(
         "-v",
         "--verbose",
         help="increase output verbosity",
+        action="store_true",
+    )
+    query = parser.add_argument_group("Load Flags")
+    query.add_argument(
+        "--sheet",
+        help="name of sheet to load",
+        type=str,
+        nargs=1,
+        metavar='<sheet name>',
+        action="store",
+    )
+    query = parser.add_argument_group("Query Flags")
+    query.add_argument(
+        "-n",
+        "--n_id",
+        help="name id (n_id) for query",
+        type=int,
+        metavar='<primary key>',
+        action="store",
+    )
+    query.add_argument(
+        "--status",
+        help="status for query",
+        choices=['draft', 'stage', 'production'],
+        default=None,
+        type=str,
+        action="store",
+    )
+    query.add_argument(
+        "--action",
+        help="action for query",
+        choices=['create', 'modify', 'delete'],
+        default=None,
+        type=str,
+        action="store",
+    )
+    query.add_argument(
+        "--latest",
+        help="query only the most recent value",
         action="store_true",
     )
     args = parser.parse_args()
@@ -156,7 +200,10 @@ def main():
 
         table_name = args.load[0]
         file_name = args.load[1]
-        load_thing_table_from_file(table_name, file_name, database.engine, database.metadata_obj)
+        sheet_name = None
+        if args.sheet:
+            sheet_name = args.sheet[0]
+        load_thing_table_from_file(table_name, file_name, database.engine, database.metadata_obj, sheet_name)
     if args.load_series is not None:
         print(f"load_series = {args.load_series}")
 
@@ -165,11 +212,23 @@ def main():
         number_of_files = int(args.load_series[2])
         load_many_thing_tables_from_file(table_name, file_name, number_of_files,
                                          database.engine, database.metadata_obj)
-    print('before args.query')
     if args.query:
+        nid = args.n_id #56894
+        status = str_to_status(args.status)
+        action = str_to_action(args.action)
+        latest = args.latest
+        print(f'query: status = {status}')
+        print(f'   n_id  = {nid}')
+        print(f'   action = {action}')
         # ontology.test_fill(database) # old style
-        get_latest_thing('artist', database.engine, database.metadata_obj)
-    print('before args.additional')
+        get_latest_thing('artist',
+                         database.engine,
+                         database.metadata_obj,
+                         status=status,
+                         n_id=nid,
+                         action=action,
+                         latest=latest,
+                         )
     if args.additional is not None:
         print('inside of args.additional')
         table_name = args.additional[0]
