@@ -113,16 +113,20 @@ def load_many_thing_tables_from_file(
         load_thing_table(table_name, df, engine, meta_data)
 
 
-def print_row(row):
+def print_row_header() -> None:
+    print(f'{"log_id":<7s} {"n_id":<5} {"action":<8} {"time_string":<12} {"user":<15} {"name":<30} {"status":<10}')
+
+
+def print_row(row: tuple[int, int, db_enum.Action, datetime, str, db_enum.Status, str]) -> None:
     log_id = row[0]
     n_id = row[1]
-    action = row[2]
+    action = db_enum.action_to_str(row[2])
     the_time: datetime = row[3]
     time_string = f'{the_time.year}-{the_time.month}-{the_time.day}'
     user = row[4]
-    status = row[5]
+    status = db_enum.status_to_str(row[5])
     name = row[6]
-    print(f'row = {log_id} {n_id} {action} {time_string} {user} {name} {status}')
+    print(f'{log_id:<7d} {n_id:<5d} {action:<8} {time_string:<12} {user:<15} {name:<30} {status:<10}')
 
 
 @timer
@@ -159,6 +163,7 @@ def get_latest_thing(table_name: str,
 
     stmt = sqla.select(latest_sub_query2)
     index = 0
+    print_row_header()
     with engine.connect() as connection:
         result = connection.execute(stmt)
         number_of_rows = result.rowcount

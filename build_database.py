@@ -83,22 +83,20 @@ def parse_arguments():
         nargs=3,  # "+" on or more
     )
     execute.add_argument(
-        "-a",
-        "--additional",
+        "--add",
         help="add additional rows for stress testing",
         action="store",
         type=str,
-        metavar=('<table name>', '<number of duplicates>'),
+        metavar=('<table name>', '<duplicates>'),
         nargs=2,  # "+" on or more
     )
     execute.add_argument(
-        "-q",
         "--query",
         help="query the thing table",
-        # nargs=1,
-        # type=str,
-        # metavar='<table name>',
-        action="store_true",
+        nargs=1,
+        type=str,
+        metavar='<table name>',
+        action="store",
     )
     parser.add_argument(
         "-v",
@@ -225,8 +223,8 @@ def main():
         print(f'   n_id  = {nid}')
         print(f'   action = {action}')
         # ontology.test_fill(database) # old style
-        # table_name = args.query[0],
-        get_latest_thing('artist',
+        table_name = args.query[0]
+        get_latest_thing(table_name,
                          database.engine,
                          database.metadata_obj,
                          status=status,
@@ -234,14 +232,14 @@ def main():
                          action=action,
                          latest=latest,
                          )
-    if args.additional is not None:
+    if args.add is not None:
         print('inside of args.additional')
-        table_name = args.additional[0]
+        table_name = args.add[0]
         print(f'table name = {table_name}')
-        additional = int(args.additional[1])
-        print(f'additional = {additional}')
+        add = int(args.add[1])
+        print(f'add = {add}')
         # ontology.test_fill(database) # old style
-        create_additional_things(table_name, additional, database.engine, database.metadata_obj)
+        create_additional_things(table_name, add, database.engine, database.metadata_obj)
 
 
 # Press the green button in the gutter to run the script.

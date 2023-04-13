@@ -13,6 +13,17 @@ class Action(enum.Enum):
     delete = 3
 
 
+def status_to_str(status: Status) -> str:
+    match status:
+        case Status.draft:
+            return 'draft'
+        case Status.stage:
+            return 'stage'
+        case Status.production:
+            return 'production'
+    return None
+
+
 def str_to_status(string: str | None) -> Status | None:
     if string is None:
         return None
@@ -23,6 +34,17 @@ def str_to_status(string: str | None) -> Status | None:
             return Status.stage
         case "production":
             return Status.production
+    return None
+
+
+def action_to_str(status: Action) -> str:
+    match status:
+        case Action.create:
+            return 'create'
+        case Action.modify:
+            return 'modify'
+        case Action.delete:
+            return 'delete'
     return None
 
 
