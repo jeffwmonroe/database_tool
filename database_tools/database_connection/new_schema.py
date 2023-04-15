@@ -5,15 +5,15 @@ import sqlalchemy as sqla
 from sqlalchemy import func, insert, select
 
 import database_tools.database_connection.enums as db_enum
-from database_tools.database_connection.database_connection import \
-    DatabaseConnection
+from database_tools.database_connection.database_connection import DatabaseConnection
 from database_tools.database_connection.old_schema import OntologySchema
 from database_tools.database_connection.ontology_table import OntologyTable
-from database_tools.database_connection.utilities import (build_data_table,
-                                                          build_sql_column,
-                                                          join_thing_and_map)
-from database_tools.jason_schema.json_schema import (JsonSchema,
-                                                     read_schema_json)
+from database_tools.database_connection.utilities import (
+    build_data_table,
+    build_sql_column,
+    join_thing_and_map,
+)
+from database_tools.jason_schema.json_schema import JsonSchema, read_schema_json
 from database_tools.transfer_table.thing import Action, Thing
 
 # ToDo move this to a .env vile

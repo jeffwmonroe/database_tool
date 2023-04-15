@@ -27,6 +27,11 @@ class DatabaseConnection:
         print("metadata has been set")
 
     def reflect_tables(self) -> list[str]:
+        # ToDo check to see the right exception to raise
+        if self.metadata_obj is None:
+            raise ValueError("trying to reflect_tables with no metadata object")
+        if self.engine is None:
+            raise ValueError("trying to reflect_tables with no engine object")
         self.metadata_obj.reflect(bind=self.engine)
         table_list = list(self.metadata_obj.tables.keys())
         return table_list

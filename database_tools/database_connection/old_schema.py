@@ -1,5 +1,4 @@
-from database_tools.database_connection.database_connection import \
-    DatabaseConnection
+from database_tools.database_connection.database_connection import DatabaseConnection
 from database_tools.transfer_table.thing import Thing
 
 
@@ -40,7 +39,7 @@ class OntologySchema(DatabaseConnection):
         print(f"database = {self.url}")
 
     def check_tables(self) -> list[dict[str, str | bool | int | None]]:
-        result = []
+        result: list[dict[str, str | bool | int | None]] = []
         for key in self.things:
             self.things[key].validate(self.engine, self.metadata_obj)
             result = result + self.things[key].validation_data()

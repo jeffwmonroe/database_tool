@@ -1,3 +1,9 @@
+"""
+Command line test framework for the database_tool package.
+
+Uses argparse to enable command line access to the database_tool package.
+Use python build_database.py --help to get a print out of the command line arguments.
+"""
 import argparse
 
 import pandas as pd
@@ -11,7 +17,13 @@ from database_tools import (NewDatabaseSchema, OntologySchema,
                             str_to_status)
 
 
-def parse_arguments():
+def parse_arguments() -> None:
+    """
+    Build the command line arguments for argparse.
+
+    Use --help to get a summary of the command line functionality.
+    :return: None
+    """
     parser = argparse.ArgumentParser(
         prog="scratch",
         description="Database practice tool",
@@ -151,7 +163,12 @@ def parse_arguments():
     return args
 
 
-def main():
+def main() -> None:
+    """
+    Control the command line access to test the database_tools package.
+
+    :return: None
+    """
     args = parse_arguments()
     if args.verbose:
         print("----------------------------")

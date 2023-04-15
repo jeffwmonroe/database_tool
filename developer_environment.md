@@ -5,9 +5,10 @@
 ### Packages:
 - black (using BlackConnect)
 - isort (integrated to PyCharm as external tool)
+## Laptop only:
 - pydocstyle: need to integrate with PyCharm
+- mypy
 
 ### Need to add
-- mypy
 - flake8
-- 
+- sphinx
