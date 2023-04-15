@@ -1,7 +1,9 @@
 """
 Base class for the set of classes that wrap standard tables in the old Ontology schema.
 
-The module also contains several helper functions.
+The module also contains several helper functions and the class TableBase
+The purpose of this code is to standardize the old database and access
+it efficiently so that it can be ported to the new schema.
 """
 import sqlalchemy as sqla
 from sqlalchemy import func, select
@@ -14,8 +16,8 @@ def duplicate_row_query(engine: sqla.Engine, column: sqla.Column) -> int:
     Return the number of duplicate rows for the given column.
 
     This function is used to check for uniqueness of values for a column.
-    :param engine: SqlAlchemy engine
-    :param column: Column
+    :param engine: SqlAlchemy engine that is connected to the database
+    :param column: SqlAlchemy Column to use in the query.
     :return: the number of duplicates
     """
     subquery = (
@@ -62,8 +64,14 @@ def good_log_cols(table: ColumnCollection) -> bool:
     """
     Check to see if the table has the correct log columns.
 
-    A standard table has 4 log columns: created_ts, created_by, updated_ts, and updated_by.
-    Note that the types vary for the created_by and updated_by columns.
+    A standard table has 4 log columns:
+
+    * created_ts
+    * created_by
+    * updated_ts
+    * updated_by.
+
+    **Note** that the types vary for the created_by and updated_by columns.
     See the good_colum, helper function above for further explanation and details.
     :param table: SqlAlchemy table with expected logistics columns
     :return: true if all four columns are found with the correct types.
@@ -180,11 +188,11 @@ class TableBase:
         """
         Validate the table.
 
-        This method does all of the validation for the table that the class wraps. For example,
+        This method does all the validation for the table that the class wraps. For example,
         if a name column is expected it checks to make certain that it is one of the columns
         in the table, with an acceptable name and data type. Similarly, for id, and log.
 
-        Note: this method has side effects. The validation requires querying the database which can
+        **Note**: this method has side effects. The validation requires querying the database which can
         be slow. Therefore, this method caches the results in the class for future reference without
         need to query the database.
 

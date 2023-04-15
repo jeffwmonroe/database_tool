@@ -195,7 +195,7 @@ def get_latest_thing(
     else:
         latest_sub_query2 = sqla.select(nid_sub_query).subquery()
 
-    stmt = sqla.select(latest_sub_query2)
+    stmt = sqla.select(latest_sub_query2).order_by(latest_sub_query2.c["created_ts"])
     index = 0
     print_row_header()
     with engine.connect() as connection:
@@ -250,6 +250,7 @@ def create_additional_things(
         new_connection.commit()
 
 
+# ToDo deprecate create_additional_things2
 def create_additional_things2(
     table_name: str, additional: int, engine: sqla.Engine, meta_data: sqla.MetaData
 ) -> None:

@@ -68,7 +68,7 @@ useful link to [pg_dump documentation](https://www.postgresql.org/docs/current/a
    - **note** I need to change the name of the new schema database
 3. python build_database.py --table
    - This will create empty tables using the new schema
-   - *note* You can run python build_database --create --table to skip a step
+   - **note** You can run python build_database --create --table to skip a step
 4. python build_database.py --reflect --enumerate --check
    - This set of commands will first reflect the ontology database into the code. 
    - Then it will iterate over the tables and store them in a datastructure
