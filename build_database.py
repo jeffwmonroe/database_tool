@@ -1,12 +1,14 @@
-import pandas as pd
-# import sqlalchemy as sqla
-from database_tools import (NewDatabaseSchema, OntologySchema, load_thing_table_from_file,
-                            load_many_thing_tables_from_file, get_latest_thing,
-                            create_additional_things,
-                            str_to_action, str_to_status,
-                            )
 import argparse
+
+import pandas as pd
 from sqlalchemy.exc import OperationalError
+
+# import sqlalchemy as sqla
+from database_tools import (NewDatabaseSchema, OntologySchema,
+                            create_additional_things, get_latest_thing,
+                            load_many_thing_tables_from_file,
+                            load_thing_table_from_file, str_to_action,
+                            str_to_status)
 
 
 def parse_arguments():
@@ -71,7 +73,7 @@ def parse_arguments():
         help="load in a single import file",
         action="store",
         type=str,
-        metavar=('<table>', '<filename>'),
+        metavar=("<table>", "<filename>"),
         nargs=2,  # "+" on or more
     )
     execute.add_argument(
@@ -79,7 +81,7 @@ def parse_arguments():
         help="Load a series of import files",
         action="store",
         type=str,
-        metavar=('<table name>', '<file name>', '<number of tabs>'),
+        metavar=("<table>", "<file name>", "<number of tabs>"),
         nargs=3,  # "+" on or more
     )
     execute.add_argument(
@@ -87,7 +89,7 @@ def parse_arguments():
         help="add additional rows for stress testing",
         action="store",
         type=str,
-        metavar=('<table name>', '<duplicates>'),
+        metavar=("<table>", "<duplicates>"),
         nargs=2,  # "+" on or more
     )
     execute.add_argument(
@@ -95,7 +97,7 @@ def parse_arguments():
         help="query the thing table",
         nargs=1,
         type=str,
-        metavar='<table name>',
+        metavar="<table>",
         action="store",
     )
     parser.add_argument(
@@ -110,7 +112,7 @@ def parse_arguments():
         help="name of sheet to load",
         type=str,
         nargs=1,
-        metavar='<sheet name>',
+        metavar="<sheet name>",
         action="store",
     )
     query = parser.add_argument_group("Query Flags")
@@ -119,14 +121,14 @@ def parse_arguments():
         "--n_id",
         help="name id (n_id) for query",
         type=int,
-        metavar='<primary key>',
+        metavar="<primary key>",
         default=None,
         action="store",
     )
     query.add_argument(
         "--status",
         help="status for query",
-        choices=['draft', 'stage', 'production'],
+        choices=["draft", "stage", "production"],
         default=None,
         type=str,
         action="store",
@@ -134,7 +136,7 @@ def parse_arguments():
     query.add_argument(
         "--action",
         help="action for query",
-        choices=['create', 'modify', 'delete'],
+        choices=["create", "modify", "delete"],
         default=None,
         type=str,
         action="store",
@@ -186,7 +188,9 @@ def main():
         ontology.enumerate_tables()
     if args.check:
         validation_results = ontology.check_tables()
-        validation_column_names = [column_name for column_name in validation_results[0].keys()]
+        validation_column_names = [
+            column_name for column_name in validation_results[0].keys()
+        ]
         df = pd.DataFrame(validation_results, columns=validation_column_names)
         # ToDo move this to an environment
         df.to_csv("./data/table validation.csv")
@@ -205,41 +209,51 @@ def main():
         sheet_name = None
         if args.sheet:
             sheet_name = args.sheet[0]
-        load_thing_table_from_file(table_name, file_name, database.engine, database.metadata_obj, sheet_name)
+        load_thing_table_from_file(
+            table_name, file_name, database.engine, database.metadata_obj, sheet_name
+        )
     if args.load_series is not None:
         print(f"load_series = {args.load_series}")
 
         table_name = args.load_series[0]
         file_name = args.load_series[1]
         number_of_files = int(args.load_series[2])
-        load_many_thing_tables_from_file(table_name, file_name, number_of_files,
-                                         database.engine, database.metadata_obj)
+        load_many_thing_tables_from_file(
+            table_name,
+            file_name,
+            number_of_files,
+            database.engine,
+            database.metadata_obj,
+        )
     if args.query:
         nid = args.n_id  # 56894
         status = str_to_status(args.status)
         action = str_to_action(args.action)
         latest = args.latest
-        print(f'query: status = {status}')
-        print(f'   n_id  = {nid}')
-        print(f'   action = {action}')
+        print(f"query: status = {status}")
+        print(f"   n_id  = {nid}")
+        print(f"   action = {action}")
         # ontology.test_fill(database) # old style
         table_name = args.query[0]
-        get_latest_thing(table_name,
-                         database.engine,
-                         database.metadata_obj,
-                         status=status,
-                         n_id=nid,
-                         action=action,
-                         latest=latest,
-                         )
+        get_latest_thing(
+            table_name,
+            database.engine,
+            database.metadata_obj,
+            status=status,
+            n_id=nid,
+            action=action,
+            latest=latest,
+        )
     if args.add is not None:
-        print('inside of args.additional')
+        print("inside of args.additional")
         table_name = args.add[0]
-        print(f'table name = {table_name}')
+        print(f"table = {table_name}")
         add = int(args.add[1])
-        print(f'add = {add}')
+        print(f"add = {add}")
         # ontology.test_fill(database) # old style
-        create_additional_things(table_name, add, database.engine, database.metadata_obj)
+        create_additional_things(
+            table_name, add, database.engine, database.metadata_obj
+        )
 
 
 # Press the green button in the gutter to run the script.

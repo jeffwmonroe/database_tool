@@ -16,11 +16,11 @@ class Action(enum.Enum):
 def status_to_str(status: Status) -> str:
     match status:
         case Status.draft:
-            return 'draft'
+            return "draft"
         case Status.stage:
-            return 'stage'
+            return "stage"
         case Status.production:
-            return 'production'
+            return "production"
     return None
 
 
@@ -40,11 +40,11 @@ def str_to_status(string: str | None) -> Status | None:
 def action_to_str(status: Action) -> str:
     match status:
         case Action.create:
-            return 'create'
+            return "create"
         case Action.modify:
-            return 'modify'
+            return "modify"
         case Action.delete:
-            return 'delete'
+            return "delete"
     return None
 
 
