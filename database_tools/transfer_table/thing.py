@@ -155,20 +155,18 @@ class Thing(TableBase):
     # for of: map_thing_vendor. The other tables are ignore.
     # This is really hacky
 
-    def vendor_action_list(self) -> list[Action]:
-        """
-        Return a list of VendorActionTables. May be deprecated.
-
-        :return: list of Actions
-        """
-        result: list[Action] = []
-        for key in self.vendor_actions.keys():
-            # ToDo remove this == 'map' check. This is pretty hacky
-            if self.vendor_actions[key].action == "map":
-                result.append(self.vendor_actions[key])
-        return result
-
     def __iter__(self):
+        """
+        Iterate over the vendor_actions.
+
+        This is to perform validation checks on the code and only return VendorActions
+        that are correctly formatted.
+
+        **Note:** this code is pretty hacky. It is only used for checking the validity
+        of the Ontology database tables and can be removed in the future.
+
+        :return: self
+        """
         self.position = 0
         self.iter_list = []
         for key in self.vendor_actions.keys():
@@ -178,6 +176,18 @@ class Thing(TableBase):
         return self
 
     def __next__(self):
+        """
+        Iterate over the vendor_actions.
+
+        This is to perform validation checks on the code and only return VendorActions
+        that are correctly formatted.
+
+        **Note:** this code is pretty hacky. It is only used for checking the validity
+        of the Ontology database tables and can be removed in the future.
+
+        :return: self
+        :return:
+        """
         # ToDo test for StopIteration
         if len(self.iter_list) == 0:
             raise StopIteration
