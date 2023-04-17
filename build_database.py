@@ -10,14 +10,19 @@ import pandas as pd
 from sqlalchemy.exc import OperationalError
 
 # import sqlalchemy as sqla
-from database_tools import (NewDatabaseSchema, OntologySchema,
-                            create_additional_things, get_latest_thing,
-                            load_many_thing_tables_from_file,
-                            load_thing_table_from_file, str_to_action,
-                            str_to_status)
+from database_tools import (
+    NewDatabaseSchema,
+    OntologySchema,
+    create_additional_things,
+    get_latest_thing,
+    load_many_thing_tables_from_file,
+    load_thing_table_from_file,
+    str_to_action,
+    str_to_status,
+)
 
 
-def parse_arguments() -> None:
+def parse_arguments() -> argparse.Namespace:
     """
     Build the command line arguments for argparse.
 
@@ -158,6 +163,14 @@ def parse_arguments() -> None:
         help="query only the most recent value",
         action="store_true",
     )
+    query.add_argument(
+        "--dump",
+        help="Dump query results to Excel",
+        type=str,
+        default=None,
+        metavar="<file name",
+        action="store",
+    )
     args = parser.parse_args()
 
     return args
@@ -252,6 +265,7 @@ def main() -> None:
         print(f"   action = {action}")
         # ontology.test_fill(database) # old style
         table_name = args.query[0]
+        excel_filename = args.dump
         get_latest_thing(
             table_name,
             database.engine,
@@ -260,6 +274,7 @@ def main() -> None:
             n_id=nid,
             action=action,
             latest=latest,
+            filename=excel_filename,
         )
     if args.add is not None:
         print("inside of args.additional")

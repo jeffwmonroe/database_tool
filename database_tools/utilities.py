@@ -142,6 +142,19 @@ def print_row(
     )
 
 
+def make_row_dict(row, column_names):
+    row_dict = {}
+    for index in range(len(column_names)):
+        value = row[index]
+        if column_names[index] == 'created_ts':
+            value = value.replace(tzinfo=None)
+        if column_names[index] == "status":
+            value = db_enum.status_to_str(value)
+        if column_names[index] == "action":
+            value = db_enum.action_to_str(value)
+        row_dict[column_names[index]] = value
+    return row_dict
+
 @timer
 def get_latest_thing(
     table_name: str,
@@ -151,6 +164,7 @@ def get_latest_thing(
     action: db_enum.Action | None = None,
     n_id: int | None = None,
     latest: bool = False,
+    filename: str = None,
 ) -> None:
     table: sqla.Table = meta_data.tables[table_name]
     # stmt = sqla.select(table).where(table.c['status'] == db_enum.Status.draft)
@@ -196,17 +210,20 @@ def get_latest_thing(
         latest_sub_query2 = sqla.select(nid_sub_query).subquery()
 
     stmt = sqla.select(latest_sub_query2).order_by(latest_sub_query2.c["created_ts"])
-    index = 0
-    print_row_header()
     with engine.connect() as connection:
         result = connection.execute(stmt)
-        number_of_rows = result.rowcount
+        column_names = [col for col in result.keys()]
+        df = pd.DataFrame(columns=column_names)
+        row_list = []
         for row in result:
-            print_row(row)
-            index += 1
-            if index > 101:
-                break
-
+            row_dict = make_row_dict(row, column_names)
+            row_list.append(row_dict)
+    df = pd.DataFrame(row_list)
+    number_of_rows = len(df.index)
+    print("dataframe:")
+    print(df)
+    if filename is not None:
+        df.to_excel(filename)
     print(f"Total rows found = {number_of_rows}")
 
 

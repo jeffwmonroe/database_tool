@@ -16,6 +16,9 @@ from database_tools.database_connection.utilities import (
 from database_tools.jason_schema.json_schema import JsonSchema, read_schema_json
 from database_tools.transfer_table.thing import Action, Thing
 
+from datetime import datetime, timedelta
+import pytz
+
 # ToDo move this to a .env vile
 table_list = "./data/table_list.xlsx"
 
@@ -220,17 +223,18 @@ class NewDatabaseSchema(DatabaseConnection):
             result = connection.execute(stmt)
             row_num: int | Callable[[], int] = result.rowcount
             for row in result:
+                time_stamp = row.t_updated_ts
+                # dt.tz_convert
                 row_dict = {
                     "n_id": thing_pk_start + index,
                     "name": row.name,
                     "action": db_enum.Action.create,
-                    "created_ts": row.t_updated_ts,
+                    "created_ts": time_stamp,
                     "created_by": row.t_updated_by,
                     "status": db_enum.Status.draft,
                 }
                 for column_name in extra_column_names:
                     if column_name in row._fields:
-                        # print(f"        extra column found: {column_name}, {row._asdict()[column_name]}")
                         row_dict[column_name] = row._asdict()[column_name]
                 thing_add.append(row_dict)
                 bridge_add.append(
