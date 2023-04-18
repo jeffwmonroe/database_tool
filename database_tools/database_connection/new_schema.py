@@ -16,12 +16,6 @@ from database_tools.database_connection.utilities import (
 from database_tools.jason_schema.json_schema import JsonSchema, read_schema_json
 from database_tools.transfer_table.thing import Action, Thing
 
-from datetime import datetime, timedelta
-import pytz
-
-# ToDo move this to a .env vile
-table_list = "./data/table_list.xlsx"
-
 
 # ToDo move this to a configuration
 def db_url() -> str:
