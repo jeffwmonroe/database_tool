@@ -7,4 +7,5 @@ from database_tools.utilities import (
     get_latest_thing,
     load_many_thing_tables_from_file,
     load_thing_table_from_file,
+    validate_schema,
 )

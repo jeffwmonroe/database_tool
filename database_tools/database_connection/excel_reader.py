@@ -2,7 +2,7 @@
 excel_reader module
 
 This is old code that read table information from an excel file. It has
-been replaced by code that reads this information from a JASON file
+been replaced by code that reads this information from a JSON file
 
 
 This code needs to be removed.

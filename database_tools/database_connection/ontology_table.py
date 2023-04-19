@@ -1,15 +1,30 @@
 import sqlalchemy as sqla
 
-from database_tools.jason_schema.json_schema import JsonColumn, JsonDataTable
+from database_tools.json_schema.json_schema import JsonColumn, JsonDataTable
+from database_tools.database_connection.utilities import (
+    build_data_table,
+    build_sql_column,
+)
 
 
 class OntologyColumn:
     def __init__(self, column: JsonColumn) -> None:
         self.name: str = column.name
         self.data_type: str = column.data_type
+        self.foreign_table: str | None = column.foreign_table
 
-    # foreign_table: str
-    # foreign_column: str
+        self.sql_column: sqla.Column = build_sql_column(column.name, column.data_type)
+
+    def validate(self, old_column: sqla.column) -> bool:
+        if self.name == old_column.name:
+            # ToDo perform data type checks
+            # print(f'          type ={type(old_column.type)}')
+            # old_type = old_column.type
+            # nt = old_column.quoted_name
+            # print(f'         old type = {old_column.type}')
+            # print(f'         new type = {self.data_type}')
+            return True
+        return False
 
 
 def get_column(sql_table: sqla.Table, name_list: list[str]) -> sqla.Column:
@@ -20,20 +35,20 @@ def get_column(sql_table: sqla.Table, name_list: list[str]) -> sqla.Column:
     raise ValueError(f"column not found in in _get_column", name_list)
 
 
-def get_id_column(sql_table: sqla.Table) -> sqla.Column:
-    return get_column(sql_table, [sql_table.name])
-
-
 class OntologyTable:
-    def __init__(self, table: JsonDataTable, sql_table: sqla.Table) -> None:
-        self.sql_table = sql_table
+    def __init__(self, metadata_obj: sqla.MetaData, table: JsonDataTable) -> None:
+
+        self.columns: list[OntologyColumn] = []
+        for column in table.columns:
+            self.columns.append(OntologyColumn(column))
+
+        columns = [column.sql_column for column in self.columns]
+        self.sql_table = build_data_table(
+            metadata_obj, table.name, use_name=True, extra_data_columns=columns
+        )
 
         self.name: str = table.name
         self.vendors: list[str] = table.vendors
-
-        self.columns: list[OntologyColumn] = [
-            OntologyColumn(col) for col in table.columns
-        ]
 
     def get_id_column(self) -> sqla.Column:
         return get_column(self.sql_table, [self.name + "_id"])
@@ -47,7 +62,7 @@ class OntologyTable:
             print(f"    column: ({column.name}, {column.data_type})")
 
     def extra_columns(
-        self, old_table: sqla.Table
+            self, old_table: sqla.Table
     ) -> tuple[list[str], list[sqla.Column]]:
         column_names: list[str] = []
         columns: list[sqla.Column] = []
@@ -57,3 +72,9 @@ class OntologyTable:
                 column_names.append(column.name)
                 columns.append(old_table.c[column.name])
         return column_names, columns
+
+    def validate_column(self, old_column: sqla.Column) -> bool:
+        for column in self.columns:
+            if column.validate(old_column):
+                return True
+        return False

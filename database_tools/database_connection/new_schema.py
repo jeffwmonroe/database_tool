@@ -10,10 +10,9 @@ from database_tools.database_connection.old_schema import OntologySchema
 from database_tools.database_connection.ontology_table import OntologyTable
 from database_tools.database_connection.utilities import (
     build_data_table,
-    build_sql_column,
     join_thing_and_map,
 )
-from database_tools.jason_schema.json_schema import JsonSchema, read_schema_json
+from database_tools.json_schema.json_schema import JsonSchema, read_schema_json
 from database_tools.transfer_table.thing import Action, Thing
 
 
@@ -29,23 +28,6 @@ def db_url() -> str:
     name = "test"
     url = f"{dialect}+{driver}://{user}:{password}@{host}:{port}/{name}"
     return url
-
-
-def build_tables_from_json(metadata: sqla.MetaData) -> dict[str, OntologyTable]:
-    # ToDo this is a horrible hard code
-    schema = read_schema_json("data/tables.json")
-    tables = {}
-    for table in schema.tables:
-        columns = []
-        for column in table.columns:
-            col = build_sql_column(column.name, column.data_type)
-            columns.append(col)
-        sql_table = build_data_table(
-            metadata, table.name, use_name=True, extra_data_columns=columns
-        )
-        tables[table.name] = OntologyTable(table, sql_table)
-
-    return tables
 
 
 class NewDatabaseSchema(DatabaseConnection):
@@ -102,6 +84,13 @@ class NewDatabaseSchema(DatabaseConnection):
             sqla.PrimaryKeyConstraint("old_id", "thing", name="primary_key"),
         )
 
+    def build_tables_from_json(self) -> None:
+        # ToDo this is a horrible hard code
+        schema = read_schema_json("data/tables.json")
+        self.data_tables = {}
+        for table in schema.tables:
+            self.data_tables[table.name] = OntologyTable(self.metadata_obj, table)
+
     def connect_tables(self, commit=False) -> None:
         self.bridge_table = self.build_bridge_table()
         self.thing_table = sqla.Table(
@@ -122,7 +111,7 @@ class NewDatabaseSchema(DatabaseConnection):
 
         # self.data_tables = read_table_info(self.metadata_obj)
         # self.vendors = read_vendor_info()
-        self.data_tables = build_tables_from_json(self.metadata_obj)
+        self.build_tables_from_json()
 
         self.name_map_table = build_data_table(
             self.metadata_obj,
@@ -180,14 +169,14 @@ class NewDatabaseSchema(DatabaseConnection):
         print(f"Total duration: {duration}")
 
     def fill_thing_table(
-        self,
-        new_data_table: sqla.Table,
-        old_engine: sqla.Engine,
-        old_thing: Thing,
-        thing_pk_start: int,
-        extra_columns: list[sqla.Column],
-        extra_column_names: list[str],
-        short_load: bool,
+            self,
+            new_data_table: sqla.Table,
+            old_engine: sqla.Engine,
+            old_thing: Thing,
+            thing_pk_start: int,
+            extra_columns: list[sqla.Column],
+            extra_column_names: list[str],
+            short_load: bool,
     ) -> tuple[dict[int, int], int]:
         print(f"    fill_thing_table:  {old_thing.thing}")
         standard_columns: list[sqla.Column] = [
@@ -262,13 +251,13 @@ class NewDatabaseSchema(DatabaseConnection):
         return bridge, thing_pk_start + index
 
     def fill_name_map_table(
-        self,
-        engine: sqla.Engine,
-        old_thing: Thing,
-        old_action: Action,
-        vendor: str,
-        bridge: dict[int, int],
-        short_load: bool,
+            self,
+            engine: sqla.Engine,
+            old_thing: Thing,
+            old_action: Action,
+            vendor: str,
+            bridge: dict[int, int],
+            short_load: bool,
     ) -> None:
         vendor_pk = self.add_vendor(vendor)
         stmt = join_thing_and_map(old_thing, old_action, short_load)

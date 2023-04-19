@@ -7,9 +7,9 @@ it efficiently so that it can be ported to the new schema.
 """
 import sqlalchemy as sqla
 from sqlalchemy import func, select
+from database_tools.transfer_table.utilities import is_name_column, is_id_column
 
 ColumnCollection = sqla.sql.expression.ColumnCollection
-
 
 def duplicate_row_query(engine: sqla.Engine, column: sqla.Column) -> int:
     """
@@ -320,11 +320,10 @@ class TableBase:
         names of the id column.
         :return: id column
         """
-        name = self.thing + "_id"
-        if name in self.table.c.keys():
-            # print(f'found it: {name}')
-            return self.table.c[name]
-        raise ValueError("No name found in get_id_column", name)
+        for column in self.table.c:
+            if is_id_column(self.thing, column):
+                return column
+        raise ValueError("No name found in get_id_column", self.thing)
 
     def get_name_column(self) -> sqla.Column:
         """
@@ -335,9 +334,8 @@ class TableBase:
         :return: id column
         :return:
         """
-        name = self.thing + "_name"
-        if name in self.table.c.keys():
-            return self.table.c[name]
-        if self.thing in self.table.c.keys():
-            return self.table.c[self.thing]
-        raise ValueError("No name found in get_name_column", name)
+        for column in self.table.c:
+            if is_name_column(self.thing, column):
+                return column
+
+        raise ValueError("No name found in get_name_column", self.thing)

@@ -33,6 +33,7 @@ class DatabaseConnection:
         if self.engine is None:
             raise ValueError("trying to reflect_tables with no engine object")
         self.metadata_obj.reflect(bind=self.engine)
+        # ToDo refactor table_list. It is probably redundant
         table_list = list(self.metadata_obj.tables.keys())
         return table_list
 

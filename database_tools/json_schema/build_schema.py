@@ -60,7 +60,7 @@ def parse_arguments() -> argparse.Namespace:
         epilog="Thanks for practicing with %(prog)s! :-)",
         allow_abbrev=False,
     )
-    database = parser.add_argument_group("build jason_schema")
+    database = parser.add_argument_group("build json_schema")
     database.add_argument(
         "-v",
         "--verbose",
@@ -70,7 +70,7 @@ def parse_arguments() -> argparse.Namespace:
     database.add_argument(
         "-b",
         "--build",
-        help="build jason_schema JSON from excel file",
+        help="build json_schema JSON from excel file",
         action="store_true",
     )
     database.add_argument(

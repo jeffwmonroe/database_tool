@@ -31,7 +31,8 @@
             "columns": [
                 {
                     "name": "company_id",
-                    "data_type": "int"
+                    "data_type": "int",
+                    "foreign_table": "company"
                 }
             ],
             "vendors": []

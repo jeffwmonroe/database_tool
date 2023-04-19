@@ -1,6 +1,7 @@
 import json
 
 from pydantic import BaseModel
+from typing import Union, Optional
 
 
 class JsonColumn(BaseModel):
@@ -10,8 +11,7 @@ class JsonColumn(BaseModel):
 
     name: str
     data_type: str
-    # foreign_table: str
-    # foreign_column: str
+    foreign_table: Optional[str]
 
 
 class JsonDataTable(BaseModel):
@@ -31,7 +31,7 @@ class JsonDataTable(BaseModel):
 
 class JsonSchema(BaseModel):
     """
-    Schema holds the tables for the new database jason_schema.
+    Schema holds the tables for the new database json_schema.
     """
 
     tables: list[JsonDataTable]

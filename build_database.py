@@ -19,6 +19,7 @@ from database_tools import (
     load_thing_table_from_file,
     str_to_action,
     str_to_status,
+    validate_schema,
 )
 
 
@@ -58,7 +59,7 @@ def parse_arguments() -> argparse.Namespace:
     table.add_argument(
         "-t",
         "--table",
-        help="build the new jason_schema tables in a fresh database",
+        help="build the new json_schema tables in a fresh database",
         action="store_true",
     )
     table.add_argument(
@@ -82,6 +83,11 @@ def parse_arguments() -> argparse.Namespace:
         "-s",
         "--short",
         help="only use the first 10 rows",
+        action="store_true",
+    )
+    table.add_argument(
+        "--schema",
+        help="check the schemas against the JSON file.",
         action="store_true",
     )
     execute = parser.add_argument_group("Execution")
@@ -214,6 +220,7 @@ def main() -> None:
         ontology.reflect_tables()
     else:
         ontology.connect_tables()
+
     if args.enumerate:
         ontology.enumerate_tables()
     if args.check:
@@ -286,6 +293,9 @@ def main() -> None:
         create_additional_things(
             table_name, add, database.engine, database.metadata_obj
         )
+    if args.schema:
+        print("Schema Check")
+        validate_schema(ontology.metadata_obj, database.data_tables)
 
 
 # Press the green button in the gutter to run the script.
