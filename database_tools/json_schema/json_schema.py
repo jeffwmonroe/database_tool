@@ -1,7 +1,7 @@
 import json
+from typing import Optional, Union
 
 from pydantic import BaseModel
-from typing import Union, Optional
 
 
 class JsonColumn(BaseModel):

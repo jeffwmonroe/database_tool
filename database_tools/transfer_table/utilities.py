@@ -16,10 +16,12 @@ def is_id_column(table_name: str, column: sqla.Column) -> bool:
 
 
 def is_log_column(table_name: str, column: sqla.Column) -> bool:
-    if (column.name == "created_by" or
-            column.name == "updated_by" or
-            column.name == "created_ts" or
-            column.name == "updated_ts"):
+    if (
+        column.name == "created_by"
+        or column.name == "updated_by"
+        or column.name == "created_ts"
+        or column.name == "updated_ts"
+    ):
         return True
     return False
 

@@ -7,9 +7,11 @@ it efficiently so that it can be ported to the new schema.
 """
 import sqlalchemy as sqla
 from sqlalchemy import func, select
-from database_tools.transfer_table.utilities import is_name_column, is_id_column
+
+from database_tools.transfer_table.utilities import is_id_column, is_name_column
 
 ColumnCollection = sqla.sql.expression.ColumnCollection
+
 
 def duplicate_row_query(engine: sqla.Engine, column: sqla.Column) -> int:
     """

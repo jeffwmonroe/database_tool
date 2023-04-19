@@ -169,14 +169,14 @@ class NewDatabaseSchema(DatabaseConnection):
         print(f"Total duration: {duration}")
 
     def fill_thing_table(
-            self,
-            new_data_table: sqla.Table,
-            old_engine: sqla.Engine,
-            old_thing: Thing,
-            thing_pk_start: int,
-            extra_columns: list[sqla.Column],
-            extra_column_names: list[str],
-            short_load: bool,
+        self,
+        new_data_table: sqla.Table,
+        old_engine: sqla.Engine,
+        old_thing: Thing,
+        thing_pk_start: int,
+        extra_columns: list[sqla.Column],
+        extra_column_names: list[str],
+        short_load: bool,
     ) -> tuple[dict[int, int], int]:
         print(f"    fill_thing_table:  {old_thing.thing}")
         standard_columns: list[sqla.Column] = [
@@ -251,13 +251,13 @@ class NewDatabaseSchema(DatabaseConnection):
         return bridge, thing_pk_start + index
 
     def fill_name_map_table(
-            self,
-            engine: sqla.Engine,
-            old_thing: Thing,
-            old_action: Action,
-            vendor: str,
-            bridge: dict[int, int],
-            short_load: bool,
+        self,
+        engine: sqla.Engine,
+        old_thing: Thing,
+        old_action: Action,
+        vendor: str,
+        bridge: dict[int, int],
+        short_load: bool,
     ) -> None:
         vendor_pk = self.add_vendor(vendor)
         stmt = join_thing_and_map(old_thing, old_action, short_load)

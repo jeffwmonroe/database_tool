@@ -1,10 +1,10 @@
 import sqlalchemy as sqla
 
-from database_tools.json_schema.json_schema import JsonColumn, JsonDataTable
 from database_tools.database_connection.utilities import (
     build_data_table,
     build_sql_column,
 )
+from database_tools.json_schema.json_schema import JsonColumn, JsonDataTable
 
 
 class OntologyColumn:
@@ -17,7 +17,9 @@ class OntologyColumn:
 
     def validate(self, old_column: sqla.column) -> bool:
         if self.name == old_column.name:
-            print(f'      column = {self.name} : {self.data_type} : {self.foreign_table}')
+            print(
+                f"      column = {self.name} : {self.data_type} : {self.foreign_table}"
+            )
             # ToDo perform data type checks
             # print(f'          type ={type(old_column.type)}')
             # old_type = old_column.type
@@ -37,9 +39,10 @@ def get_column(sql_table: sqla.Table, name_list: list[str]) -> sqla.Column:
 
 
 def get_bridge_keys(column, metadata_obj, engine):
-    bridge_table = metadata_obj.tables['old_new_bridge']
-    bridge_query1 = sqla.select(bridge_table
-                                ).filter(bridge_table.c.thing == column.foreign_table)
+    bridge_table = metadata_obj.tables["old_new_bridge"]
+    bridge_query1 = sqla.select(bridge_table).filter(
+        bridge_table.c.thing == column.foreign_table
+    )
     with engine.connect() as connection:
         result = connection.execute(bridge_query1)
         old_keys = [row[0] for row in result]
@@ -49,7 +52,6 @@ def get_bridge_keys(column, metadata_obj, engine):
 
 class OntologyTable:
     def __init__(self, metadata_obj: sqla.MetaData, table: JsonDataTable) -> None:
-
         self.columns: list[OntologyColumn] = []
         for column in table.columns:
             self.columns.append(OntologyColumn(column))
@@ -74,7 +76,7 @@ class OntologyTable:
             print(f"    column: ({column.name}, {column.data_type})")
 
     def extra_columns(
-            self, old_table: sqla.Table
+        self, old_table: sqla.Table
     ) -> tuple[list[str], list[sqla.Column]]:
         column_names: list[str] = []
         columns: list[sqla.Column] = []
@@ -91,56 +93,64 @@ class OntologyTable:
                 return True
         return False
 
-    def null_bad_foreign_keys(self,
-                              column,
-                              metadata_obj: sqla.MetaData,
-                              engine: sqla.Engine,
-                              ):
+    def null_bad_foreign_keys(
+        self,
+        column,
+        metadata_obj: sqla.MetaData,
+        engine: sqla.Engine,
+    ):
         old_keys = get_bridge_keys(column, metadata_obj, engine)
 
-        null_update = sqla.update(
-            self.sql_table
-        ).where(
-            self.sql_table.c[column.name].not_in(old_keys)
-        ).values({self.sql_table.c[column.name]: 666})
+        null_update = (
+            sqla.update(self.sql_table)
+            .where(self.sql_table.c[column.name].not_in(old_keys))
+            .values({self.sql_table.c[column.name]: 666})
+        )
         # ToDo fix hardwired value. What is NULL?
         with engine.connect() as connection:
             connection.execute(null_update)
             connection.commit()
 
-    def connect_foreign_keys(self,
-                             metadata_obj: sqla.MetaData,
-                             engine: sqla.Engine,
-                             ) -> None:
+    def connect_foreign_keys(
+        self,
+        metadata_obj: sqla.MetaData,
+        engine: sqla.Engine,
+    ) -> None:
         # print(f'   table: {self.name}')
         for column in self.columns:
             if column.foreign_table is None:
                 continue
-            print(f'      found foreign key: {column.name}')
+            print(f"      found foreign key: {column.name}")
             if column.foreign_table not in metadata_obj.tables.keys():
-                print(f'         ERROR foreign table {column.foreign_table} not found')
+                print(f"         ERROR foreign table {column.foreign_table} not found")
                 break
-            bridge_table = metadata_obj.tables['old_new_bridge']
+            bridge_table = metadata_obj.tables["old_new_bridge"]
 
             self.null_bad_foreign_keys(column, metadata_obj, engine)
 
-            bridge_query = sqla.select(bridge_table
-                                       ).filter(bridge_table.c.thing == column.foreign_table
-                                                ).subquery()
-            join_query = sqla.select(
-                self.sql_table.c.log_id,
-                self.sql_table.c.n_id,
-                bridge_query.c.old_id,
-                bridge_query.c.n_id.label('answer')
-            ).join(bridge_query,
-                   self.sql_table.c[column.name] == bridge_query.c.old_id
-                   ).subquery()
+            bridge_query = (
+                sqla.select(bridge_table)
+                .filter(bridge_table.c.thing == column.foreign_table)
+                .subquery()
+            )
+            join_query = (
+                sqla.select(
+                    self.sql_table.c.log_id,
+                    self.sql_table.c.n_id,
+                    bridge_query.c.old_id,
+                    bridge_query.c.n_id.label("answer"),
+                )
+                .join(
+                    bridge_query, self.sql_table.c[column.name] == bridge_query.c.old_id
+                )
+                .subquery()
+            )
 
-            update_query = sqla.update(
-                self.sql_table
-            ).where(
-                self.sql_table.c.log_id == join_query.c.log_id
-            ).values({self.sql_table.c[column.name]: join_query.c["answer"]})
+            update_query = (
+                sqla.update(self.sql_table)
+                .where(self.sql_table.c.log_id == join_query.c.log_id)
+                .values({self.sql_table.c[column.name]: join_query.c["answer"]})
+            )
 
             with engine.connect() as connection:
                 connection.execute(update_query)

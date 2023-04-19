@@ -27,7 +27,7 @@ def timer(function):
 
 
 def generate_new_id_pks(
-        number: int, thing_name: str, thing_table: sqla.Table, engine: sqla.Engine
+    number: int, thing_name: str, thing_table: sqla.Table, engine: sqla.Engine
 ) -> list[int]:
     thing_table_values: list[dict[str, str]] = [
         {"thing": thing_name} for index in range(number)
@@ -45,10 +45,10 @@ def generate_new_id_pks(
 
 
 def load_thing_table(
-        table_name: str,
-        df: pd.DataFrame,
-        engine: sqla.Engine,
-        meta_data: sqla.MetaData,
+    table_name: str,
+    df: pd.DataFrame,
+    engine: sqla.Engine,
+    meta_data: sqla.MetaData,
 ) -> None:
     """
     This function will load one table into the database from a pandas dataframe.
@@ -95,11 +95,11 @@ def load_thing_table(
 
 
 def load_thing_table_from_file(
-        table_name: str,
-        file_name: str,
-        engine: sqla.Engine,
-        meta_data: sqla.MetaData,
-        sheet_name=None,
+    table_name: str,
+    file_name: str,
+    engine: sqla.Engine,
+    meta_data: sqla.MetaData,
+    sheet_name=None,
 ) -> None:
     if sheet_name is None:
         df = pd.read_excel(file_name)
@@ -109,11 +109,11 @@ def load_thing_table_from_file(
 
 
 def load_many_thing_tables_from_file(
-        table_name: str,
-        file_name: str,
-        number_of_files: int,
-        engine: sqla.Engine,
-        meta_data: sqla.MetaData,
+    table_name: str,
+    file_name: str,
+    number_of_files: int,
+    engine: sqla.Engine,
+    meta_data: sqla.MetaData,
 ) -> None:
     for index in range(number_of_files):
         sheet_name = f"load-{index + 1:d}"
@@ -129,7 +129,7 @@ def print_row_header() -> None:
 
 
 def print_row(
-        row: tuple[int, int, db_enum.Action, datetime, str, db_enum.Status, str]
+    row: tuple[int, int, db_enum.Action, datetime, str, db_enum.Status, str]
 ) -> None:
     log_id = row[0]
     n_id = row[1]
@@ -160,14 +160,14 @@ def make_row_dict(row, column_names):
 
 @timer
 def get_latest_thing(
-        table_name: str,
-        engine: sqla.Engine,
-        meta_data: sqla.MetaData,
-        status: db_enum.Status | None = None,
-        action: db_enum.Action | None = None,
-        n_id: int | None = None,
-        latest: bool = False,
-        filename: str = None,
+    table_name: str,
+    engine: sqla.Engine,
+    meta_data: sqla.MetaData,
+    status: db_enum.Status | None = None,
+    action: db_enum.Action | None = None,
+    n_id: int | None = None,
+    latest: bool = False,
+    filename: str = None,
 ) -> None:
     table: sqla.Table = meta_data.tables[table_name]
     # stmt = sqla.select(table).where(table.c['status'] == db_enum.Status.draft)
@@ -232,7 +232,7 @@ def get_latest_thing(
 
 @timer
 def create_additional_things(
-        table_name: str, additional: int, engine: sqla.Engine, meta_data: sqla.MetaData
+    table_name: str, additional: int, engine: sqla.Engine, meta_data: sqla.MetaData
 ) -> None:
     print("create addditional things")
     table = meta_data.tables[table_name]
@@ -272,7 +272,7 @@ def create_additional_things(
 
 # ToDo deprecate create_additional_things2
 def create_additional_things2(
-        table_name: str, additional: int, engine: sqla.Engine, meta_data: sqla.MetaData
+    table_name: str, additional: int, engine: sqla.Engine, meta_data: sqla.MetaData
 ) -> None:
     print("create_additional_things")
     table_df = pd.read_sql_table(table_name, engine.connect())
@@ -298,7 +298,7 @@ def create_additional_things2(
 
 
 def get_extra_columns(old_table: sqla.Table) -> list[sqla.Column]:
-    print(f'   old_table.name = {old_table.name}')
+    print(f"   old_table.name = {old_table.name}")
     return_list = []
     for column in old_table.c:
         if not is_standard_column(old_table.name, column):
@@ -307,10 +307,10 @@ def get_extra_columns(old_table: sqla.Table) -> list[sqla.Column]:
 
 
 def validate_schema(
-        old_metadata: sqla.MetaData,
-        new_tables: dict[str, OntologyTable],
+    old_metadata: sqla.MetaData,
+    new_tables: dict[str, OntologyTable],
 ) -> None:
-    print('validate_schema:')
+    print("validate_schema:")
     # Todo Add list of tables from old schema to exclude
     # Todo calculate list of old tables that are in JSON
     # Todo calculate list of old tables that are not in JSON
@@ -334,7 +334,7 @@ def validate_schema(
                 if new_table.validate_column(column):
                     pass
                 else:
-                    print(f'      Error in column: {column.name}')
+                    print(f"      Error in column: {column.name}")
         else:
             # ToDo validate tables list
             # print(f'   table <{table_name}> not found in new database')

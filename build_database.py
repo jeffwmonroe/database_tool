@@ -10,17 +10,11 @@ import pandas as pd
 from sqlalchemy.exc import OperationalError
 
 # import sqlalchemy as sqla
-from database_tools import (
-    NewDatabaseSchema,
-    OntologySchema,
-    create_additional_things,
-    get_latest_thing,
-    load_many_thing_tables_from_file,
-    load_thing_table_from_file,
-    str_to_action,
-    str_to_status,
-    validate_schema,
-)
+from database_tools import (NewDatabaseSchema, OntologySchema,
+                            create_additional_things, get_latest_thing,
+                            load_many_thing_tables_from_file,
+                            load_thing_table_from_file, str_to_action,
+                            str_to_status, validate_schema)
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -304,6 +298,7 @@ def main() -> None:
     if args.foreign:
         print("Connect foreign keys")
         database.connect_foreign_keys()
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == "__main__":

@@ -16,10 +16,7 @@ mapping was needed to discover that fact.
 
 import sqlalchemy as sqla
 
-from database_tools.transfer_table.table_base import (
-    TableBase,
-    good_column,
-)
+from database_tools.transfer_table.table_base import TableBase, good_column
 
 
 class Action(TableBase):

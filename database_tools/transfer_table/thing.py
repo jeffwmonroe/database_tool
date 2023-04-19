@@ -5,8 +5,8 @@ from collections import namedtuple
 import sqlalchemy as sqla
 
 from database_tools.transfer_table.action import Action
-from database_tools.transfer_table.vendor_action import VendorAction
 from database_tools.transfer_table.table_base import TableBase
+from database_tools.transfer_table.vendor_action import VendorAction
 
 ActionKey = namedtuple("vendor", "vend action")
 
