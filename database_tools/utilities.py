@@ -331,7 +331,6 @@ def validate_schema(
             # print(f'   table <{table_name}> found')
             columns = get_extra_columns(old_table)
             for column in columns:
-                print(f'      col = {column.name}')
                 if new_table.validate_column(column):
                     pass
                 else:
@@ -340,4 +339,3 @@ def validate_schema(
             # ToDo validate tables list
             # print(f'   table <{table_name}> not found in new database')
             pass
-    pass

@@ -90,6 +90,11 @@ def parse_arguments() -> argparse.Namespace:
         help="check the schemas against the JSON file.",
         action="store_true",
     )
+    table.add_argument(
+        "--foreign",
+        help="connect the foreign keys in the new database.",
+        action="store_true",
+    )
     execute = parser.add_argument_group("Execution")
     execute.add_argument(
         "--load",
@@ -296,7 +301,9 @@ def main() -> None:
     if args.schema:
         print("Schema Check")
         validate_schema(ontology.metadata_obj, database.data_tables)
-
+    if args.foreign:
+        print("Connect foreign keys")
+        database.connect_foreign_keys()
 
 # Press the green button in the gutter to run the script.
 if __name__ == "__main__":

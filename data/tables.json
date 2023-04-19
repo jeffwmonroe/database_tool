@@ -127,11 +127,13 @@
             "columns": [
                 {
                     "name": "brand_id",
-                    "data_type": "int"
+                    "data_type": "int",
+                    "foreign_table": "brand"
                 },
                 {
                     "name": "category_id",
-                    "data_type": "int"
+                    "data_type": "int",
+                    "foreign_table": "category"
                 }
             ],
             "vendors": [

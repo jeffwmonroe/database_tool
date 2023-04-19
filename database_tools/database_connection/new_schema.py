@@ -296,3 +296,7 @@ class NewDatabaseSchema(DatabaseConnection):
                 new_connection.commit()
         duration = time.time() - start_time
         print(f"         Duration: {duration}")
+
+    def connect_foreign_keys(self):
+        for table in self.data_tables.values():
+            table.connect_foreign_keys(self.metadata_obj, self.engine)
