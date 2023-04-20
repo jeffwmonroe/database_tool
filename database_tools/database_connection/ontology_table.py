@@ -1,9 +1,7 @@
 import sqlalchemy as sqla
 
-from database_tools.database_connection.utilities import (
-    build_data_table,
-    build_sql_column,
-)
+from database_tools.database_connection.utilities import (build_data_table,
+                                                          build_sql_column)
 from database_tools.json_schema.json_schema import JsonColumn, JsonDataTable
 
 
@@ -154,18 +152,19 @@ class OntologyTable:
                 connection.commit()
 
     def standard_table_exceptions(self) -> list[str]:
-        table_exceptions = [f'import_{self.name}',
-                            f'export_{self.name}',
-                            f'history_{self.name}',
-                            ]
+        table_exceptions = [
+            f"import_{self.name}",
+            f"export_{self.name}",
+            f"history_{self.name}",
+        ]
         for vendor in self.vendors:
-            col_exceptions = [f'exp_map_{self.name}_{vendor}',
-                              f'fuzzymatch_{self.name}_{vendor}',
-                              f'history_map_{self.name}_{vendor}',
-                              f'log_map_{self.name}_{vendor}',
-                              f'map_{self.name}_{vendor}',
-                              f'import_{self.name}_{vendor}',
-                              ]
+            col_exceptions = [
+                f"exp_map_{self.name}_{vendor}",
+                f"fuzzymatch_{self.name}_{vendor}",
+                f"history_map_{self.name}_{vendor}",
+                f"log_map_{self.name}_{vendor}",
+                f"map_{self.name}_{vendor}",
+                f"import_{self.name}_{vendor}",
+            ]
             table_exceptions = table_exceptions + col_exceptions
         return table_exceptions
-

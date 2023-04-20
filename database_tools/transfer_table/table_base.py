@@ -8,7 +8,8 @@ it efficiently so that it can be ported to the new schema.
 import sqlalchemy as sqla
 from sqlalchemy import func, select
 
-from database_tools.transfer_table.utilities import is_id_column, is_name_column
+from database_tools.transfer_table.utilities import (is_id_column,
+                                                     is_name_column)
 
 ColumnCollection = sqla.sql.expression.ColumnCollection
 
@@ -325,7 +326,9 @@ class TableBase:
         for column in self.table.c:
             if is_id_column(self.thing, column):
                 return column
-        raise ValueError(f"No name found in get_id_column for table: {self.thing}", self.thing)
+        raise ValueError(
+            f"No name found in get_id_column for table: {self.thing}", self.thing
+        )
 
     def get_name_column(self) -> sqla.Column:
         """
@@ -340,4 +343,6 @@ class TableBase:
             if is_name_column(self.thing, column):
                 return column
 
-        raise ValueError(f"No name found in get_name_column for table: {self.thing}", self.thing)
+        raise ValueError(
+            f"No name found in get_name_column for table: {self.thing}", self.thing
+        )

@@ -10,10 +10,8 @@ This code needs to be removed.
 import pandas as pd
 import sqlalchemy as sqla
 
-from database_tools.database_connection.utilities import (
-    build_data_table,
-    build_sql_column,
-)
+from database_tools.database_connection.utilities import (build_data_table,
+                                                          build_sql_column)
 
 # ToDo move this to a .env vile
 table_list = "./data/table_list.xlsx"
