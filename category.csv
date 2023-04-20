@@ -1,0 +1,353 @@
+"category_id","category_name"
+0,Unknown
+1,Aerospace Manufacturing
+2,Air Freight & Logistics
+3,Alcoholic Beverages
+4,Amusement Parks & Tourist Attractions
+5,Aperitifs
+6,Apparel Brands
+7,Artist Services
+8,Athletic Apparel
+9,Athletic Retail
+10,At Home Fitness
+11,ATVs
+12,Audio
+13,Auto Insurance
+14,Auto Manufacturing
+15,Auto Parts Distribution
+16,Auto Parts Retail
+17,Auto Parts & Service
+18,Auto Repair
+19,Autos
+20,Baby Bathing
+21,Baby Feeding
+22,Baby & Toddler's
+23,Baby & Toddler'S Clothing
+24,Baby & Toddler's Clothing Retail
+25,Bakeware
+26,Baking
+27,Banking
+28,Bars & Clubs
+29,Bath Tissue & Paper Products
+30,Batteries
+31,Beauty & Cosmetics
+32,Beauty & Cosmetics Retail
+33,Beer
+34,Beer & Cider
+35,"Beer, Wine & Spirits Retail"
+36,Boating
+37,Body Soap
+38,Booking Services
+39,Books
+40,Boots
+41,Bourbon
+42,Brandy
+43,Breakfast
+44,Budget Gyms
+45,Building Materials
+46,Burgers
+47,Cable Providers
+48,Cameras
+49,Cannabis
+50,Cannabis Food Items
+51,Canned Food
+52,Car Buying
+53,Car Rental
+54,Car Services
+55,Cash Back Rewards
+56,Casino / Gaming
+57,Casual Clothing Retail
+58,Casual Dining
+59,Cereals & Grains
+60,Chicken
+61,Cider
+62,Class-Based Gyms
+63,Club
+64,Coffee Chains
+65,Coffees
+66,Commodities
+67,Communication Services
+68,Computers
+69,Consumer
+70,Consumer Discretionary
+71,Consumer Electronics
+72,Consumer Services
+73,Consumer Staples
+74,Convenience Stores
+75,Cookware
+76,Craft Beer
+77,Craft Retail
+78,Cruises
+79,Crypto
+80,Cutlery
+81,Cyclicals
+82,Dairy & Eggs
+83,Dairy Milks
+84,Dating
+85,Dealerships
+86,Deli & Cold Cuts
+87,Denim
+88,Deodorants & Antiperspirants
+89,Department Stores
+90,Dessert
+91,Developer Tools
+92,Devices
+93,Diapers & Wipes
+94,Digital Media
+95,Dish Soap
+96,Distributors
+97,Dollar Stores
+98,"Dressings, Sauces, Spreads"
+99,Drug Store
+100,Ecommerce
+101,Education
+102,E-Learning
+103,Electronic Materials
+104,Electronics Retail
+105,Email
+106,Energy
+107,Eye Wear
+108,Farm Supply
+109,Fast Casual
+110,Fast Fashion
+111,Fast Fashion Retail
+112,Feminine Hygiene Care
+113,Film & TV Entertainment
+114,Film & Tv Streaming
+115,Financials
+116,Financial Services & Crypto
+117,Fine Dining
+118,First-Aid
+119,Fitness
+120,Floral
+121,Food & Beverage
+122,Food Distribution
+123,Food Items
+124,Footwear
+125,Footwear Retail
+126,For-Profit Education
+127,Fragrance
+128,Free-To-Play Casino Games
+129,Frozen Foods
+130,Fruit & Vegetable Juices
+131,Fuel
+132,General Merchandise
+133,Gifts & Occasions
+134,Gin
+135,Graphics & Design
+136,Grill & Outdoor Kitchen
+137,Grocers
+138,Grocery - Direct To Consumer
+139,Gyms
+140,Hair Care
+141,Handbags & Accessories
+142,Hard Seltzer
+143,Hardware
+144,Health Insurance
+145,Health & Wellness
+146,Home Furnishing
+147,Home Improvement
+148,Hospitals
+149,Hospital Services
+150,Hotel & Lodging
+151,Household Appliance
+152,Household Balance Sheet
+153,Household Electronics
+154,Household Supplies
+155,Icasino
+156,Industrials
+157,"Industrials, Cyclicals, And Energy"
+158,Information Technology
+159,In-Person Casino
+160,Instant Messaging
+161,Insurance
+162,Interest Group
+163,Internet Browser
+164,Internet Services
+165,Investing (Non-Crypto)
+166,Jewelry
+167,Jewelry Retail
+168,Kitchenware (Consumable)
+169,Laundry Detergent
+170,Lawn & Outdoors
+171,Licensing
+172,Life Insurance
+173,Lingerie
+174,Lingerie Retail
+175,Liqueur
+176,Liquor
+177,Live Events
+178,Luggage
+179,Luxury Apparel
+180,Luxury Goods
+181,Luxury Gyms
+182,Major Networks
+183,Manufacturing
+184,Massage And Spa
+185,Mass Merchant
+186,Materials
+187,Meal Products
+188,"Meats, Poultry, & Seafood"
+189,Media
+190,Meditation
+191,Men's
+192,Men's Clothing Retail
+193,MLB
+194,MMA
+195,Mobile And Online Gaming
+196,Mobile Plans
+197,Motorcycles
+198,Movies
+199,Movie Theaters
+200,Moving & Storage
+201,Music
+202,Music Labels
+203,Music Streaming Platforms
+204,Nail Care
+205,Nails
+206,Navigation
+207,NBA
+208,News Services
+209,NFL
+210,NHL
+211,Non-Alcoholic Beverages
+212,Non-Wearables
+213,Not-For-Profit Education
+214,Odor Eliminator
+215,Office Goods Retail
+216,Off-Price Retail
+217,Oral Care
+218,Organic Grocers
+219,Organics
+220,OTC Medication
+221,Other
+222,Outdoors Retail
+223,Outerwear
+224,Outerwear Retail
+225,Payments
+226,Personal Care
+227,Pest Control & Insecticides
+228,Pet Brands
+229,Pet Food
+230,Pet Retail
+231,Pet Services
+232,Pet Supplies
+233,PGA
+234,Photo & Video
+235,Pizza
+236,Platforms And Microtransactions
+237,Prepared Meals
+238,Private Label
+239,Produce
+240,Productivity
+241,Professional Cleaning & Paper Supplies
+242,Property Insurance
+243,QSR
+244,Racing
+245,Raki
+246,Ready To Drink
+247,Real Estate
+248,Real Estate Services
+249,Recreational Vehicles
+250,Renewable Energy Equipment
+251,Restaurant Delivery
+252,Restaurants
+253,Retail
+254,Ride Share
+255,Rum
+256,Sandals
+257,Sandwiches
+258,Satellite Providers
+259,Scotch
+260,Seafood
+261,Search Engine
+262,Seasoning & Spices
+263,Security Software
+264,Seltzer
+265,Shapewear
+266,Shaving & Grooming
+267,Skin Care
+268,Snack And Beverages
+269,Snack Food & Sweets
+270,Sneakers
+271,Social Media
+272,Socks
+273,"Soft Drinks, Sodas & Colas"
+274,Software & Services
+275,Song Funds
+276,Sparkling Wine
+277,Specialized Reits
+278,Specialty Apparel
+279,Specialty Retail
+280,Sporting Goods Equipment
+281,Sporting Goods Retail
+282,Sports
+283,Sports Betting (Remote)
+284,Sports & Energy Drinks
+285,Sports Media
+286,Streaming Radio
+287,Studios
+288,Supplements
+289,Swimwear
+290,Tacos
+291,Talent & Entertainment
+292,Teas & Herbal Infusions
+293,Teen Clothing Retail
+294,Telemedicine
+295,Tequila
+296,Ticketing
+297,Tires
+298,TMT
+299,Tobacco
+300,Toys & Games
+301,Traditional Developers And Publishers
+302,Traditional Grocery
+303,Traditional Media
+304,Transportation
+305,Travel & Tourism
+306,TV & Home Theater
+307,TV Shows
+308,Used Cars
+309,Utilities
+310,Vegan
+311,Vehicles
+312,Video Conferencing
+313,Video Games
+314,Video On Demand
+315,Vitamins
+316,Vodka
+317,Watches
+318,Waters
+319,Wearables
+320,Weather
+321,Weight Loss
+322,Whiskey
+323,Wine
+324,Women's Apparel
+325,Women's Clothing Retail
+326,Workwear
+327,Daily Fantasy Sports
+328,Online Casino
+329,Online Sportsbook
+330,Sportsbook & Casino
+331,Professional Sports
+332,Sportsbook & Icasino
+333,Gaming Hardware
+399,Auto Components
+400,Consumer Durables & Apparel
+401,Email & Messaging
+402,"Food, Beverage & Tobacco"
+403,Food Products
+404,Health Devices
+405,Home & Household
+406,Household & Personal Products
+407,Other Consumer Services
+432,Automobiles & Components
+433,Book Retail
+434,Club Retail
+435,Consumer Discretionary Retail
+436,Consumer Staples Retail
+437,Health Care
+438,Home Furnishing Retail
+439,Home Improvement Retail
+440,Media & Entertainment
