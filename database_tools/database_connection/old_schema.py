@@ -15,6 +15,47 @@ def ontology_url() -> str:
     return url
 
 
+def enumerated_thing_list() -> str:
+    return ["actor",
+            "app",
+            "artist",
+            "brand",
+            "category",
+            "category_hierarchy",
+            "company",
+            "division",
+            "education_level",
+            "entity_type",
+            "ethnicity",
+            "franchise",
+            "gender",
+            "generation",
+            "genre",
+            "has_children",
+            "household_size",
+            "marital_status",
+            "political_affiliation",
+            "product",
+            "property_value",
+            "region",
+            "residence",
+            "space",
+            "sport",
+            "sport_league",
+            "sport_team",
+            "sport_team_league",
+            "state",
+            "theatre_title",
+            "ticker",
+            "time",
+            "time_table",
+            "time_type",
+            "title",
+            "venue",
+            "yearly_income",
+            ]
+
+
 class OntologySchema(DatabaseConnection):
     def __init__(self, *args, **kwargs) -> None:
         kwargs["schema"] = "ontology"
@@ -46,45 +87,7 @@ class OntologySchema(DatabaseConnection):
         return result
 
     def enumerate_tables(self) -> None:
-        thing_list = [
-            "actor",
-            "app",
-            "artist",
-            "brand",
-            "category",
-            "category_hierarchy",
-            "company",
-            "division",
-            "eduction_level",
-            "entity_type",
-            "ethnicity",
-            "franchise",
-            "gender",
-            "generation",
-            "genre",
-            "has_children",
-            "household_size",
-            "marital_status",
-            "political_affiliation",
-            "product",
-            "property_value",
-            "region",
-            "residence",
-            "space",
-            "sport",
-            "sport_league",
-            "sport_team",
-            "sport_team_league",
-            "state",
-            "theatre_tite",
-            "ticker",
-            "time",
-            "time_table",
-            "time_type",
-            "title",
-            "venue",
-            "yearly_income",
-        ]
+        thing_list = enumerated_thing_list()
         vendor_list = [
             "alligator",
             "android",

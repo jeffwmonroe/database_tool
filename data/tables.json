@@ -23,7 +23,8 @@
             "columns": [],
             "vendors": [
                 "android",
-                "ios"
+                "ios",
+                "stork"
             ]
         },
         {
@@ -173,6 +174,30 @@
             "columns": [],
             "vendors": []
         },
+         {
+            "name": "sport_team",
+            "columns": [
+                {
+                    "name": "postal_code",
+                    "data_type": "string30"
+                }
+            ],
+            "vendors": [
+                "natterjack",
+                "tapir"
+                ]
+        },
+        {
+            "name": "sport_league",
+            "columns": [
+                {
+                    "name": "sport_id",
+                    "data_type": "int",
+                    "foreign_table": "sport"
+                }
+            ],
+            "vendors": []
+        },
         {
             "name": "state",
             "columns": [
@@ -181,6 +206,16 @@
                     "data_type": "string30"
                 }
             ],
+            "vendors": []
+        },
+         {
+            "name": "education_level",
+            "columns": [],
+            "vendors": ["koala"]
+        },
+         {
+            "name": "theatre_title",
+            "columns": [],
             "vendors": []
         },
         {
@@ -234,7 +269,8 @@
             ],
             "vendors": [
                 "koala",
-                "porcupine"
+                "porcupine",
+                "natterjack"
             ]
         },
         {

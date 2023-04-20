@@ -17,9 +17,6 @@ class OntologyColumn:
 
     def validate(self, old_column: sqla.column) -> bool:
         if self.name == old_column.name:
-            print(
-                f"      column = {self.name} : {self.data_type} : {self.foreign_table}"
-            )
             # ToDo perform data type checks
             # print(f'          type ={type(old_column.type)}')
             # old_type = old_column.type
@@ -155,3 +152,20 @@ class OntologyTable:
             with engine.connect() as connection:
                 connection.execute(update_query)
                 connection.commit()
+
+    def standard_table_exceptions(self) -> list[str]:
+        table_exceptions = [f'import_{self.name}',
+                            f'export_{self.name}',
+                            f'history_{self.name}',
+                            ]
+        for vendor in self.vendors:
+            col_exceptions = [f'exp_map_{self.name}_{vendor}',
+                              f'fuzzymatch_{self.name}_{vendor}',
+                              f'history_map_{self.name}_{vendor}',
+                              f'log_map_{self.name}_{vendor}',
+                              f'map_{self.name}_{vendor}',
+                              f'import_{self.name}_{vendor}',
+                              ]
+            table_exceptions = table_exceptions + col_exceptions
+        return table_exceptions
+

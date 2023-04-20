@@ -1,0 +1,49 @@
+django_celery_beat_periodictasks,no celery
+django_celery_results_chordcounter,no celery
+django_celery_beat_clockedschedule,no celery
+django_celery_results_groupresult,no celery
+django_celery_beat_crontabschedule,no celery
+django_celery_beat_intervalschedule,no celery
+django_celery_beat_solarschedule,no celery
+django_celery_results_taskresult,no celery
+django_migrations,remove django framework
+django_content_type,remove django framework
+django_celery_beat_periodictask,remove django framework
+django_session,remove django framework
+cbb_temp,temp
+cfb_temp,temp
+cluster,empty
+cluster_database,empty
+column_map,empty
+common_geo_crosswalk,data but not a table it looks like it is  temp working table
+custom_table_column,empty
+column_linkage,empty
+column_linkage,empty
+database_schema,
+division,not properly formatted
+division_old,?? Should we use this one ??
+django_admin_log,remove django framework
+geo_crosswalk,not a proper table. No PK. Is it temp working?
+geo_crosswalk_old,not a proper table. No PK. Is it temp working?
+has_children,boolean not a string. Is this needed?
+map_has_children_koala,boolean not a string. Is this needed?
+log_map_artist_mrckingbird,miss spelling
+map_app_stork_ios_android,data but not a table it looks like it is  temp working table
+map_actor_title_genre_franchise,not a proper table. No PK. Is it temp working? Lots of null val;ues
+map_theatre_title_tapir,redundant with map_title_tapir
+map_table_information,empty and not regularly formatted
+ontology_config,empty
+region_old,deprecated table?
+schema_table,empty
+space,empty
+space_table,empty
+space_type,empty
+sql_mapping_list,looks like a temporary work table
+table_column,empty
+table_view,empty
+tag,empty
+tag_type,empty
+tapir_team_zips,not a proper table. No PK. Temp working file??
+time,empty
+time_table,empty
+time_type,empty

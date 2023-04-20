@@ -1,0 +1,17 @@
+category_hierarchy,Need to settle on the format,Need design decision,
+import_category_hierarchy,will auto resolve when category_heirarchy is fixed,Auto Resolve,
+map_app_brand,is this an internal mapping table? There are much fewer rows than app or brand. Is this WIP?,Need Feedback,Bridge
+map_artist_concert_venue,Looks like an internal bridge table. Should we port this?,Need Feedback,Bridge
+map_artist_genre,Looks like an internal mapping table. Not normalized. Key to genre table but music type genre is a column,Need Feedback,Bridge
+sport_team_league,This is a bridge table from sport team to sport league. Keep table or move foreign key to sport team?,Need Feedback,Bridge
+map_dma_monkey,I do not understand this table,Need Feedback,
+map_dma_region_division,I do not understand this table,Need Feedback,
+map_location_natterjack,mapping table but there is no location table in the database. Work in progress?,Need Feedback,
+map_location_porcupine,mapping table but there is no location table in the database. Work in progress?,Need Feedback,
+map_team_game_venue,I do not understand this table. Looks like an internal bridge table,Need Feedback,
+auth_group,Need to research. Is this used? Empty table,Research,
+auth_group_permissions,Need to research. Is this used? Empty table,Research,
+auth_permission,Need to research. Is this used? Proper table but looks like content_type_id foreign key is bad,Research,
+auth_user,Is this a django auth / user table?,Research,
+auth_user_groups,empty. Is this WIP for user groups?,Research,
+auth_user_user_permissions,empty. Is this WIP for user permissions??,Research,

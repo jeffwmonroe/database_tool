@@ -10,7 +10,7 @@ from sqlalchemy.exc import OperationalError
 import database_tools.database_connection.enums as db_enum
 from database_tools.database_connection.ontology_table import OntologyTable
 from database_tools.transfer_table.utilities import is_standard_column
-
+from database_tools.database_connection.old_schema import enumerated_thing_list
 
 # ToDo move this to a different utility module
 def timer(function):
@@ -27,7 +27,7 @@ def timer(function):
 
 
 def generate_new_id_pks(
-    number: int, thing_name: str, thing_table: sqla.Table, engine: sqla.Engine
+        number: int, thing_name: str, thing_table: sqla.Table, engine: sqla.Engine
 ) -> list[int]:
     thing_table_values: list[dict[str, str]] = [
         {"thing": thing_name} for index in range(number)
@@ -45,10 +45,10 @@ def generate_new_id_pks(
 
 
 def load_thing_table(
-    table_name: str,
-    df: pd.DataFrame,
-    engine: sqla.Engine,
-    meta_data: sqla.MetaData,
+        table_name: str,
+        df: pd.DataFrame,
+        engine: sqla.Engine,
+        meta_data: sqla.MetaData,
 ) -> None:
     """
     This function will load one table into the database from a pandas dataframe.
@@ -95,11 +95,11 @@ def load_thing_table(
 
 
 def load_thing_table_from_file(
-    table_name: str,
-    file_name: str,
-    engine: sqla.Engine,
-    meta_data: sqla.MetaData,
-    sheet_name=None,
+        table_name: str,
+        file_name: str,
+        engine: sqla.Engine,
+        meta_data: sqla.MetaData,
+        sheet_name=None,
 ) -> None:
     if sheet_name is None:
         df = pd.read_excel(file_name)
@@ -109,11 +109,11 @@ def load_thing_table_from_file(
 
 
 def load_many_thing_tables_from_file(
-    table_name: str,
-    file_name: str,
-    number_of_files: int,
-    engine: sqla.Engine,
-    meta_data: sqla.MetaData,
+        table_name: str,
+        file_name: str,
+        number_of_files: int,
+        engine: sqla.Engine,
+        meta_data: sqla.MetaData,
 ) -> None:
     for index in range(number_of_files):
         sheet_name = f"load-{index + 1:d}"
@@ -129,7 +129,7 @@ def print_row_header() -> None:
 
 
 def print_row(
-    row: tuple[int, int, db_enum.Action, datetime, str, db_enum.Status, str]
+        row: tuple[int, int, db_enum.Action, datetime, str, db_enum.Status, str]
 ) -> None:
     log_id = row[0]
     n_id = row[1]
@@ -160,14 +160,14 @@ def make_row_dict(row, column_names):
 
 @timer
 def get_latest_thing(
-    table_name: str,
-    engine: sqla.Engine,
-    meta_data: sqla.MetaData,
-    status: db_enum.Status | None = None,
-    action: db_enum.Action | None = None,
-    n_id: int | None = None,
-    latest: bool = False,
-    filename: str = None,
+        table_name: str,
+        engine: sqla.Engine,
+        meta_data: sqla.MetaData,
+        status: db_enum.Status | None = None,
+        action: db_enum.Action | None = None,
+        n_id: int | None = None,
+        latest: bool = False,
+        filename: str = None,
 ) -> None:
     table: sqla.Table = meta_data.tables[table_name]
     # stmt = sqla.select(table).where(table.c['status'] == db_enum.Status.draft)
@@ -232,7 +232,7 @@ def get_latest_thing(
 
 @timer
 def create_additional_things(
-    table_name: str, additional: int, engine: sqla.Engine, meta_data: sqla.MetaData
+        table_name: str, additional: int, engine: sqla.Engine, meta_data: sqla.MetaData
 ) -> None:
     print("create addditional things")
     table = meta_data.tables[table_name]
@@ -272,7 +272,7 @@ def create_additional_things(
 
 # ToDo deprecate create_additional_things2
 def create_additional_things2(
-    table_name: str, additional: int, engine: sqla.Engine, meta_data: sqla.MetaData
+        table_name: str, additional: int, engine: sqla.Engine, meta_data: sqla.MetaData
 ) -> None:
     print("create_additional_things")
     table_df = pd.read_sql_table(table_name, engine.connect())
@@ -306,9 +306,26 @@ def get_extra_columns(old_table: sqla.Table) -> list[sqla.Column]:
     return return_list
 
 
+import csv
+
+
+def read_table_exceptions() -> list[str]:
+    results = []
+    with open('table_exceptions.csv', 'r') as csvfile:
+        readCSV = csv.reader(csvfile, delimiter=',')
+        for row in readCSV:
+            results.append(row[0])
+
+    with open('table_todo.csv', 'r') as csvfile:
+        readCSV = csv.reader(csvfile, delimiter=',')
+        for row in readCSV:
+            results.append(row[0])
+    return results
+
+
 def validate_schema(
-    old_metadata: sqla.MetaData,
-    new_tables: dict[str, OntologyTable],
+        old_metadata: sqla.MetaData,
+        new_tables: dict[str, OntologyTable],
 ) -> None:
     print("validate_schema:")
     # Todo Add list of tables from old schema to exclude
@@ -319,11 +336,18 @@ def validate_schema(
     # print(f'old tables = {old_metadata.tables.keys()}')
     keys = [key for key in old_metadata.tables.keys()]
 
+    enumerated_list =enumerated_thing_list()
+    for key in new_tables.keys():
+        if key not in enumerated_list:
+            print(f"ERROR: {key} table from JSON is not in the enumerated list")
     # with open('old tables.csv', 'w') as f:
     #     write = csv.writer(f)
     #     for key in keys:
     #         write.writerow([key])
-
+    table_exceptions = read_table_exceptions()
+    missing_tables = []
+    for new_table in new_tables.values():
+        table_exceptions = table_exceptions + new_table.standard_table_exceptions()
     for table_name, old_table in old_metadata.tables.items():
         table_name = table_name[9:]  # strip off the name of the schema: ontology.
         new_table = new_tables.get(table_name)
@@ -334,8 +358,15 @@ def validate_schema(
                 if new_table.validate_column(column):
                     pass
                 else:
-                    print(f"      Error in column: {column.name}")
+                    print(f"      Error in table <{table_name}> missing column: {column.name}")
         else:
-            # ToDo validate tables list
-            # print(f'   table <{table_name}> not found in new database')
-            pass
+            if table_name not in table_exceptions:
+                print(f'   ERROR: table <{table_name}> not found in new database')
+                missing_tables.append(table_name)
+
+    print(f'missing tables: {len(missing_tables)}')
+    missing_tables.sort()
+    with open('missing_tables.csv', 'w+', newline='') as file:
+        write = csv.writer(file)
+        for row in missing_tables:
+            write.writerow([row])

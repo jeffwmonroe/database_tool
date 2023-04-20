@@ -325,7 +325,7 @@ class TableBase:
         for column in self.table.c:
             if is_id_column(self.thing, column):
                 return column
-        raise ValueError("No name found in get_id_column", self.thing)
+        raise ValueError(f"No name found in get_id_column for table: {self.thing}", self.thing)
 
     def get_name_column(self) -> sqla.Column:
         """
@@ -340,4 +340,4 @@ class TableBase:
             if is_name_column(self.thing, column):
                 return column
 
-        raise ValueError("No name found in get_name_column", self.thing)
+        raise ValueError(f"No name found in get_name_column for table: {self.thing}", self.thing)
