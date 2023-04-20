@@ -3,5 +3,10 @@ sqlalchemy
 sqlalchemy_utils
 pandas
 openpyxl
-jupyter
 pydantic
+
+# dev environment tools
+jupyter
+isort
+pydocstyle
+black[d]

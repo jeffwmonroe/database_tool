@@ -108,7 +108,7 @@ def main():
     else:
         category_hierarchy_df = pd.read_csv("category_hierarchy.csv")
 
-    print(f"cat heir: {category_hierarchy_df}")
+    # print(f"cat heir: {category_hierarchy_df}")
 
     base = CategoryNode("base")
 
@@ -118,10 +118,10 @@ def main():
         for col in value.keys():
             if value[col] not in val_list:
                 val_list.append(value[col])
-        print(f"value = {val_list}")
+        # print(f"value = {val_list}")
         base.insert_list(val_list)
 
-    base.pprint()
+    # base.pprint()
 
     cat_dict = {
         "cat_0": [],
@@ -133,7 +133,7 @@ def main():
     }
     df = pd.DataFrame(cat_dict)
     df = base.add_to_df(df)
-    print(f"df = {df}")
+    # print(f"df = {df}")
     df.to_csv("hierarchy out.csv")
 
     base.dump_to_html()
