@@ -1,3 +1,17 @@
+"""
+The module build_schema is used to build the JSON schema from an excel file.
+
+The data for the schema was initially constructed in Excel. This was a convenient
+human readable and manageable format; however, the format would have been awkward
+to maintain and could not easily contain more advanced data.
+
+This module is a command-line app which constructs the JSON and can also read
+the file and print it to verify accuracy.
+
+# ToDo deprecate this file
+**Note** this file can be deprecated
+
+"""
 import argparse
 import json
 
@@ -9,6 +23,11 @@ table_list = "../../data/table_list.xlsx"
 
 
 def read_vendor_info() -> dict[str, list[str]]:
+    """
+    Read the vendor information from the Excel file.
+
+    :return: Returns a dictionary of lists of vendors. The key is the thing (actor, venue etc)
+    """
     print("---------------------------------------")
     print("read_vendor_info")  # ToDo fix the file name
     df = pd.read_excel(table_list, sheet_name="vendors", keep_default_na=False)
@@ -25,6 +44,12 @@ def read_vendor_info() -> dict[str, list[str]]:
 
 
 def read_table_info(vendors: dict[str, list[str]]) -> list[JsonDataTable]:
+    """
+    Read the table information from the Excel File.
+
+    :param vendors:  Dictionary of list of vendors produced from read_vendor_info
+    :return:  list of JsonDataTable
+    """
     print("---------------------------------------")
     print("new_schema: read_table_info")
     df = pd.read_excel(table_list, sheet_name="tables", keep_default_na=False)
@@ -54,6 +79,12 @@ def read_table_info(vendors: dict[str, list[str]]) -> list[JsonDataTable]:
 
 
 def parse_arguments() -> argparse.Namespace:
+    """
+    Parse the command line arguments.
+
+    Use --help at the command line
+    :return: argparse.Namepace with parsed command line data
+    """
     parser = argparse.ArgumentParser(
         prog="Build Schema",
         description="Schema Build Tool",
@@ -84,6 +115,11 @@ def parse_arguments() -> argparse.Namespace:
 
 
 def main():
+    """
+    Read and test Excel and JSON schema file.
+
+    :return: None.
+    """
     args = parse_arguments()
     if args.verbose:
         print("---------------------------------")
