@@ -11,7 +11,7 @@ from sqlalchemy.exc import OperationalError
 
 # import sqlalchemy as sqla
 from database_tools import (NewDatabaseSchema, OntologySchema,
-                            create_additional_things, get_latest_thing,
+                            create_additional_things, query_thing_table,
                             load_many_thing_tables_from_file,
                             load_thing_table_from_file, str_to_action,
                             str_to_status, validate_schema)
@@ -272,7 +272,7 @@ def main() -> None:
         # ontology.test_fill(database) # old style
         table_name = args.query[0]
         excel_filename = args.dump
-        get_latest_thing(
+        query_thing_table(
             table_name,
             database.engine,
             database.metadata_obj,
